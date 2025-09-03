@@ -1,9 +1,4 @@
-## This is a Project Zomboid Mod Template
-### This template is staged for a hybrid B41/B42 setup
-In other words, you are working on a mod for both versions of the game.<br>
-See: https://pzwiki.net/wiki/Mod_structure for more info.
-<br><br>
-### Note on Non-standard [images](images/) folder.
-This folder is not included in steam-workshop uploads; it is useful for keeping raw images, psd files, larger assets that you may want to keep with your project but obviously don't want players to have to download.
+![Choose Disassembly Inventory mod - poster.](https://github.com/amescodes/PZChooseDisassembleInventory/blob/main/Contents/mods/ChooseDisassembleInventory/poster.png)
 
-<sup>Note: This is not a standard folder, and can be named anything.</sup>
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/amescodes)
+[![Support me on ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/E1E11KCLJV)

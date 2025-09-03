@@ -1,0 +1,8 @@
+VERSION = 1,
+
+option ChooseDisassemblyInventory.Items = {
+  type = string,
+  default = "Base.Nails,", 
+  page = ChooseDisassemblyInventory, 
+  translation = ChooseDisassemblyInventory_Destination
+}

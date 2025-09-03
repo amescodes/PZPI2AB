@@ -1,0 +1,11 @@
+id=ChooseDisassemblyInventory
+name=ChooseDisassemblyInventory
+description= 
+poster=poster.png
+tags=Build 41
+versionMin=41.0
+url=https://github.com/amescodes/PZChooseDisassembleInventory
+authors=amescodes
+modversion=41.1.0.0
+
+

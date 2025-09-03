@@ -1,0 +1,5 @@
+Sandbox_EN = {
+  Sandbox_ChooseDisassemblyInventory                = "Choose Disassembly Inventory"
+  Sandbox_ChooseDisassemblyInventory_Items          = "Items"
+  Sandbox_ChooseDisassemblyInventory_Items_tooltip  = "Items that will move to the destination container, if set, when items are dismantled or disassembled."
+}
