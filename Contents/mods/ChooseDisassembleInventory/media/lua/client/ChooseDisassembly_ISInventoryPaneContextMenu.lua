@@ -1,6 +1,6 @@
 local old_ISInventoryPaneContextMenu_OnCraft = ISInventoryPaneContextMenu.OnCraft
 ISInventoryPaneContextMenu.OnCraft = function(selectedItem, recipe, player, all)
-	old_ISInventoryPaneContextMenu_OnCraft(selectedItem, recipe, player, all)
+    old_ISInventoryPaneContextMenu_OnCraft(selectedItem, recipe, player, all)
 
     -- local res = recipe:getResult()
     -- if res then
@@ -22,8 +22,10 @@ ISInventoryPaneContextMenu.OnCraft = function(selectedItem, recipe, player, all)
 end
 
 local old_ISInventoryPaneContextMenu_OnCraftComplete = ISInventoryPaneContextMenu.OnCraftComplete
-ISInventoryPaneContextMenu.OnCraftComplete = function(completedAction, recipe, playerObj, container, containers, selectedItemType, selectedItemContainer)
-	old_ISInventoryPaneContextMenu_OnCraftComplete(completedAction, recipe, playerObj, container, containers, selectedItemType, selectedItemContainer)
+ISInventoryPaneContextMenu.OnCraftComplete = function(completedAction, recipe, playerObj, container, containers,
+    selectedItemType, selectedItemContainer)
+    old_ISInventoryPaneContextMenu_OnCraftComplete(completedAction, recipe, playerObj, container, containers,
+        selectedItemType, selectedItemContainer)
     ChooseDisassemblyInventory_PrintQueue(playerObj)
     local res = recipe:getResult()
     if res then
@@ -32,10 +34,11 @@ ISInventoryPaneContextMenu.OnCraftComplete = function(completedAction, recipe, p
         local playerInv = playerObj:getInventory()
         if playerInv:containsType(resItemType) then
             local previousAction = completedAction
-            for _=1,count do
+            for _ = 1, count do
                 local it = playerInv:FindAndReturn(resItemType)
                 if it then
-                    local action = ISInventoryTransferAction:new(playerObj, it, playerObj:getInventory(), selectedItemContainer, nil)
+                    local action = ISInventoryTransferAction:new(playerObj, it, playerObj:getInventory(),
+                        selectedItemContainer, nil)
                     if not action.ignoreAction then
                         ISTimedActionQueue.addAfter(previousAction, action)
                         previousAction = action
@@ -45,3 +48,37 @@ ISInventoryPaneContextMenu.OnCraftComplete = function(completedAction, recipe, p
         end
     end
 end
+
+local function makeTargetContainer(item, player)
+    if item then
+        ChooseDisassemblyInventory:setTargetContainer(player,item)
+    end
+end
+
+local function ChooseDisassemblyInventoryContextMenuEntry(player, context, items)
+    if not ChooseDisassemblyInventory.Enabled then
+        return
+    end
+
+    -- items = ISInventoryPane.getActualItems(items)
+    for _, v in ipairs(items) do
+        local testItem = v
+        if not instanceof(v, "InventoryItem") then
+            testItem = v.items[1];
+        end
+        if instanceof(testItem, "InventoryContainer") then
+            local targetContainerOption = context:insertOptionAfter(getText("IGUI_CraftUI_Favorite"), getText("IGUI_ChooseDisassemblyInventory_TargetContainer"), testItem, makeTargetContainer, player)
+            targetContainerOption.tooltip = getText("IGUI_ChooseDisassemblyInventory_TargetContainer_tooltip")
+            local texture = getTexture("media/ui/RadioButtonCircle.png")
+            local alreadyTarget = ChooseDisassemblyInventory:isTargetContainer(testItem)
+            if alreadyTarget then
+                targetContainerOption.notAvailable = true
+                targetContainerOption.tooltip = ''
+                texture = getTexture("media/ui/RadioButtonIndicator.png")
+            end
+            targetContainerOption.iconTexture = texture
+        end
+    end
+end
+
+Events.OnFillInventoryObjectContextMenu.Add(ChooseDisassemblyInventoryContextMenuEntry)

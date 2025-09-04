@@ -1,0 +1,4 @@
+IGUI_EN = {
+    IGUI_ChooseDisassemblyInventory_TargetContainer = "Target Container"
+    IGUI_ChooseDisassemblyInventory_TargetContainer_tooltip = "Crafted and dismantled items will transfer to this inventory automatically if there is capacity."
+}
