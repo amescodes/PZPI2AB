@@ -46,3 +46,16 @@ function ChooseDisassemblyInventory:isTargetContainer(container)
     ChooseDisassemblyInventoryPrint("ChooseDisassemblyInventory:isTargetContainer: container Id "..tostring(containerId), true)
     return ChooseDisassemblyInventory.TargetContainer and ChooseDisassemblyInventory.TargetContainer == containerId
 end
+
+function ChooseDisassemblyInventory:getTargetContainer(playerObj)
+    local playerInv = playerObj:getInventory()
+    local targetContainer
+    if ChooseDisassemblyInventory.TargetContainer then
+        local item = playerInv:getItemById(ChooseDisassemblyInventory.TargetContainer)
+        if item then
+            targetContainer = item:getItemContainer()
+        end
+    end
+    
+    return targetContainer
+end

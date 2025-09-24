@@ -23,3 +23,12 @@ function ChooseDisassemblyInventory_PrintQueue(playerObj)
         ChooseDisassemblyInventoryPrint("ChooseDisassemblyInventory: queue END ", true)
     end
 end
+
+function ChooseDisassemblyInventory_PrintArray(array)
+    if array then
+        for i = 0, array:size() - 1 do 
+            local s = array:get(i)
+            ChooseDisassemblyInventoryPrint(tostring(s), true)
+        end
+    end
+end
