@@ -59,3 +59,38 @@ function ChooseDisassemblyInventory:getTargetContainer(playerObj)
     
     return targetContainer
 end
+
+local function makeTargetContainer(item, player)
+    if item then
+        ChooseDisassemblyInventory:setTargetContainer(player,item)
+    end
+end
+
+local function ChooseDisassemblyInventoryContextMenuEntry(player, context, items)
+    if not ChooseDisassemblyInventory.Enabled then
+        return
+    end
+
+    -- items = ISInventoryPane.getActualItems(items)
+    for _, v in ipairs(items) do
+        local testItem = v
+        if not instanceof(v, "InventoryItem") then
+            testItem = v.items[1];
+        end
+        -- todo check not keys!
+        if instanceof(testItem, "InventoryContainer") then
+            local targetContainerOption = context:insertOptionAfter(getText("IGUI_CraftUI_Favorite"), getText("IGUI_ChooseDisassemblyInventory_TargetContainer"), testItem, makeTargetContainer, player)
+            targetContainerOption.tooltip = getText("IGUI_ChooseDisassemblyInventory_TargetContainer_tooltip")
+            local texture = getTexture("media/ui/RadioButtonCircle.png")
+            local alreadyTarget = ChooseDisassemblyInventory:isTargetContainer(testItem)
+            if alreadyTarget then
+                targetContainerOption.notAvailable = true
+                targetContainerOption.tooltip = ''
+                texture = getTexture("media/ui/RadioButtonIndicator.png")
+            end
+            targetContainerOption.iconTexture = texture
+        end
+    end
+end
+
+Events.OnFillInventoryObjectContextMenu.Add(ChooseDisassemblyInventoryContextMenuEntry)
