@@ -55,6 +55,13 @@ function BinaryInsert(t, value, fcomp)
     return (iMid+iState)
 end
 
+function ShallowClone(array)
+    local result = ArrayList.new()
+    for i = 0, array:size() - 1 do
+        result:add(array:get(i))
+    end
+    return result
+end
 -- -- http://lua-users.org/wiki/BinarySearch
 -- local default_fcompval = function( value ) return value end
 -- local fcompf = function( a,b ) return a < b end

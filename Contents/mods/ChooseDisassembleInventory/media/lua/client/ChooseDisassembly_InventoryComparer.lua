@@ -16,7 +16,7 @@ function ChooseDisassemblyInventoryComparer:setBefore(items)
         return
     end
 
-    self.before = items
+    self.before = ShallowClone(items)
 end
 
 function ChooseDisassemblyInventoryComparer:compare(items, source)
@@ -28,12 +28,7 @@ function ChooseDisassemblyInventoryComparer:compare(items, source)
     end
 
     -- set to after items to start
-    -- local result = items:toArray()
-    local result = ArrayList.new()
-    for i = 0, items:size() - 1 do
-        result:add(items:get(i))
-    end
-
+    local result = ShallowClone(items)
     for i = 0, self.before:size() - 1 do
         local item = self.before:get(i)
         if item then
@@ -43,9 +38,9 @@ function ChooseDisassemblyInventoryComparer:compare(items, source)
     end
     if source and source:size() > 0 then
         for j = 0, source:size() - 1 do
-            local testItem = source:get(j)
-            
-            local h = 0
+            local srcItem = source:get(j)
+            local foundSrcItem = result:remove(srcItem)     
+            local j = 0
         end
     end
 
