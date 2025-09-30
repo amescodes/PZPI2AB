@@ -5,11 +5,9 @@ if not ChooseDisassemblyInventory then
 end
 
 ChooseDisassemblyInventory.Enabled = true
-ChooseDisassemblyInventory.Verbose = isDebugEnabled()
-
-if not ChooseDisassemblyInventory.TargetContainer then
-    ChooseDisassemblyInventory.TargetContainer = ""
-end
+ChooseDisassemblyInventory.DefaultDestinationContainer = 1
+ChooseDisassemblyInventory.WhenToTransferItems = 1
+ChooseDisassemblyInventory.TargetContainer = ""
 
 function ChooseDisassemblyInventory.init()
     local player = getPlayer()
@@ -19,31 +17,31 @@ function ChooseDisassemblyInventory.init()
 
     if player:getModData().ChooseDisassemblyInventory == nil then
         -- create new mod data
-        ChooseDisassemblyInventoryPrint("ChooseDisassemblyInventory:init: creating new modData", true)
+        ChooseDisassemblyInventoryUtil.Print("ChooseDisassemblyInventory:init: creating new modData", true)
         player:getModData().ChooseDisassemblyInventory = {}
         ChooseDisassemblyInventory.TargetContainer = ""
     else
         -- load mod data
-        ChooseDisassemblyInventoryPrint("ChooseDisassemblyInventory:init: loading modData", true)
+        ChooseDisassemblyInventoryUtil.Print("ChooseDisassemblyInventory:init: loading modData", true)
         for key, value in pairs(player:getModData().ChooseDisassemblyInventory) do
-            ChooseDisassemblyInventoryPrint("ChooseDisassemblyInventory:init: loading "..tostring(key).." = "..tostring(value), true)
+            ChooseDisassemblyInventoryUtil.Print("ChooseDisassemblyInventory:init: loading "..tostring(key).." = "..tostring(value), true)
             ChooseDisassemblyInventory[key] = value
         end
     end
 end
 
-Events.OnGameStart.Add(ChooseDisassemblyInventory.init)
+-- Events.OnGameStart.Add(ChooseDisassemblyInventory.init)
 
 function ChooseDisassemblyInventory:setTargetContainer(player,container)
     local containerId = container:getID()
-    ChooseDisassemblyInventoryPrint("ChooseDisassemblyInventory:setTargetContainer: container Id "..tostring(containerId), true)
+    ChooseDisassemblyInventoryUtil.Print("ChooseDisassemblyInventory:setTargetContainer: container Id "..tostring(containerId), true)
     ChooseDisassemblyInventory.TargetContainer = containerId
     getSpecificPlayer(player):getModData()["ChooseDisassemblyInventory"]["TargetContainer"] = containerId
 end
 
 function ChooseDisassemblyInventory:isTargetContainer(container)
     local containerId = container:getID()
-    ChooseDisassemblyInventoryPrint("ChooseDisassemblyInventory:isTargetContainer: container Id "..tostring(containerId), true)
+    ChooseDisassemblyInventoryUtil.Print("ChooseDisassemblyInventory:isTargetContainer: container Id "..tostring(containerId), true)
     return ChooseDisassemblyInventory.TargetContainer and ChooseDisassemblyInventory.TargetContainer == containerId
 end
 
@@ -71,14 +69,15 @@ local function ChooseDisassemblyInventoryContextMenuEntry(player, context, items
         return
     end
 
-    -- items = ISInventoryPane.getActualItems(items)
     for _, v in ipairs(items) do
         local testItem = v
         if not instanceof(v, "InventoryItem") then
             testItem = v.items[1];
         end
-        -- todo check not keys!
         if instanceof(testItem, "InventoryContainer") then
+            -- check for keys and moveables
+            if testItem:getFullType() == "Base.KeyRing" then return end
+
             local targetContainerOption = context:insertOptionAfter(getText("IGUI_CraftUI_Favorite"), getText("IGUI_ChooseDisassemblyInventory_TargetContainer"), testItem, makeTargetContainer, player)
             targetContainerOption.tooltip = getText("IGUI_ChooseDisassemblyInventory_TargetContainer_tooltip")
             local texture = getTexture("media/ui/RadioButtonCircle.png")

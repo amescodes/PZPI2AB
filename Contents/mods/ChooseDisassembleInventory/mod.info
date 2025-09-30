@@ -6,6 +6,7 @@ tags=Build 41
 versionMin=41.0
 url=https://github.com/amescodes/PZChooseDisassembleInventory
 authors=amescodes
+require=modoptions
 modversion=41.1.0.0
 
 
