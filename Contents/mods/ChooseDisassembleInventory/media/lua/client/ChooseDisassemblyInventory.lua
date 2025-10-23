@@ -4,6 +4,8 @@ if not ChooseDisassemblyInventory then
     ChooseDisassemblyInventory = {}
 end
 
+
+ChooseDisassemblyInventory.Verbose = isDebugEnabled()
 ChooseDisassemblyInventory.Enabled = true
 ChooseDisassemblyInventory.DefaultDestinationContainer = 1
 ChooseDisassemblyInventory.WhenToTransferItems = 1
@@ -72,7 +74,7 @@ local function ChooseDisassemblyInventoryContextMenuEntry(player, context, items
     for _, v in ipairs(items) do
         local testItem = v
         if not instanceof(v, "InventoryItem") then
-            testItem = v.items[1];
+            testItem = v.items[1]
         end
         if instanceof(testItem, "InventoryContainer") then
             -- check for keys and moveables

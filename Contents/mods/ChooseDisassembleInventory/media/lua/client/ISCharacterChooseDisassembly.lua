@@ -14,7 +14,7 @@ end
 
 local function addComboOption(combo,name,previousWidth,data)
     local txt = getText(name)
-    local txtWidth = getTextManager():MeasureStringX(UIFont.Small, txt);
+    local txtWidth = getTextManager():MeasureStringX(UIFont.Small, txt)
     combo:addOptionWithData(txt,data)
     if previousWidth > txtWidth then return previousWidth end
     return txtWidth
@@ -59,7 +59,7 @@ function ISCharacterChooseDisassembly:createChildren()
 	self.defaultDestContainerCombo:initialise()
 	self:addChild(self.defaultDestContainerCombo)
 
-    local width = 0;
+    local width = 0
     width = addComboOption(self.defaultDestContainerCombo,"UI_char_ChooseDisassemblyInventory_DestContainer_PlayerInventory",width,1)
     width = addComboOption(self.defaultDestContainerCombo,"UI_char_ChooseDisassemblyInventory_DestContainer_ItemSource",width,2)
     self.defaultDestContainerCombo:setWidth(width+35)

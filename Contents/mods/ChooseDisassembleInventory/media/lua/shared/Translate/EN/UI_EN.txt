@@ -13,7 +13,7 @@ UI_EN = {
 	UI_char_ChooseDisassemblyInventory_DestContainer_PlayerInventory 	= "Player Inventory"
 
 	UI_char_ChooseDisassemblyInventory_WhenToTransferItems 				= "Transfer Items on All"
-	UI_char_ChooseDisassemblyInventory_WhenToTransferItems_tooltip		= "When items will be transferred to the target container when crafting/disassembling all. After Each will transfer the resulting ingredients after each single craft/disassemble task. At End will transfer the resulting ingredients of all craft/disassemble tasks when all tasks are completed."	
+	UI_char_ChooseDisassemblyInventory_WhenToTransferItems_tooltip		= "When items will be transferred to the target container when crafting/disassembling all. After Each will transfer the resulting ingredients after each single craft/disassemble task. At End will transfer the resulting ingredients when all tasks are completed."	
 	UI_char_ChooseDisassemblyInventory_WhenToTransferItems_AfterEach 	= "After Each"
 	UI_char_ChooseDisassemblyInventory_WhenToTransferItems_AtEnd 		= "At End"
 }

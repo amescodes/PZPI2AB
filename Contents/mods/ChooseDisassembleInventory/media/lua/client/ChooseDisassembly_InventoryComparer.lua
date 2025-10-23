@@ -1,6 +1,6 @@
 require "ChooseDisassemblyInventoryUtil"
 
-ChooseDisassemblyInventoryComparer = {};
+ChooseDisassemblyInventoryComparer = {}
 ChooseDisassemblyInventoryComparer.Comparers = {}
 
 function ChooseDisassemblyInventoryComparer.get(time)
