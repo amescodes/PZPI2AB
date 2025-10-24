@@ -1,5 +1,5 @@
-[ 9/x/25 ]
-- Add support for Chuckleberry Finn Mod Update and Alert system.
+[ 10/24/25 ]
+- Initial release.
 [ ------ ]
 
 
@@ -7,5 +7,5 @@
 link1 = Ko-fi = https://steamcommunity.com/linkfilter/?u=https://ko-fi.com/amescodes,
 link2 = Buymeacoffee = https://steamcommunity.com/linkfilter/?u=https://buymeacoffee.com/amescodes,
 link3 = Workshop = https://steamcommunity.com/id/ames_games/myworkshopfiles/?appid=108600,
-link4 = Github = https://steamcommunity.com/linkfilter/?u=https://github.com/amescodes/PZChooseDisassembleInventory
+link4 = Github = https://steamcommunity.com/linkfilter/?u=https://github.com/amescodes/PZPI2AB
 [ ------ ]

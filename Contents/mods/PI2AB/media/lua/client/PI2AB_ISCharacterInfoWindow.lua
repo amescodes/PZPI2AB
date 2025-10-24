@@ -1,18 +1,18 @@
-local modName = "ChooseDisassemblyInventory"
+local modName = "PI2AB"
 
 local upperLayer_ISCharacterInfoWindow_createChildren = ISCharacterInfoWindow.createChildren
 function ISCharacterInfoWindow:createChildren()
     upperLayer_ISCharacterInfoWindow_createChildren(self)
 
-    self.chooseDisassemblyView = ISCharacterChooseDisassembly:new(0, 8, 300, 200, self.playerNum)
-    self.chooseDisassemblyView:initialise()
-    self.panel:addView(getText("UI_ChooseDisassemblyInventory"), self.chooseDisassemblyView)
+    self.PI2ABView = ISCharacterPI2AB:new(0, 8, 300, 200, self.playerNum)
+    self.PI2ABView:initialise()
+    self.panel:addView(getText("UI_PI2AB"), self.PI2ABView)
 end
 
 local upperLayer_ISCharacterInfoWindow_onTabTornOff = ISCharacterInfoWindow.onTabTornOff
 function ISCharacterInfoWindow:onTabTornOff(view, window)
-    if self.playerNum == 0 and view == self.chooseDisassemblyView then
-        ISLayoutManager.RegisterWindow("charinfowindow.ChooseDisassemblyInventory", ISCollapsableWindow, window)
+    if self.playerNum == 0 and view == self.PI2ABView then
+        ISLayoutManager.RegisterWindow("charinfowindow.PI2AB", ISCollapsableWindow, window)
     end
     upperLayer_ISCharacterInfoWindow_onTabTornOff(self, view, window)
 end

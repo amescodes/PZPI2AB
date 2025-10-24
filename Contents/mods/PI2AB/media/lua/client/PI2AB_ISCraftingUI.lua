@@ -1,8 +1,8 @@
-require "ChooseDisassemblyInventoryComparer"
+require "PI2ABComparer"
 
 ISCraftingUI_transferOnCraftComplete = function(completedAction, recipe, playerObj, container,containers,all,ui)
     local playerInv = playerObj:getInventory()
-    local targetContainer = ChooseDisassemblyInventory:getTargetContainer(playerObj)
+    local targetContainer = PI2AB:getTargetContainer(playerObj)
 
     local previousAction = completedAction
     local src = recipe:getSource()
@@ -10,7 +10,7 @@ ISCraftingUI_transferOnCraftComplete = function(completedAction, recipe, playerO
         local allItems = playerInv:getItems()
 
         if completedAction.timestamp then
-            local comparer = ChooseDisassemblyInventoryComparer.get(completedAction.timestamp)
+            local comparer = PI2ABComparer.get(completedAction.timestamp)
             if comparer then
                 local itemsToTransfer = comparer:compare(allItems,src)
                 if itemsToTransfer then
@@ -20,7 +20,7 @@ ISCraftingUI_transferOnCraftComplete = function(completedAction, recipe, playerO
                         if targetContainer and targetContainer:hasRoomFor(playerObj, it) then
                             destinationContainer = targetContainer
                         else
-                            local defContainer = ChooseDisassemblyInventoryUtil.GetDefaultContainer(container,playerInv)
+                            local defContainer = PI2ABUtil.GetDefaultContainer(container,playerInv)
                             if defContainer and defContainer:hasRoomFor(playerObj, it) then
                                 destinationContainer = defContainer
                             else
@@ -32,7 +32,7 @@ ISCraftingUI_transferOnCraftComplete = function(completedAction, recipe, playerO
                         destinationContainer, nil)
                         action:setAllowMissingItems(true)
                         if not action.ignoreAction then
-                            previousAction = ChooseDisassemblyInventoryUtil.AddWhenToTransferAction(previousAction, action)
+                            previousAction = PI2ABUtil.AddWhenToTransferAction(previousAction, action)
                         end
                     end
                 end
@@ -71,7 +71,7 @@ ISCraftingUI_transferOnCraftComplete = function(completedAction, recipe, playerO
         
         local timestamp = os.time()
         action.timestamp = timestamp
-        ChooseDisassemblyInventoryComparer.create(timestamp,playerObj:getInventory():getItems())
+        PI2ABComparer.create(timestamp,playerObj:getInventory():getItems())
 
         ISTimedActionQueue.addAfter(previousAction, action)
         ISCraftingUI.ReturnItemsToOriginalContainer(playerObj, returnToContainer)
@@ -82,7 +82,7 @@ local old_ISCraftingUI_craft = ISCraftingUI.craft
 function ISCraftingUI:craft(button, all)
     old_ISCraftingUI_craft(self,button, all)
 
-    if ChooseDisassemblyInventory.Enabled then
+    if PI2AB.Enabled then
         -- self.craftInProgress = false
         local recipeListBox = self:getRecipeListBox()
         local recipe = recipeListBox.items[recipeListBox.selected].item.recipe
@@ -93,13 +93,13 @@ function ISCraftingUI:craft(button, all)
 
         local queue = ISTimedActionQueue.getTimedActionQueue(playerObj).queue
         if queue then
-            local action = ChooseDisassemblyInventoryUtil.GetCraftAction(recipe,queue)
+            local action = PI2ABUtil.GetCraftAction(recipe,queue)
             if action then
                 action:setOnComplete(ISCraftingUI_transferOnCraftComplete, action, recipe, playerObj,container,self.containerList,all,self)
                 
                 local timestamp = os.time()
                 action.timestamp = timestamp
-                ChooseDisassemblyInventoryComparer.create(timestamp,playerObj:getInventory():getItems())
+                PI2ABComparer.create(timestamp,playerObj:getInventory():getItems())
             end
         end
     end

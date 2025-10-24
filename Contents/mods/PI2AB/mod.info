@@ -1,0 +1,12 @@
+id=PI2AB
+name=Put it in a #$!% bag!
+description=After crafting or dismantling items, transfer them to a target container of your choosing, as long as it's on your character!
+poster=poster.png
+tags=Build 41
+versionMin=41.0
+url=https://github.com/amescodes/PZPI2AB
+authors=amescodes
+require=modoptions
+modversion=41.1.0.0
+
+
