@@ -31,8 +31,6 @@ function PI2AB.init()
     end
 end
 
--- Events.OnGameStart.Add(PI2AB.init)
-
 function PI2AB:setTargetContainer(player,container)
     local containerId = container:getID()
     PI2ABUtil.Print("PI2AB:setTargetContainer: container Id "..tostring(containerId), true)
@@ -76,7 +74,6 @@ local function setTargetContextMenuEntry(player, context, items)
             testItem = v.items[1]
         end
         if instanceof(testItem, "InventoryContainer") then
-            -- check for keys and moveables
             if testItem:getFullType() == "Base.KeyRing" then return end
 
             local targetContainerOption = context:insertOptionAfter(getText("IGUI_CraftUI_Favorite"), getText("IGUI_PI2AB_TargetContainer"), testItem, makeTargetContainer, player)
