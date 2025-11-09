@@ -4,7 +4,6 @@ if not PI2AB then
     PI2AB = {}
 end
 
-
 PI2AB.Verbose = isDebugEnabled()
 PI2AB.Enabled = true
 PI2AB.DefaultDestinationContainer = 1
@@ -66,7 +65,7 @@ local function makeTargetContainer(item, player)
     end
 end
 
-local function PI2ABContextMenuEntry(player, context, items)
+local function setTargetContextMenuEntry(player, context, items)
     if not PI2AB.Enabled then
         return
     end
@@ -85,8 +84,7 @@ local function PI2ABContextMenuEntry(player, context, items)
             local texture = getTexture("media/ui/RadioButtonCircle.png")
             local alreadyTarget = PI2AB:isTargetContainer(testItem)
             if alreadyTarget then
-                targetContainerOption.notAvailable = true
-                targetContainerOption.tooltip = ''
+                targetContainerOption.tooltip = getText("IGUI_PI2AB_IsTargetContainer_tooltip")
                 texture = getTexture("media/ui/RadioButtonIndicator.png")
             end
             targetContainerOption.iconTexture = texture
@@ -94,4 +92,25 @@ local function PI2ABContextMenuEntry(player, context, items)
     end
 end
 
-Events.OnFillInventoryObjectContextMenu.Add(PI2ABContextMenuEntry)
+Events.OnFillInventoryObjectContextMenu.Add(setTargetContextMenuEntry)
+
+local function resetTargetContainer(target,player)
+    if player then
+        PI2AB.TargetContainer = nil
+        getSpecificPlayer(player):getModData()["PI2AB"]["TargetContainer"] = nil
+    end
+end
+
+local function resetTargetContextMenuEntry(player, context,isLoot)
+    if not PI2AB.Enabled then
+        return
+    end
+    local test  = getSpecificPlayer(player)
+    if not isLoot then
+        local resetTargetOption = context:addOption( getText("IGUI_PI2AB_ResetTarget"), nil, resetTargetContainer, player)
+        resetTargetOption.tooltip = getText("IGUI_PI2AB_ResetTarget_tooltip")
+    end
+end
+
+LuaEventManager.AddEvent("OnFillInventoryContextMenuNoItems")
+Events.OnFillInventoryContextMenuNoItems.Add(resetTargetContextMenuEntry)

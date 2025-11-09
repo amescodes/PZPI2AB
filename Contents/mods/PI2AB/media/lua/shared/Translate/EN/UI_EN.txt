@@ -1,6 +1,6 @@
 UI_EN = {
-	UI_PI2AB                     		      		= "Put it in a #$!% bag!"
-	UI_PI2ABOptions                     		    = "Options"
+	UI_PI2AB                     		      		= "PI2AB"
+	UI_PI2ABTitle	                     		    = "Put it in a #$!% bag!"
 
 	UI_char_PI2AB_Enabled 							= "Enabled"
 	UI_char_PI2AB_Enabled_tooltip 					= "Enable to automatically move items to target container. Disable to use vanilla behavior."
