@@ -1,5 +1,5 @@
 version=1
-title=[B41/B42] Choose Disassembly Inventory
-description=
+title=[B41/B42] Put it in a #$!% bag!
+description=After crafting or dismantling items, transfer them to a target container of your choosing, as long as it's on your character!
 tags=Build 41;Build 42;
 visibility=unlisted

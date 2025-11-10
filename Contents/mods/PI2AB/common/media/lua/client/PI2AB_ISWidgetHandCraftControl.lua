@@ -4,12 +4,7 @@ local ISWidgetHandCraftControl_transferOnHandcraftActionComplete = function(args
     local playerInv = playerObj:getInventory()
     local targetContainer = PI2AB:getTargetContainer(playerObj)
 
-    local t = args.widget.logic:getCraftActionTable()
     local completedAction = args.completedAction
-
-    -- PI2ABUtil.Print("---------------transferOnHandcraftActionComplete-------------")
-    -- PI2ABUtil.PrintQueue(playerObj)
-    -- PI2ABUtil.Print("-------------------------------END-----------------------------")
 
     local inputItems = args.recipe:getAllInputItems()
     if inputItems then
@@ -44,7 +39,8 @@ local ISWidgetHandCraftControl_transferOnHandcraftActionComplete = function(args
                             ISInventoryTransferAction:new(playerObj, it, playerInv, destinationContainer, nil)
                         action:setAllowMissingItems(true)
                         if not action.ignoreAction then
-                            PI2ABUtil.AddWhenToTransferActionHandcraft(ISTimedActionQueue.getTimedActionQueue(playerObj),action)
+                            PI2ABUtil.AddWhenToTransferActionHandcraft(
+                                ISTimedActionQueue.getTimedActionQueue(playerObj), action)
                         end
                     end
                 end
@@ -58,39 +54,37 @@ end
 local old_ISWidgetHandCraftControl_startHandcraft = ISWidgetHandCraftControl.startHandcraft
 function ISWidgetHandCraftControl:startHandcraft(force)
     old_ISWidgetHandCraftControl_startHandcraft(self, force)
-    local playerObj = self.player
-    if playerObj:HasTrait("Disorganized") then
-        return
-    end
 
     if PI2AB.Enabled then
-        local recipeData = self.logic:getRecipeData()
-        local recipe = recipeData:getRecipe()
+        local playerObj = self.player
+        if playerObj:HasTrait("Disorganized") then
+            return
+        end
 
         local queue = ISTimedActionQueue.getTimedActionQueue(playerObj).queue
         if queue then
             local ct = self.craftTimes
             local playerObj = self.player
 
-            local l = self.logic
-            local recipeData = l:getRecipeData()
+            local recipeData = self.logic:getRecipeData()
             local selectedItem = recipeData:getFirstInputItemWithFlag("Prop2")
             if not selectedItem then
                 local destroyedItems = recipeData:getAllDestroyInputItems()
-                selectedItem = destroyedItems:get(0)
-                if not selectedItem then
+                if destroyedItems and not destroyedItems == 0 then
+                    selectedItem = destroyedItems:get(0)
+                else
                     local inputItems = recipeData:getAllInputItems()
                     selectedItem = inputItems:get(0)
                 end
             end
 
             for i = 0, ct - 1 do
-                local action = PI2ABUtil.GetCraftAction(recipe, queue, i)
+                local action = PI2ABUtil.GetCraftAction(recipeData:getRecipe(), queue, i)
                 if action then
-                    local args = PI2ABTransferArgs:new(nil,self, action, recipeData, playerObj, selectedItem:getContainer(),
-                        action.containers, selectedItem)
+                    local args = PI2ABTransferArgs:new(nil, self, action, recipeData, playerObj,
+                        selectedItem:getContainer(), action.containers, selectedItem)
 
-                    action:setOnComplete(ISWidgetHandCraftControl_transferOnHandcraftActionComplete, args) -- , action, recipeData, playerObj, selectedItem:getContainer(), action.containers,selectedItem)
+                    action:setOnComplete(ISWidgetHandCraftControl_transferOnHandcraftActionComplete, args)
                     local timestamp = os.time()
                     action.timestamp = timestamp
                     PI2ABComparer.create(timestamp, playerObj:getInventory():getItems())

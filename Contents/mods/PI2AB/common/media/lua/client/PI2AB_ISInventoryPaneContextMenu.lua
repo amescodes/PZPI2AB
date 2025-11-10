@@ -196,6 +196,10 @@ ISInventoryPaneContextMenu.OnNewCraft = function(selectedItem, recipe, player, a
 
     if PI2AB.Enabled then
         local playerObj = getSpecificPlayer(player)
+        if playerObj:HasTrait("Disorganized") then
+            return
+        end
+        
         local playerInv = playerObj:getInventory()
         local queue = ISTimedActionQueue.getTimedActionQueue(playerObj).queue
         if queue then
