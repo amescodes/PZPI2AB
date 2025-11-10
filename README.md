@@ -1,6 +1,10 @@
-![Put it in a #$!% bag! mod - poster.](https://github.com/amescodes/PZPI2AB/blob/main/preview.png)
+![Put it in a #$!% bag! mod - poster.](https://github.com/amescodes/PZPI2AB/blob/main/images/poster.png)
 
-Put it in a #$!% bag! (PI2AB)A Project Zomboid mod that automatically transfers crafted and dismantled items to your specified target container. Compatible with Build 41 & 42!
+Put it in a #$!% bag! (PI2AB)
+
+A Project Zomboid mod that automatically transfers crafted and dismantled items to your specified target container. Compatible with Build 41 & 42!
+
+Place early in the mod load order, especially if using with other inventory and/or item transfer mods.
 
 <a title="ames_games Steam Workshop" href="https://steamcommunity.com/id/ames_games/myworkshopfiles/?appid=108600"><img width="64" alt="Steam official logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Steam_icon_logo.svg/64px-Steam_icon_logo.svg.png?20220611141426">Workshop</a>
 
@@ -14,9 +18,7 @@ Put it in a #$!% bag! (PI2AB)A Project Zomboid mod that automatically transfers 
 
 - Right-click any container (except key rings) to set it as your target container
 
-![Target container right-click option when it's not set.](https://github.com/amescodes/PZPI2AB/blob/main/images/targetcontainer-off.png)
-
-![Target container right-click option when it's not set.](https://github.com/amescodes/PZPI2AB/blob/main/images/targetcontainer-on.png)
+![Target container right-click option on backpacks and other containers.](https://github.com/amescodes/PZPI2AB/blob/main/images/targetcontainer.png)
 
 - Crafted and dismantled items will automatically transfer to the target container if there's room
 - If the target container is full or not set, items will go to the default target (configurable from the PI2AB tab in the character panel)
@@ -44,6 +46,10 @@ When there's no target container set or when the target container is full, items
 - **Player Inventory**: Items go to your main inventory (default setting)
 - **Item Source Container**: Items return to the container where one of the crafting ingredients came from 
 
+## Known Incompatibilities
+
+None!
+
 ## Credits
 
-- PZ modding community for the repo template as well as being a helpful resource
+- PZ modding community for the ![repo template](https://github.com/Project-Zomboid-Community-Modding/pzmc-template) as well as being a helpful resource
