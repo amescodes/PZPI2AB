@@ -144,9 +144,10 @@ end
 
 
 local old_ISInventoryPaneContextMenu_OnNewCraftComplete = ISInventoryPaneContextMenu.OnNewCraftComplete
-local ISInventoryPaneContextMenu_transferOnNewCraftComplete = function(logic,completedAction, recipe, playerObj, container,containers,selectedItem,all)
-    old_ISInventoryPaneContextMenu_OnNewCraftComplete(logic)
+local ISInventoryPaneContextMenu_transferOnNewCraftComplete = function(args)
+    old_ISInventoryPaneContextMenu_OnNewCraftComplete(args.logic)
 
+    local playerObj = args.playerObj
     local playerInv = playerObj:getInventory()
     local targetContainer = PI2AB:getTargetContainer(playerObj)
 
@@ -154,14 +155,14 @@ local ISInventoryPaneContextMenu_transferOnNewCraftComplete = function(logic,com
     -- PI2ABUtil.PrintQueue(playerObj)
     -- PI2ABUtil.Print("------------------------END------------------------")
 
-    local previousAction = completedAction
-    local src = recipe:getSource()
-    if src then
+    local previousAction = args.completedAction
+    local inputItems = args.recipe:getAllInputItems()
+    if inputItems then
         local allItems = playerInv:getItems()
-        if completedAction.timestamp then
-            local comparer = PI2ABComparer.get(completedAction.timestamp)
+        if previousAction.timestamp then
+            local comparer = PI2ABComparer.get(previousAction.timestamp)
             if comparer then
-                local itemsToTransfer = comparer:compare(allItems,src)
+                local itemsToTransfer = comparer:compare(allItems,inputItems)
                 if itemsToTransfer then
                     for i = 0, itemsToTransfer:size() - 1 do
                         local it = itemsToTransfer:get(i)
@@ -169,7 +170,7 @@ local ISInventoryPaneContextMenu_transferOnNewCraftComplete = function(logic,com
                         if targetContainer and targetContainer:hasRoomFor(playerObj, it) then
                             destinationContainer = targetContainer
                         else
-                            local defContainer = PI2ABUtil.GetDefaultContainer(container,playerInv)
+                            local defContainer = PI2ABUtil.GetDefaultContainer(args.container,playerInv)
                             if defContainer and defContainer:hasRoomFor(playerObj, it) then
                                 destinationContainer = defContainer
                             else
@@ -180,7 +181,7 @@ local ISInventoryPaneContextMenu_transferOnNewCraftComplete = function(logic,com
                         local action = ISInventoryTransferAction:new(playerObj, it, playerInv, destinationContainer, nil)
                         action:setAllowMissingItems(true)
                         if not action.ignoreAction then
-                            previousAction = PI2ABUtil.AddWhenToTransferAction(previousAction, action)
+                            previousAction = PI2ABUtil.AddWhenToTransferActionHandcraft(ISTimedActionQueue.getTimedActionQueue(playerObj), action)
                         end
                     end
                 end
@@ -194,21 +195,15 @@ ISInventoryPaneContextMenu.OnNewCraft = function(selectedItem, recipe, player, a
     old_ISInventoryPaneContextMenu_OnNewCraft(selectedItem, recipe, player, all, eatPercentage)
 
     if PI2AB.Enabled then
-        local container = selectedItem:getContainer()
         local playerObj = getSpecificPlayer(player)
         local playerInv = playerObj:getInventory()
-        local containers = ISInventoryPaneContextMenu.getContainers(playerObj)
-        local logic = HandcraftLogic.new(playerObj, nil, nil);
-
-        logic:setContainers(containers)
-        logic:setRecipeFromContextClick(recipe, selectedItem)
-
         local queue = ISTimedActionQueue.getTimedActionQueue(playerObj).queue
         if queue then
             local action = PI2ABUtil.GetCraftAction(recipe, queue)
             if action then
-                action:setOnComplete(ISInventoryPaneContextMenu_transferOnNewCraftComplete, logic, action, recipe, playerObj, container, containers,
-                    selectedItem, all)
+                local logic = action.onCompleteTarget                
+                local args = PI2ABTransferArgs:new(logic,nil, action, logic:getRecipeData(), playerObj, selectedItem:getContainer(), action.containers, selectedItem,all)
+                action:setOnComplete(ISInventoryPaneContextMenu_transferOnNewCraftComplete, args)
                 local timestamp = os.time()
                 action.timestamp = timestamp
                 PI2ABComparer.create(timestamp, playerInv:getItems())

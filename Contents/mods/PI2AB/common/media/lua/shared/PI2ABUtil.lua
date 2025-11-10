@@ -32,6 +32,24 @@ function PI2ABUtil.AddWhenToTransferAction(previousAction, action)
     return nil
 end
 
+
+function PI2ABUtil.AddWhenToTransferActionHandcraft(queue, action)
+    local whenToTransferIndex = PI2AB.WhenToTransferItems
+    if whenToTransferIndex then
+        local defOption = PI2ABUtil.WhenToTransfer[whenToTransferIndex]
+        if defOption == 'AfterEach' then
+            --ISTimedActionQueue.addAfter(previousAction, action)
+            table.insert(queue.queue, 1, action)
+            queue.current = action
+            action:begin()
+            return action
+        end
+    end
+
+    queue:addToQueue(action)
+    return nil
+end
+
 function PI2ABUtil.Print(txt, debugOnly)
     if debugOnly == nil then
         debugOnly = false
@@ -86,7 +104,7 @@ function PI2ABUtil.PrintQueue(playerObj)
     if queue then
         PI2ABUtil.Print("PI2AB: queue...", true)
         for i, action in ipairs(queue) do
-            local jobType = action.jobType
+            local jobType = action.Type
             if not jobType then
                 jobType = "???"
                 local item = action.item:getFullType()

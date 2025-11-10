@@ -1,4 +1,4 @@
-![Choose Disassembly Inventory mod - poster.](https://github.com/amescodes/PZPI2AB/blob/main/Contents/mods/PI2AB/poster.png)
+![Put it in a #$!% bag! mod - poster.](https://github.com/amescodes/PZPI2AB/blob/main/Contents/mods/PI2AB/poster.png)
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/amescodes)
 [![Support me on ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/E1E11KCLJV)
