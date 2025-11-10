@@ -10,10 +10,6 @@ local ISWidgetHandCraftControl_transferOnHandcraftActionComplete = function(args
     if inputItems then
         local allItems = playerInv:getItems()
 
-        -- PI2ABUtil.Print("---------AFTER INVENTORY-----------")
-        -- PI2ABUtil.PrintArray(allItems)
-        -- PI2ABUtil.Print("---------------END-----------------")
-
         if completedAction.timestamp then
             local container = args.container
 

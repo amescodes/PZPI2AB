@@ -4,19 +4,10 @@ ISInventoryPaneContextMenu_transferOnCraftComplete = function(completedAction, r
     local playerInv = playerObj:getInventory()
     local targetContainer = PI2AB:getTargetContainer(playerObj)
 
-    -- PI2ABUtil.Print("---------------transferOnCraftComplete-------------")
-    -- PI2ABUtil.PrintQueue(playerObj)
-    -- PI2ABUtil.Print("------------------------END------------------------")
-
     local previousAction = completedAction
     local src = recipe:getSource()
     if src then
         local allItems = playerInv:getItems()
-
-        -- PI2ABUtil.Print("---------AFTER INVENTORY-----------")
-        -- PI2ABUtil.PrintArray(allItems)
-        -- PI2ABUtil.Print("---------------END-----------------")
-        
         if completedAction.timestamp then
             local comparer = PI2ABComparer.get(completedAction.timestamp)
             if comparer then
@@ -121,14 +112,6 @@ ISInventoryPaneContextMenu.OnCraft = function(selectedItem, recipe, player, all)
         local container = selectedItem:getContainer()
         local containers = ISInventoryPaneContextMenu.getContainers(playerObj)
 
-        -- PI2ABUtil.Print("---------BEFORE INVENTORY-----------")
-        -- PI2ABUtil.PrintArray(playerInv:getItems())
-        -- PI2ABUtil.Print("---------------END------------------")
-        
-        -- PI2ABUtil.Print("---------------ON CRAFT-------------")
-        -- PI2ABUtil.PrintQueue(playerObj)
-        -- PI2ABUtil.Print("---------------END------------------")
-
         local queue = ISTimedActionQueue.getTimedActionQueue(playerObj).queue
         if queue then
             local action = PI2ABUtil.GetCraftAction(recipe,queue)
@@ -150,10 +133,6 @@ local ISInventoryPaneContextMenu_transferOnNewCraftComplete = function(args)
     local playerObj = args.playerObj
     local playerInv = playerObj:getInventory()
     local targetContainer = PI2AB:getTargetContainer(playerObj)
-
-    -- PI2ABUtil.Print("---------------transferOnNewCraftComplete-------------")
-    -- PI2ABUtil.PrintQueue(playerObj)
-    -- PI2ABUtil.Print("------------------------END------------------------")
 
     local previousAction = args.completedAction
     local inputItems = args.recipe:getAllInputItems()

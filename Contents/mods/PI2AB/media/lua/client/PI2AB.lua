@@ -49,7 +49,7 @@ end
 function PI2AB:getTargetContainer(playerObj)
     local playerInv = playerObj:getInventory()
     local targetContainer
-    if PI2AB.TargetContainer then
+    if PI2AB.TargetContainer and not (PI2AB.TargetContainer == nil or PI2AB.TargetContainer == 0 ) then
         local item = playerInv:getItemById(PI2AB.TargetContainer)
         if item then
             targetContainer = item:getItemContainer()
@@ -96,8 +96,8 @@ Events.OnFillInventoryObjectContextMenu.Add(setTargetContextMenuEntry)
 
 local function resetTargetContainer(target,player)
     if player then
-        PI2AB.TargetContainer = nil
-        getSpecificPlayer(player):getModData()["PI2AB"]["TargetContainer"] = nil
+        PI2AB.TargetContainer = ""
+        getSpecificPlayer(player):getModData()["PI2AB"]["TargetContainer"] = ""
     end
 end
 
@@ -105,7 +105,6 @@ local function resetTargetContextMenuEntry(player, context,isLoot)
     if not PI2AB.Enabled then
         return
     end
-    local test  = getSpecificPlayer(player)
     if not isLoot then
         local resetTargetOption = context:addOption( getText("IGUI_PI2AB_ResetTarget"), nil, resetTargetContainer, player)
         resetTargetOption.tooltip = getText("IGUI_PI2AB_ResetTarget_tooltip")
