@@ -1,6 +1,6 @@
 ISInventoryPaneContextMenu_transferOnCraftComplete = function(completedAction, recipe, playerObj, selectedItemContainer,container,containers,selectedItem,all)
     local playerInv = playerObj:getInventory()
-    local targetContainer = PI2AB:getTargetContainer(playerObj)
+    local targetContainer = PI2AB.getTargetContainer(playerObj)
 
     local previousAction = completedAction
     local src = recipe:getSource()

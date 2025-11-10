@@ -2,7 +2,7 @@ local ISWidgetHandCraftControl_transferOnHandcraftActionComplete = function(args
     local playerObj = args.playerObj
 
     local playerInv = playerObj:getInventory()
-    local targetContainer = PI2AB:getTargetContainer(playerObj)
+    local targetContainer = PI2AB.getTargetContainer(playerObj)
 
     local completedAction = args.completedAction
 

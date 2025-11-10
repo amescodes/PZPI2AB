@@ -1,8 +1,8 @@
 ![Put it in a #$!% bag! mod - poster.](https://github.com/amescodes/PZPI2AB/blob/main/images/poster.png)
 
-Put it in a #$!% bag! (PI2AB)
+#### Put it in a #$!% bag! (PI2AB) Compatible with Build 41 & 42!
 
-A Project Zomboid mod that automatically transfers crafted and dismantled items to your specified target container. Compatible with Build 41 & 42!
+A Project Zomboid mod that automatically transfers crafted and dismantled items to your specified target container. Safe to add/remove mid-game!
 
 Place early in the mod load order, especially if using with other inventory and/or item transfer mods.
 
@@ -32,13 +32,6 @@ Place early in the mod load order, especially if using with other inventory and/
 
 The mod adds a new "PI2AB" tab in your character info panel with several options:
 
-#### When to Transfer Items
-
-When crafting/dismantling multiple items at once ("All" option), you can choose when the items get transferred:
-
-- **After Each**: Items are transferred immediately after each individual craft/dismantle task
-- **At End**: Items are transferred only after all crafting/dismantling tasks are completed
-
 #### Default Target
 
 When there's no target container set or when the target container is full, items will be transferred to the default target. You have two options:
@@ -46,9 +39,16 @@ When there's no target container set or when the target container is full, items
 - **Player Inventory**: Items go to your main inventory (default setting)
 - **Item Source Container**: Items return to the container where one of the crafting ingredients came from 
 
+#### Transfer Items on All
+
+When crafting/dismantling multiple items at once ("All" option), you can choose when the items get transferred:
+
+- **After Each**: Items are transferred immediately after each individual craft/dismantle task
+- **At End**: Items are transferred only after all crafting/dismantling tasks are completed
+
 ## Known Incompatibilities
 
-None!
+None. (11/10/2025)
 
 ## Credits
 

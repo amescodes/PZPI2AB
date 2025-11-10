@@ -2,7 +2,7 @@ require "PI2ABComparer"
 
 ISInventoryPaneContextMenu_transferOnCraftComplete = function(completedAction, recipe, playerObj, container,containers,selectedItem,all)
     local playerInv = playerObj:getInventory()
-    local targetContainer = PI2AB:getTargetContainer(playerObj)
+    local targetContainer = PI2AB.getTargetContainer(playerObj)
 
     local previousAction = completedAction
     local src = recipe:getSource()
@@ -132,7 +132,7 @@ local ISInventoryPaneContextMenu_transferOnNewCraftComplete = function(args)
 
     local playerObj = args.playerObj
     local playerInv = playerObj:getInventory()
-    local targetContainer = PI2AB:getTargetContainer(playerObj)
+    local targetContainer = PI2AB.getTargetContainer(playerObj)
 
     local previousAction = args.completedAction
     local inputItems = args.recipe:getAllInputItems()

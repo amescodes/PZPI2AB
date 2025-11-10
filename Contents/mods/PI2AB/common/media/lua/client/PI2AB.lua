@@ -19,8 +19,7 @@ function PI2AB.init()
     if player:getModData().PI2AB == nil then
         -- create new mod data
         PI2ABUtil.Print("PI2AB:init: creating new modData", true)
-        player:getModData().PI2AB = {}
-        PI2AB.TargetContainer = ""
+        player:getModData().PI2AB = PI2AB
     else
         -- load mod data
         PI2ABUtil.Print("PI2AB:init: loading modData", true)
@@ -31,23 +30,10 @@ function PI2AB.init()
     end
 end
 
-function PI2AB:setTargetContainer(player,container)
-    local containerId = container:getID()
-    PI2ABUtil.Print("PI2AB:setTargetContainer: container Id "..tostring(containerId), true)
-    PI2AB.TargetContainer = containerId
-    getSpecificPlayer(player):getModData()["PI2AB"]["TargetContainer"] = containerId
-end
-
-function PI2AB:isTargetContainer(container)
-    local containerId = container:getID()
-    PI2ABUtil.Print("PI2AB:isTargetContainer: container Id "..tostring(containerId), true)
-    return PI2AB.TargetContainer and PI2AB.TargetContainer == containerId
-end
-
-function PI2AB:getTargetContainer(playerObj)
+function PI2AB.getTargetContainer(playerObj)
     local playerInv = playerObj:getInventory()
     local targetContainer
-    if PI2AB.TargetContainer and not (PI2AB.TargetContainer == "" or PI2AB.TargetContainer == 0 ) then
+    if PI2AB.TargetContainer and not PI2AB.TargetContainer == "" then
         local item = playerInv:getItemById(PI2AB.TargetContainer)
         if item then
             targetContainer = item:getItemContainer()
@@ -57,10 +43,19 @@ function PI2AB:getTargetContainer(playerObj)
     return targetContainer
 end
 
-local function makeTargetContainer(item, player)
-    if item then
-        PI2AB:setTargetContainer(player,item)
+local function makeTargetContainer(container, player)
+    if container then
+        local containerId = container:getID()
+        PI2ABUtil.Print("setTargetContainer: container Id "..tostring(containerId), true)
+        PI2AB.TargetContainer = containerId
+        getSpecificPlayer(player):getModData()["PI2AB"]["TargetContainer"] = containerId
     end
+end
+
+local function isTargetContainer(container)
+    local containerId = container:getID()
+    PI2ABUtil.Print("PI2AB:isTargetContainer: container Id "..tostring(containerId), true)
+    return PI2AB.TargetContainer and PI2AB.TargetContainer == containerId
 end
 
 local function setTargetContextMenuEntry(player, context, items)
@@ -79,7 +74,7 @@ local function setTargetContextMenuEntry(player, context, items)
             local targetContainerOption = context:insertOptionAfter(getText("IGUI_CraftUI_Favorite"), getText("IGUI_PI2AB_TargetContainer"), testItem, makeTargetContainer, player)
             targetContainerOption.tooltip = getText("IGUI_PI2AB_TargetContainer_tooltip")
             local texture = getTexture("media/ui/RadioButtonCircle.png")
-            local alreadyTarget = PI2AB:isTargetContainer(testItem)
+            local alreadyTarget = isTargetContainer(testItem)
             if alreadyTarget then
                 targetContainerOption.tooltip = getText("IGUI_PI2AB_IsTargetContainer_tooltip")
                 texture = getTexture("media/ui/RadioButtonIndicator.png")
@@ -102,7 +97,6 @@ local function resetTargetContextMenuEntry(player, context,isLoot)
     if not PI2AB.Enabled then
         return
     end
-    local test  = getSpecificPlayer(player)
     if not isLoot then
         local resetTargetOption = context:addOption( getText("IGUI_PI2AB_ResetTarget"), nil, resetTargetContainer, player)
         resetTargetOption.tooltip = getText("IGUI_PI2AB_ResetTarget_tooltip")
