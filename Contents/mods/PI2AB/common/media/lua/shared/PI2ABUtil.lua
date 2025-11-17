@@ -32,7 +32,6 @@ function PI2ABUtil.AddWhenToTransferAction(previousAction, action)
     return nil
 end
 
-
 function PI2ABUtil.AddWhenToTransferActionHandcraft(queue, action)
     local whenToTransferIndex = PI2AB.WhenToTransferItems
     if whenToTransferIndex then
@@ -48,15 +47,6 @@ function PI2ABUtil.AddWhenToTransferActionHandcraft(queue, action)
 
     queue:addToQueue(action)
     return nil
-end
-
-function PI2ABUtil.Print(txt, debugOnly)
-    if debugOnly == nil then
-        debugOnly = false
-    end
-    if (not debugOnly or PI2AB.Verbose) then
-        print(txt)
-    end
 end
 
 function PI2ABUtil.GetCraftAction(recipe, queue,skipCt)
@@ -97,6 +87,15 @@ function PI2ABUtil.GetCraftActionDesc(recipe, queue)
         end
     end
     return nil
+end
+
+function PI2ABUtil.Print(txt, debugOnly)
+    if debugOnly == nil then
+        debugOnly = false
+    end
+    if (not debugOnly or PI2AB.Verbose) then
+        print(txt)
+    end
 end
 
 function PI2ABUtil.PrintQueue(playerObj)

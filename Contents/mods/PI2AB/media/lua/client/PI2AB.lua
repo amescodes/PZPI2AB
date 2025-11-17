@@ -18,8 +18,9 @@ function PI2AB.init()
 
     if player:getModData().PI2AB == nil then
         -- create new mod data
-        PI2ABUtil.Print("PI2AB:init: creating new modData", true)
-        player:getModData().PI2AB = PI2AB
+        PI2ABUtil.Print("PI2AB.init: creating new modData", true)
+        PI2AB.TargetContainer = ""
+        getSpecificPlayer(player):getModData()["PI2AB"]["TargetContainer"] = ""
     else
         -- load mod data
         PI2ABUtil.Print("PI2AB:init: loading modData", true)
@@ -33,7 +34,9 @@ end
 function PI2AB.getTargetContainer(playerObj)
     local playerInv = playerObj:getInventory()
     local targetContainer
-    if PI2AB.TargetContainer and not PI2AB.TargetContainer == "" then
+    local t = PI2AB.TargetContainer
+    -- if PI2AB.TargetContainer and not PI2AB.TargetContainer == "" then
+    if PI2AB.TargetContainer then
         local item = playerInv:getItemById(PI2AB.TargetContainer)
         if item then
             targetContainer = item:getItemContainer()
