@@ -1,18 +1,19 @@
 require "PI2ABComparer"
 
-ISCraftingUI_transferOnCraftComplete = function(completedAction, recipe, playerObj, container,containers,all,ui)
+ISCraftingUI_transferOnCraftComplete = function(completedAction, recipe, playerObj, selectedItemContainer,container,containers,all,ui)
     local playerInv = playerObj:getInventory()
     local targetContainer = PI2AB.getTargetContainer(playerObj)
 
     local previousAction = completedAction
     local src = recipe:getSource()
+    local itemsToTransfer
     if src then
         local allItems = playerInv:getItems()
 
         if completedAction.timestamp then
             local comparer = PI2ABComparer.get(completedAction.timestamp)
             if comparer then
-                local itemsToTransfer = comparer:compare(allItems,src)
+                itemsToTransfer = comparer:compare(allItems,src)
                 if itemsToTransfer then
                     for i = 0, itemsToTransfer:size() - 1 do
                         local it = itemsToTransfer:get(i)
@@ -57,8 +58,8 @@ ISCraftingUI_transferOnCraftComplete = function(completedAction, recipe, playerO
         if not recipe:isCanBeDoneFromFloor() then
             for i=1,items:size() do
                 local item = items:get(i-1)
-                if item:getContainer() ~= playerObj:getInventory() then
-                    local action = ISInventoryTransferAction:new(playerObj, item, item:getContainer(), playerObj:getInventory(), nil)
+                if item:getContainer() ~= playerInv then
+                    local action = ISInventoryTransferAction:new(playerObj, item, item:getContainer(), playerInv, nil)
                     ISTimedActionQueue.addAfter(previousAction, action)
                     previousAction = action
                     table.insert(returnToContainer, item)
@@ -67,11 +68,11 @@ ISCraftingUI_transferOnCraftComplete = function(completedAction, recipe, playerO
         end
 
         local action = ISCraftAction:new(playerObj, items:get(0), recipe:getTimeToMake(), recipe, container, containers)
-        action:setOnComplete(ISCraftingUI_transferOnCraftComplete, action, recipe, playerObj, container,containers,all,ui)
+        action:setOnComplete(ISCraftingUI_transferOnCraftComplete, action, recipe, playerObj, selectedItemContainer, container,containers,all,ui)
         
         local timestamp = os.time()
         action.timestamp = timestamp
-        PI2ABComparer.create(timestamp,playerObj:getInventory():getItems())
+        PI2ABComparer.create(timestamp,playerInv:getItems(),itemsToTransfer)
 
         ISTimedActionQueue.addAfter(previousAction, action)
         ISCraftingUI.ReturnItemsToOriginalContainer(playerObj, returnToContainer)
@@ -83,19 +84,22 @@ function ISCraftingUI:craft(button, all)
     old_ISCraftingUI_craft(self,button, all)
 
     if PI2AB.Enabled then
-        -- self.craftInProgress = false
         local recipeListBox = self:getRecipeListBox()
         local recipe = recipeListBox.items[recipeListBox.selected].item.recipe
         local playerObj = self.character
 
         local itemsUsed = self:transferItems()
         local container = itemsUsed[1]:getContainer()
+        local selectedItemContainer = container
+        if not recipe:isCanBeDoneFromFloor() then
+            container = playerObj:getInventory()
+        end
 
         local queue = ISTimedActionQueue.getTimedActionQueue(playerObj).queue
         if queue then
             local action = PI2ABUtil.GetCraftAction(recipe,queue)
             if action then
-                action:setOnComplete(ISCraftingUI_transferOnCraftComplete, action, recipe, playerObj,container,self.containerList,all,self)
+                action:setOnComplete(ISCraftingUI_transferOnCraftComplete, action, recipe, playerObj,selectedItemContainer,container,self.containerList,all,self)
                 
                 local timestamp = os.time()
                 action.timestamp = timestamp

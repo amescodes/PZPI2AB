@@ -11,7 +11,7 @@ function PI2ABComparer.remove(time)
     PI2ABComparer.Comparers[time] = nil
 end
 
-function PI2ABComparer.create(time, items,previousActionItems)
+function PI2ABComparer.create(time, items, previousActionItems)
     local comparer = PI2ABComparer:new(time)
 
     if previousActionItems then
@@ -26,16 +26,7 @@ function PI2ABComparer.create(time, items,previousActionItems)
     end
 
     comparer:setBefore(items)
-    PI2ABUtil.Print("----COMPARERS BEFORE---")    
-    PI2ABUtil.PrintTable(PI2ABComparer.Comparers)
-    PI2ABUtil.Print("")
-    
     PI2ABComparer.Comparers[time] = comparer
-    
-    PI2ABUtil.Print("----COMPARERS AFTER---")
-    PI2ABUtil.PrintTable(PI2ABComparer.Comparers)
-    PI2ABUtil.Print("")
-
     return comparer
 end
 
@@ -58,7 +49,7 @@ function PI2ABComparer:compare(items, source)
     -- set to after items to start
     local result = PI2ABUtil.ShallowClone(items)
 
-    if self.before and  self.before:size() > 0 then
+    if self.before and self.before:size() > 0 then
         for i = 0, self.before:size() - 1 do
             local item = self.before:get(i)
             if item then
@@ -97,32 +88,32 @@ function PI2ABComparer:compareDebug(items, source)
     PI2ABUtil.Print("----END---")
     PI2ABUtil.Print("")
 
-    if self.before and  self.before:size() > 0 then
-        -- PI2ABUtil.Print("----BEFORE---")
+    if self.before and self.before:size() > 0 then
+        PI2ABUtil.Print("----BEFORE---")
         for i = 0, self.before:size() - 1 do
             local item = self.before:get(i)
             if item then
-                -- PI2ABUtil.Print(tostring(item))
+                PI2ABUtil.Print(tostring(item))
                 local foundBeforeItem = result:remove(item)
             end
         end
-        -- PI2ABUtil.Print("----END---")
-        -- PI2ABUtil.Print("")
+        PI2ABUtil.Print("----END---")
+        PI2ABUtil.Print("")
     end
 
     if source and source:size() > 0 then
-        -- PI2ABUtil.Print("----SOURCE---")
+        PI2ABUtil.Print("----SOURCE---")
         for j = 0, source:size() - 1 do
             local srcItem = source:get(j)
             if srcItem then
                 if result:contains(srcItem) then
-                    -- PI2ABUtil.Print(tostring(srcItem))
+                    PI2ABUtil.Print(tostring(srcItem))
                     local foundSrcItem = result:remove(srcItem)
                 end
             end
         end
-        -- PI2ABUtil.Print("----END---")
-        -- PI2ABUtil.Print("")
+        PI2ABUtil.Print("----END---")
+        PI2ABUtil.Print("")
     end
 
     PI2ABUtil.Print("----END RESULT---")
