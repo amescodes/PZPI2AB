@@ -49,6 +49,18 @@ function PI2ABUtil.AddWhenToTransferAction2(queue, action)
     return nil
 end
 
+function PI2ABUtil.GetMovablesAction(queue)
+    for i = 1, #queue do
+        local action = queue[i]
+
+        if action.mode and action.moveProps and action.mode == "scrap" then
+            return action
+        end
+    end
+    return nil
+end
+
+
 function PI2ABUtil.GetCraftAction(recipe, queue)
     for i = 1, #queue do
         local action = queue[i]
@@ -88,6 +100,18 @@ function PI2ABUtil.GetActualItemsFromSource(playerInv,source)
                     if actualItem then actualItems:add(actualItem) end
                 end
             end
+        end
+    end
+    return actualItems
+end
+
+function PI2ABUtil.GetActualItemsFromMoveablesSource(playerInv,source)
+    local actualItems = ArrayList.new()
+    if source and source:size() > 0 then
+        for k = 0, source:size() - 1 do
+            local srcItem = source:get(k)
+            local actualItem = playerInv:FindAndReturn(srcItem)
+            if actualItem then actualItems:add(actualItem) end
         end
     end
     return actualItems

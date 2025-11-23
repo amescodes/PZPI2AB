@@ -32,14 +32,14 @@ end
 
 function PI2ABComparer:setBefore(items)
     if not items then
-        return
+        self.before = ArrayList.new()
+    else
+        self.before = PI2ABUtil.ShallowClone(items)
     end
-
-    self.before = PI2ABUtil.ShallowClone(items)
 end
 
 function PI2ABComparer:compare(items, source)
-    if not self.before or self.before:size() == 0 then
+    if not self.before then
         return
     end
     if not items then
@@ -49,22 +49,18 @@ function PI2ABComparer:compare(items, source)
     -- set to after items to start
     local result = PI2ABUtil.ShallowClone(items)
 
-    if self.before and self.before:size() > 0 then
-        for i = 0, self.before:size() - 1 do
-            local item = self.before:get(i)
-            if item then
-                local foundBeforeItem = result:remove(item)
-            end
+    for i = 0, self.before:size() - 1 do
+        local item = self.before:get(i)
+        if item then
+            local foundBeforeItem = result:remove(item)
         end
     end
 
-    if source and source:size() > 0 then
+    if source then
         for j = 0, source:size() - 1 do
             local srcItem = source:get(j)
-            if srcItem then
-                if result:contains(srcItem) then
-                    local foundSrcItem = result:remove(srcItem)
-                end
+            if srcItem and result:contains(srcItem) then
+                local foundSrcItem = result:remove(srcItem)
             end
         end
     end
