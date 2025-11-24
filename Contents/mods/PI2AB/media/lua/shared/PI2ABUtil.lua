@@ -60,7 +60,6 @@ function PI2ABUtil.GetMovablesAction(queue)
     return nil
 end
 
-
 function PI2ABUtil.GetCraftAction(recipe, queue)
     for i = 1, #queue do
         local action = queue[i]
@@ -115,6 +114,54 @@ function PI2ABUtil.GetActualItemsFromMoveablesSource(playerInv,source)
         end
     end
     return actualItems
+end
+
+-- from ISInventoryPage:refreshBackpacks()
+function PI2ABUtil.GetObjectsOnAndAroundSquare(square)
+    local cx = square:getX()
+    local cy = square:getY()
+    local cz = square:getZ()
+    local sqs = {}
+    for dy=-1,1 do
+        for dx=-1,1 do
+            local sq = getCell():getGridSquare(cx + dx, cy + dy, cz)
+            if sq then
+                table.insert(sqs, sq)
+            end
+        end
+    end
+
+    local items = ArrayList.new()
+    
+    -- items on square
+    local wobs = square:getWorldObjects()
+    for i = 0, wobs:size()-1 do
+        local o = wobs:get(i)
+        if o then
+            local item = o:getItem()
+            if item then items:add(item) end
+        end
+    end
+    -- items on surrounding squares
+    for _,gs in ipairs(sqs) do
+        -- stop grabbing thru walls...
+        if gs ~= square and square and square:isBlockedTo(gs) then
+            gs = nil
+        end
+
+        if gs ~= nil then
+            local wobs = gs:getWorldObjects()
+            for i = 0, wobs:size()-1 do
+                local o = wobs:get(i)
+                if o then
+                    local item = o:getItem()
+                    if item then items:add(item) end
+                end
+            end
+        end
+    end
+    PI2ABUtil.PrintArray(items)
+    return items
 end
 
 function PI2ABUtil.Print(txt, debugOnly)
