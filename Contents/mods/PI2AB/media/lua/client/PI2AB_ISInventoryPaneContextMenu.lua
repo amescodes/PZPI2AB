@@ -35,7 +35,8 @@ ISInventoryPaneContextMenu_transferOnCraftComplete = function(completedAction, r
                         destinationContainer = targetContainer
                     else
                         possibleNewWeight = PZMath.roundFromEdges(bRunningBagWeight + itemWeight)
-                        if defContainer and defContainer:hasRoomFor(playerObj, it) and possibleNewWeight <= bCapacity then
+                        local type = defContainer:getType()
+                        if defContainer and type == "floor" or (defContainer:hasRoomFor(playerObj, it) and possibleNewWeight <= bCapacity) then
                             PI2ABUtil.Print("default container possibleNewWeight: "..tostring(possibleNewWeight), true)
                             bRunningBagWeight = possibleNewWeight
                             destinationContainer = defContainer

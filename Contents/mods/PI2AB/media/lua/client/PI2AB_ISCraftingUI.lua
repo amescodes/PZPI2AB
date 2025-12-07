@@ -1,6 +1,4 @@
-require "PI2ABComparer"
-
-ISCraftingUI_transferOnCraftComplete = function(completedAction, recipe, playerObj, selectedItemContainer,container,containers,all,ui)
+ISCraftingUI_transferOnCraftComplete = function(completedAction, recipe, playerObj, selectedItemContainer,container,containers,all)
     local playerInv = playerObj:getInventory()
     local targetContainer = PI2AB.getTargetContainer(playerObj)
 
@@ -68,7 +66,7 @@ ISCraftingUI_transferOnCraftComplete = function(completedAction, recipe, playerO
         end
 
         local action = ISCraftAction:new(playerObj, items:get(0), recipe:getTimeToMake(), recipe, container, containers)
-        action:setOnComplete(ISCraftingUI_transferOnCraftComplete, action, recipe, playerObj, selectedItemContainer, container,containers,all,ui)
+        action:setOnComplete(ISCraftingUI_transferOnCraftComplete, action, recipe, playerObj, selectedItemContainer, container,containers,all)
         
         local timestamp = os.time()
         action.timestamp = timestamp
@@ -99,7 +97,7 @@ function ISCraftingUI:craft(button, all)
         if queue then
             local action = PI2ABUtil.GetCraftAction(recipe,queue)
             if action then
-                action:setOnComplete(ISCraftingUI_transferOnCraftComplete, action, recipe, playerObj,selectedItemContainer,container,self.containerList,all,self)
+                action:setOnComplete(ISCraftingUI_transferOnCraftComplete, action, recipe, playerObj,selectedItemContainer,container,self.containerList,all)
                 
                 local timestamp = os.time()
                 action.timestamp = timestamp
