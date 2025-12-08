@@ -1,3 +1,5 @@
+-- overwrites
+
 function ISMoveablesAction:perform()
     if self.mode and self.mode=="scrap" then
 		self.moveProps.object:setHighlighted(false);

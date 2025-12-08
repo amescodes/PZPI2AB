@@ -11,8 +11,8 @@ function PI2ABComparer.remove(time)
     PI2ABComparer.Comparers[time] = nil
 end
 
-function PI2ABComparer.create(time, items, previousActionItems)
-    local comparer = PI2ABComparer:new(time)
+function PI2ABComparer.create(time, items, previousActionItems, targetWeightTransferred, defWeightTransferred)
+    local comparer = PI2ABComparer:new(time, targetWeightTransferred, defWeightTransferred)
 
     if previousActionItems then
         local prevItems = PI2ABUtil.ShallowClone(items)
@@ -120,13 +120,16 @@ function PI2ABComparer:compareDebug(items, source)
     return result
 end
 
-function PI2ABComparer:new(time)
+function PI2ABComparer:new(time,targetWeightTransferred,defWeightTransferred)
     local o = {}
     setmetatable(o, self)
     self.__index = self
 
     o.timestamp = time
     o.before = nil
+
+    o.targetWeightTransferred = targetWeightTransferred or 0
+    o.defWeightTransferred = defWeightTransferred or 0
 
     return o
 end

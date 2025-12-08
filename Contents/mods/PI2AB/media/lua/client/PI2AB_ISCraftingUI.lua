@@ -1,43 +1,10 @@
-ISCraftingUI_transferOnCraftComplete = function(completedAction, recipe, playerObj, selectedItemContainer,container,containers,all,ui)
+ISCraftingUI_transferOnCraftComplete = function(completeAction, recipe, playerObj, selectedItemContainer,container,containers,all,ui)
     local playerInv = playerObj:getInventory()
     local targetContainer = PI2AB.getTargetContainer(playerObj)
 
-    local previousAction = completedAction
-    local src = recipe:getSource()
-    local itemsToTransfer
-    if src then
-        local allItems = playerInv:getItems()
-
-        if completedAction.timestamp then
-            local comparer = PI2ABComparer.get(completedAction.timestamp)
-            if comparer then
-                itemsToTransfer = comparer:compare(allItems,src)
-                if itemsToTransfer then
-                    for i = 0, itemsToTransfer:size() - 1 do
-                        local it = itemsToTransfer:get(i)
-                        local destinationContainer
-                        if targetContainer and targetContainer:hasRoomFor(playerObj, it) then
-                            destinationContainer = targetContainer
-                        else
-                            local defContainer = PI2ABUtil.GetDefaultContainer(container,playerInv)
-                            if defContainer and defContainer:hasRoomFor(playerObj, it) then
-                                destinationContainer = defContainer
-                            else
-                                destinationContainer = playerInv
-                            end
-                        end
-
-                        local action = ISInventoryTransferAction:new(playerObj, it, playerObj:getInventory(),
-                        destinationContainer, nil)
-                        action:setAllowMissingItems(true)
-                        if not action.ignoreAction then
-                            previousAction = PI2ABUtil.AddWhenToTransferAction(previousAction, action)
-                        end
-                    end
-                end
-            end
-        end
-    end
+    local result = PI2ABUtil.PutInBagRecipe(playerObj,playerInv,selectedItemContainer,targetContainer,completeAction, recipe)
+    local previousAction = result.previousAction
+    local completedAction = result.completedAction
 
     if all then
         -- from ISCraftingUI:onCraftComplete
@@ -60,6 +27,11 @@ ISCraftingUI_transferOnCraftComplete = function(completedAction, recipe, playerO
                     local action = ISInventoryTransferAction:new(playerObj, item, item:getContainer(), playerInv, nil)
                     ISTimedActionQueue.addAfter(previousAction, action)
                     previousAction = action
+                    -- action:setAllowMissingItems(true)
+                    -- if not action.ignoreAction then
+                    --     ISTimedActionQueue.addAfter(previousAction, action)
+                    --     previousAction = action
+                    -- end
                     table.insert(returnToContainer, item)
                 end
             end
@@ -70,7 +42,7 @@ ISCraftingUI_transferOnCraftComplete = function(completedAction, recipe, playerO
         
         local timestamp = os.time()
         action.timestamp = timestamp
-        PI2ABComparer.create(timestamp,playerInv:getItems(),itemsToTransfer)
+        PI2ABComparer.create(timestamp,playerInv:getItems(),result.itemsToTransfer,result.targetWeightTransferred,result.defWeightTransferred)
 
         ISTimedActionQueue.addAfter(previousAction, action)
         ISCraftingUI.ReturnItemsToOriginalContainer(playerObj, returnToContainer)

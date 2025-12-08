@@ -4,15 +4,13 @@ ISWorldMenuElements_ContextDisassemble_transferOnCraftComplete =
     function(completedAction, scrapDef, playerObj, square)
         local playerInv = playerObj:getInventory()
         local targetContainer = PI2AB.getTargetContainer(playerObj)
-
         local previousAction = completedAction
 
-        local itemsToTransfer
         if completedAction.timestamp then
             local comparer = PI2ABComparer.get(completedAction.timestamp)
             if comparer then
                 local allItems = playerInv:getItems()
-                itemsToTransfer = comparer:compare(allItems, nil)
+                local itemsToTransfer = comparer:compare(allItems, nil)
                 -- target container
                 local capacity = targetContainer and targetContainer:getEffectiveCapacity(playerObj) or 0
                 PI2ABUtil.Print("target container capacity " .. tostring(capacity), true)
@@ -29,7 +27,7 @@ ISWorldMenuElements_ContextDisassemble_transferOnCraftComplete =
                     local it = itemsToTransfer:get(i)
                     local itemWeight = it:getWeight()
                     local destinationContainer
-                    local possibleNewWeight = PZMath.roundFromEdges(runningBagWeight + itemWeight)
+                    local possibleNewWeight = PI2ABUtil.Round(runningBagWeight + itemWeight)
                     if targetContainer and targetContainer:hasRoomFor(playerObj, it) and possibleNewWeight <= capacity then
                         PI2ABUtil.Print("target container possibleNewWeight: " .. tostring(possibleNewWeight), true)
                         runningBagWeight = possibleNewWeight
@@ -38,7 +36,7 @@ ISWorldMenuElements_ContextDisassemble_transferOnCraftComplete =
                         if defContainer and defContainer ~= nil then
                             destinationContainer = nil
                         else
-                            destinationContainer = square
+                            destinationContainer = ISInventoryPage.GetFloorContainer(playerObj:getPlayerNum())
                         end
                     end
 
@@ -63,12 +61,11 @@ ISWorldMenuElements_ContextDisassemble_transferFromGroundOnCraftComplete =
         local targetContainer = PI2AB.getTargetContainer(playerObj)
 
         local previousAction = completedAction
-        local itemsToTransfer
         if completedAction.timestamp then
             local comparer = PI2ABComparer.get(completedAction.timestamp)
             if comparer then
                 local allItems = PI2ABUtil.GetObjectsOnAndAroundSquare(square)
-                itemsToTransfer = comparer:compare(allItems, nil)
+                local itemsToTransfer = comparer:compare(allItems, nil)
                 -- target container
                 local capacity = targetContainer and targetContainer:getEffectiveCapacity(playerObj) or 0
                 PI2ABUtil.Print("target container capacity " .. tostring(capacity), true)
@@ -81,7 +78,7 @@ ISWorldMenuElements_ContextDisassemble_transferFromGroundOnCraftComplete =
                     local it = itemsToTransfer:get(i)
                     local itemWeight = it:getWeight()
                     local destinationContainer
-                    local possibleNewWeight = PZMath.roundFromEdges(runningBagWeight + itemWeight)
+                    local possibleNewWeight = PI2ABUtil.Round(runningBagWeight + itemWeight)
                     if targetContainer and targetContainer:hasRoomFor(playerObj, it) and possibleNewWeight <= capacity then
                         PI2ABUtil.Print("target container possibleNewWeight: " .. tostring(possibleNewWeight), true)
                         runningBagWeight = possibleNewWeight
@@ -132,7 +129,6 @@ function ISWorldMenuElements.ContextDisassemble()
                             scrapDef, player)
                     else
                         -- items dumped to ground
-                        -- beforeItems = _v.square:getWorldObjects()
                         beforeItems = PI2ABUtil.GetObjectsOnAndAroundSquare(_v.square)
                         action:setOnComplete(ISWorldMenuElements_ContextDisassemble_transferFromGroundOnCraftComplete,
                             action, scrapDef, player, _v.square)

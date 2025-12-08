@@ -6,6 +6,87 @@ PI2ABUtil.DefaultContainers = {'PlayerInventory', 'ItemSource'}
 
 PI2ABUtil.WhenToTransfer = {'AfterEach', 'AtEnd'}
 
+function PI2ABUtil.PutInBagRecipe(playerObj,playerInv,selectedItemContainer,targetContainer,completedAct,recipe)
+    local src = recipe:getSource()
+    local itemsToTransfer
+    local result
+    if src then
+        local srcItems = PI2ABUtil.GetActualItemsFromSource(playerInv,src)
+        local allItems = playerInv:getItems()
+        if completedAct.timestamp then
+            result = PI2ABUtil.PutInBag(playerObj,playerInv,selectedItemContainer,targetContainer,completedAct, allItems, srcItems)
+        end
+    end
+
+    return result or PI2ABResult:new(nil,completedAct,itemsToTransfer)
+end
+
+function PI2ABUtil.PutInBag(playerObj,playerInv,selectedItemContainer,targetContainer,completedAct, allItems, srcItems)
+    local comparer = PI2ABComparer.get(completedAct.timestamp)
+    local previousAct = completedAct
+    local targetWeightTransferred = 0.0
+    local defWeightTransferred = 0.0
+    local itemsToTransfer
+    if comparer then
+        itemsToTransfer = comparer:compare(allItems,srcItems)
+        -- target container
+        local capacity = targetContainer and targetContainer:getEffectiveCapacity(playerObj) or 0
+        PI2ABUtil.Print("target container capacity "..tostring(capacity), true)
+        local tWeight = targetContainer:getContentsWeight() or 0
+        targetWeightTransferred = comparer.targetWeightTransferred
+        local runningBagWeight = targetContainer and PI2ABUtil.Round(tWeight + targetWeightTransferred) or 0
+        PI2ABUtil.Print("target container contents weight START "..tostring(runningBagWeight), true)
+        -- backup / default container
+        local defContainer = PI2ABUtil.GetDefaultContainer(selectedItemContainer,playerInv)
+        local bCapacity = defContainer and defContainer:getCapacity() or 0
+        PI2ABUtil.Print("default container capacity "..tostring(bCapacity), true)
+        local bWeight = defContainer and defContainer:getContentsWeight() or 0
+        defWeightTransferred = comparer.defWeightTransferred
+        local bRunningBagWeight = defContainer and PI2ABUtil.Round(bWeight + defWeightTransferred) or 0
+        PI2ABUtil.Print("default container contents weight START "..tostring(bRunningBagWeight), true)
+        -- check new items and queue transfer actions
+        for i = 0, itemsToTransfer:size() - 1 do
+            local it = itemsToTransfer:get(i)
+            local itemWeight = it:getWeight()
+            PI2ABUtil.Print("itemWeight: "..tostring(itemWeight), true)
+            local destinationContainer
+            local possibleNewWeight = PI2ABUtil.Round(runningBagWeight + itemWeight)
+            if targetContainer and targetContainer:hasRoomFor(playerObj, it) and possibleNewWeight <= capacity then
+                PI2ABUtil.Print("target container possibleNewWeight: "..tostring(possibleNewWeight), true)
+                runningBagWeight = possibleNewWeight
+                targetWeightTransferred = PI2ABUtil.Round(targetWeightTransferred + itemWeight)
+                destinationContainer = targetContainer
+            else
+                possibleNewWeight = PI2ABUtil.Round(bRunningBagWeight + itemWeight)
+                if defContainer then
+                    PI2ABUtil.Print("default container possibleNewWeight: "..tostring(possibleNewWeight), true)
+                    if defContainer:getType() ~= "floor" then
+                        if defContainer:hasRoomFor(playerObj, it) and possibleNewWeight <= bCapacity then
+                            bRunningBagWeight = possibleNewWeight
+                            defWeightTransferred = PI2ABUtil.Round(defWeightTransferred + itemWeight)
+                        end
+                    end
+
+                    destinationContainer = defContainer
+                else
+                    destinationContainer = playerInv
+                end
+            end
+
+            if destinationContainer then
+                local tAction = ISInventoryTransferAction:new(playerObj, it, playerInv, destinationContainer, nil)
+                tAction:setAllowMissingItems(true)
+                if not tAction.ignoreAction then
+                    previousAct = PI2ABUtil.AddWhenToTransferAction(previousAct, tAction)
+                end
+            end
+        end
+
+        PI2ABComparer.remove(completedAct.timestamp)
+    end
+    return PI2ABResult:new(previousAct,completedAct,itemsToTransfer,targetWeightTransferred,defWeightTransferred)
+end
+
 function PI2ABUtil.GetDefaultContainer(selectedItemContainer, playerInv)
     local defaultIndex = PI2AB.DefaultDestinationContainer
     if defaultIndex then
@@ -224,4 +305,8 @@ function PI2ABUtil.ShallowClone(array)
         result:add(array:get(i))
     end
     return result
+end
+
+function PI2ABUtil.Round(number)
+    return ItemContainer.floatingPointCorrection(number)
 end
