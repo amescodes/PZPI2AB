@@ -86,8 +86,11 @@ local old_ISInventoryPaneContextMenu_OnCraft = ISInventoryPaneContextMenu.OnCraf
 ISInventoryPaneContextMenu.OnCraft = function(selectedItem, recipe, player, all)
     old_ISInventoryPaneContextMenu_OnCraft(selectedItem, recipe, player, all)
     if PI2AB.Enabled then
-
         local playerObj = getSpecificPlayer(player)
+        if not PI2ABUtil.IsAllowed(playerObj) then
+            return
+        end
+        
         local playerInv = playerObj:getInventory()
         local container = selectedItem:getContainer()
         local selectedItemContainer = container

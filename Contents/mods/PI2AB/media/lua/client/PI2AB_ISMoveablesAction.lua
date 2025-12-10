@@ -1,4 +1,4 @@
--- overwrites
+-- overwrites ISMoveablesAction:perform to add onComplete callback functionality
 
 function ISMoveablesAction:perform()
     if self.mode and self.mode=="scrap" then

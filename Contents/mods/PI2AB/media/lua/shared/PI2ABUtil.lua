@@ -185,6 +185,14 @@ function PI2ABUtil.GetActualItemsFromSource(playerInv,source)
     return actualItems
 end
 
+function PI2ABUtil.IsAllowed(playerObj)
+    --todo add sandbox setting
+    -- if playerObj:HasTrait("Disorganized") then
+    --     return false
+    -- end
+    return true
+end
+
 function PI2ABUtil.GetActualItemsFromMoveablesSource(playerInv,source)
     local actualItems = ArrayList.new()
     if source and source:size() > 0 then

@@ -53,10 +53,14 @@ local old_ISCraftingUI_craft = ISCraftingUI.craft
 function ISCraftingUI:craft(button, all)
     old_ISCraftingUI_craft(self,button, all)
 
-    if PI2AB.Enabled then
+    if PI2AB.Enabled then        
+        local playerObj = self.character
+        if not PI2ABUtil.IsAllowed(playerObj) then
+            return
+        end
+
         local recipeListBox = self:getRecipeListBox()
         local recipe = recipeListBox.items[recipeListBox.selected].item.recipe
-        local playerObj = self.character
 
         local itemsUsed = self:transferItems()
         local container = itemsUsed[1]:getContainer()

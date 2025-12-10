@@ -113,7 +113,12 @@ function ISWorldMenuElements.ContextDisassemble()
     local old_disassemble = self.disassemble
     self.disassemble = function(_data, _v)
         old_disassemble(_data, _v)
+        
         local player = _data.player
+        if not PI2ABUtil.IsAllowed(player) then
+            return
+        end
+
         local playerInv = player:getInventory()
         if _v and _v.moveProps and _v.square and _v.object then
             local queue = ISTimedActionQueue.getTimedActionQueue(player).queue
