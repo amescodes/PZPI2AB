@@ -12,18 +12,20 @@ PI2AB.TargetContainer = ""
 
 function PI2AB.init()
     local player = getPlayer()
-    if player == nil or player:getModData() == nil then
+    local modData = player:getModData()
+    if player == nil or modData == nil then
         return
     end
 
-    if player:getModData().PI2AB == nil then
+    if modData.PI2AB == nil then
         -- create new mod data
-        PI2ABUtil.Print("PI2AB:init: creating new modData", true)
-        player:getModData().PI2AB = PI2AB
+        PI2ABUtil.Print("PI2AB.init: creating new modData", true)
+        modData.PI2AB = {}
+        modData.TargetContainer = ""
     else
         -- load mod data
         PI2ABUtil.Print("PI2AB:init: loading modData", true)
-        for key, value in pairs(player:getModData().PI2AB) do
+        for key, value in pairs(modData.PI2AB) do
             PI2ABUtil.Print("PI2AB:init: loading "..tostring(key).." = "..tostring(value), true)
             PI2AB[key] = value
         end
@@ -32,29 +34,34 @@ end
 
 function PI2AB.getTargetContainer(playerObj)
     local playerInv = playerObj:getInventory()
-    local targetContainer
-    if PI2AB.TargetContainer and not PI2AB.TargetContainer == "" then
+    if PI2AB.TargetContainer then
         local item = playerInv:getItemById(PI2AB.TargetContainer)
         if item then
-            targetContainer = item:getItemContainer()
+            return item:getItemContainer()
         end
     end
-    
-    return targetContainer
+    return nil
 end
 
-local function makeTargetContainer(container, player)
-    if container then
-        local containerId = container:getID()
-        PI2ABUtil.Print("setTargetContainer: container Id "..tostring(containerId), true)
-        PI2AB.TargetContainer = containerId
-        getSpecificPlayer(player):getModData()["PI2AB"]["TargetContainer"] = containerId
+local function setTargetContainer(playerNum,container)
+    local containerId = container:getID()
+    PI2ABUtil.Print("setTargetContainer: container Id "..tostring(containerId), true)
+    PI2AB.TargetContainer = containerId
+    local player = getSpecificPlayer(playerNum)
+    if player then
+        player:getModData().PI2AB.TargetContainer = containerId
+    end
+end
+
+local function makeTargetContainer(item, player)
+    if item then
+        setTargetContainer(player,item)
     end
 end
 
 local function isTargetContainer(container)
     local containerId = container:getID()
-    PI2ABUtil.Print("PI2AB:isTargetContainer: container Id "..tostring(containerId), true)
+    PI2ABUtil.Print("PI2AB.isTargetContainer: container Id "..tostring(containerId), true)
     return PI2AB.TargetContainer and PI2AB.TargetContainer == containerId
 end
 
@@ -69,6 +76,7 @@ local function setTargetContextMenuEntry(player, context, items)
             testItem = v.items[1]
         end
         if instanceof(testItem, "InventoryContainer") then
+            -- check for keys and moveables
             if testItem:getFullType() == "Base.KeyRing" then return end
 
             local targetContainerOption = context:insertOptionAfter(getText("IGUI_CraftUI_Favorite"), getText("IGUI_PI2AB_TargetContainer"), testItem, makeTargetContainer, player)
@@ -86,10 +94,13 @@ end
 
 Events.OnFillInventoryObjectContextMenu.Add(setTargetContextMenuEntry)
 
-local function resetTargetContainer(target,player)
-    if player then
+local function resetTargetContainer(target,playerNum)
+    if playerNum then
         PI2AB.TargetContainer = ""
-        getSpecificPlayer(player):getModData()["PI2AB"]["TargetContainer"] = ""
+        local player = getSpecificPlayer(playerNum)
+        if player then
+            player:getModData().PI2AB.TargetContainer = ""
+        end
     end
 end
 
