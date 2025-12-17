@@ -119,7 +119,7 @@ ISInventoryPaneContextMenu_transferOnNewCraftComplete = function(args)
 
     local playerObj = args.playerObj
     local playerInv = playerObj:getInventory()
-    PI2ABUtil.PutInBag(playerObj, playerInv, args.container, PI2AB.getTargetContainer(playerObj), args.completedAction, playerInv:getItems(),args.recipe:getAllInputItems())
+    PI2ABUtil.PutInBag(playerObj, playerInv, args.container, PI2AB.getTargetContainer(playerObj), args.completedAction, playerInv:getItems(),args.recipe:getAllInputItems(),true)
 
     -- local previousAction = args.completedAction
     -- local inputItems = args.recipe:getAllInputItems()
@@ -162,16 +162,16 @@ ISInventoryPaneContextMenu.OnNewCraft = function(selectedItem, recipe, player, a
 
     if PI2AB.Enabled then
         local playerObj = getSpecificPlayer(player)
-        if playerObj:HasTrait("Disorganized") then
+        if not PI2ABUtil.IsAllowed(playerObj) then
             return
         end
-        
+
         local playerInv = playerObj:getInventory()
         local queue = ISTimedActionQueue.getTimedActionQueue(playerObj).queue
         if queue then
             local action = PI2ABUtil.GetCraftAction(recipe, queue)
-            if action then
-                local logic = action.onCompleteTarget                
+            if action and action.containers then
+                local logic = action.onCompleteTarget
                 local args = PI2ABTransferArgs:new(logic,nil, action, logic:getRecipeData(), playerObj, selectedItem:getContainer(), action.containers, selectedItem,all)
                 action:setOnComplete(ISInventoryPaneContextMenu_transferOnNewCraftComplete, args)
                 local timestamp = os.time()
@@ -182,6 +182,6 @@ ISInventoryPaneContextMenu.OnNewCraft = function(selectedItem, recipe, player, a
     end
 end
 
--- likely upcoming in future versions of the game
+-- possibly upcoming in future versions of the game
 --ISInventoryPaneContextMenu.OnNewCraftCompleteAll = function(completedAction, recipe, playerObj, containers, usedItems)
 --end

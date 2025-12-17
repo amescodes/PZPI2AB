@@ -32,7 +32,7 @@ function PI2ABUtil.PutInBag(playerObj,playerInv,selectedItemContainer,targetCont
         -- target container
         local capacity = targetContainer and targetContainer:getEffectiveCapacity(playerObj) or 0
         PI2ABUtil.Print("target container capacity "..tostring(capacity), true)
-        local tWeight = targetContainer:getContentsWeight() or 0
+        local tWeight = targetContainer and targetContainer:getContentsWeight() or 0
         targetWeightTransferred = comparer.targetWeightTransferred
         local runningBagWeight = targetContainer and PI2ABUtil.Round(tWeight + targetWeightTransferred) or 0
         PI2ABUtil.Print("target container contents weight START "..tostring(runningBagWeight), true)

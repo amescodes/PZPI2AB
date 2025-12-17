@@ -6,7 +6,7 @@ PI2ABUtil.DefaultContainers = {'PlayerInventory', 'ItemSource'}
 
 PI2ABUtil.WhenToTransfer = {'AfterEach', 'AtEnd'}
 
-function PI2ABUtil.PutInBagRecipe(playerObj, playerInv, selectedItemContainer, targetContainer, completedAct, recipe)
+function PI2ABUtil.PutInBagRecipe(playerObj, playerInv, selectedItemContainer, targetContainer, completedAct, recipe,handcraft)
     local src = recipe:getSource()
     local itemsToTransfer
     local result
@@ -15,7 +15,7 @@ function PI2ABUtil.PutInBagRecipe(playerObj, playerInv, selectedItemContainer, t
         local allItems = playerInv:getItems()
         if completedAct.timestamp then
             result = PI2ABUtil.PutInBag(playerObj, playerInv, selectedItemContainer, targetContainer, completedAct,
-                allItems, srcItems)
+                allItems, srcItems,handcraft)
         end
     end
 
@@ -23,7 +23,7 @@ function PI2ABUtil.PutInBagRecipe(playerObj, playerInv, selectedItemContainer, t
 end
 
 function PI2ABUtil.PutInBag(playerObj, playerInv, selectedItemContainer, targetContainer, completedAct, allItems,
-    srcItems)
+    srcItems,handcraft)
     local comparer = PI2ABComparer.get(completedAct.timestamp)
     local previousAct = completedAct
     local targetWeightTransferred = 0.0
@@ -34,7 +34,7 @@ function PI2ABUtil.PutInBag(playerObj, playerInv, selectedItemContainer, targetC
         -- target container
         local capacity = targetContainer and targetContainer:getEffectiveCapacity(playerObj) or 0
         PI2ABUtil.Print("target container capacity " .. tostring(capacity), true)
-        local tWeight = targetContainer:getContentsWeight() or 0
+        local tWeight = targetContainer and targetContainer:getContentsWeight() or 0
         targetWeightTransferred = comparer.targetWeightTransferred
         local runningBagWeight = targetContainer and PI2ABUtil.Round(tWeight + targetWeightTransferred) or 0
         PI2ABUtil.Print("target container contents weight START " .. tostring(runningBagWeight), true)
@@ -106,29 +106,20 @@ function PI2ABUtil.AddWhenToTransferAction(previousAction, action)
     if whenToTransferIndex then
         local defOption = PI2ABUtil.WhenToTransfer[whenToTransferIndex]
         if defOption == 'AfterEach' then
-            ISTimedActionQueue.addAfter(previousAction, action)
-            return action
+            local result = ISTimedActionQueue.addAfter(previousAction, action)
+            if result then
+                return action
+            else
+                local queue = ISTimedActionQueue.getTimedActionQueue(previousAction.character)
+                table.insert(queue.queue, 1, action)
+                queue.current = action
+                action:begin()
+                return action
+            end
         end
     end
-
-    ISTimedActionQueue.add(action)
-    return nil
-end
-
-function PI2ABUtil.AddWhenToTransferAction2(queue, action)
-    local whenToTransferIndex = PI2AB.WhenToTransferItems
-    if whenToTransferIndex then
-        local defOption = PI2ABUtil.WhenToTransfer[whenToTransferIndex]
-        if defOption == 'AfterEach' then
-            -- ISTimedActionQueue.addAfter(previousAction, action)
-            table.insert(queue.queue, 1, action)
-            queue.current = action
-            action:begin()
-            return action
-        end
-    end
-
-    queue:addToQueue(action)
+    
+    ISTimedActionQueue.getTimedActionQueue(previousAction.character):addToQueue(action)
     return nil
 end
 
@@ -142,6 +133,29 @@ function PI2ABUtil.GetMovablesAction(queue)
     end
     return nil
 end
+
+function PI2ABUtil.GetUninstallVehiclePartAction(queue)
+    for i = 1, #queue do
+        local action = queue[i]
+
+        if action.vehicle and action.part then
+            return action
+        end
+    end
+    return nil
+end
+
+function PI2ABUtil.GetRemoveBurntVehicleAction(queue)
+    for i = 1, #queue do
+        local action = queue[i]
+
+        if action.vehicle then
+            return action
+        end
+    end
+    return nil
+end
+
 
 function PI2ABUtil.GetCraftAction(recipe, queue, skipCt)
     if not skipCt then
@@ -164,6 +178,8 @@ function PI2ABUtil.GetCraftAction(recipe, queue, skipCt)
                 return action
             end
         end
+
+        skips = skips + 1
     end
     return nil
 end
@@ -200,7 +216,8 @@ end
 
 function PI2ABUtil.IsAllowed(playerObj)
     -- todo add sandbox setting
-    -- if playerObj:HasTrait("Disorganized") then
+    -- if playerObj:hasTrait(CharacterTrait.DISORGANIZED) then return end
+    -- b41: if playerObj:HasTrait("Disorganized") then
     --     return false
     -- end
     return true
@@ -268,7 +285,6 @@ function PI2ABUtil.GetObjectsOnAndAroundSquare(square)
             end
         end
     end
-    PI2ABUtil.PrintArray(items)
     return items
 end
 

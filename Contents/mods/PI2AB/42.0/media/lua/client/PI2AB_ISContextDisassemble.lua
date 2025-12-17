@@ -1,10 +1,13 @@
 ISWorldMenuElements = ISWorldMenuElements or {};
 
+local pdata = nil
 ISWorldMenuElements_ContextDisassemble_transferOnCraftComplete =
     function(completedAction, scrapDef, playerObj, square)
         local playerInv = playerObj:getInventory()
         local targetContainer = PI2AB.getTargetContainer(playerObj)
-        local previousAction = completedAction
+        local playerNum = playerObj:getPlayerNum()
+        if pdata == nil then pdata = getPlayerData(playerNum) end
+        if pdata then pdata.lootInventory:refreshBackpacks() end
 
         if completedAction.timestamp then
             local comparer = PI2ABComparer.get(completedAction.timestamp)
@@ -36,31 +39,32 @@ ISWorldMenuElements_ContextDisassemble_transferOnCraftComplete =
                         if defContainer and defContainer ~= nil then
                             destinationContainer = nil
                         else
-                            destinationContainer = ISInventoryPage.GetFloorContainer(playerObj:getPlayerNum())
+                            destinationContainer = ISInventoryPage.GetFloorContainer(playerNum)
                         end
                     end
-
+                    
                     if destinationContainer then
-                        local tAction =
-                            ISInventoryTransferAction:new(playerObj, it, playerInv, destinationContainer, nil)
+                        local tAction = ISInventoryTransferAction:new(playerObj, it, playerInv, destinationContainer, nil)
                         tAction:setAllowMissingItems(true)
                         if not tAction.ignoreAction then
-                            previousAction = PI2ABUtil.AddWhenToTransferAction(previousAction, tAction)
+                            ISTimedActionQueue.getTimedActionQueue(playerObj):addToQueue(tAction)
                         end
                     end
                 end
-
+                
                 PI2ABComparer.remove(completedAction.timestamp)
             end
         end
     end
-
+    
 ISWorldMenuElements_ContextDisassemble_transferFromGroundOnCraftComplete =
     function(completedAction, scrapDef, playerObj, square)
         local playerInv = playerObj:getInventory()
         local targetContainer = PI2AB.getTargetContainer(playerObj)
-
-        local previousAction = completedAction
+        local playerNum = playerObj:getPlayerNum()
+        if pdata == nil then pdata = getPlayerData(playerNum) end
+        if pdata then pdata.lootInventory:refreshBackpacks() end
+        
         if completedAction.timestamp then
             local comparer = PI2ABComparer.get(completedAction.timestamp)
             if comparer then
@@ -71,7 +75,7 @@ ISWorldMenuElements_ContextDisassemble_transferFromGroundOnCraftComplete =
                 PI2ABUtil.Print("target container capacity " .. tostring(capacity), true)
                 local runningBagWeight = targetContainer and targetContainer:getContentsWeight() or 0
                 PI2ABUtil.Print("target container contents weight START " .. tostring(runningBagWeight), true)
-
+                
                 local defContainer = PI2ABUtil.GetDefaultContainer(nil, playerInv)
                 -- check new items and queue transfer actions            
                 for i = 0, itemsToTransfer:size() - 1 do
@@ -90,13 +94,12 @@ ISWorldMenuElements_ContextDisassemble_transferFromGroundOnCraftComplete =
                             destinationContainer = playerInv
                         end
                     end
-
+                    
                     if destinationContainer then
-                        local tAction = ISInventoryTransferAction:new(playerObj, it, it:getContainer(),
-                            destinationContainer, nil)
+                        local tAction = ISInventoryTransferAction:new(playerObj, it, ISInventoryPage.GetFloorContainer(playerNum), destinationContainer, nil)
                         tAction:setAllowMissingItems(true)
                         if not tAction.ignoreAction then
-                            previousAction = PI2ABUtil.AddWhenToTransferAction(previousAction, tAction)
+                            ISTimedActionQueue.getTimedActionQueue(playerObj):addToQueue(tAction)
                         end
                     end
                 end
@@ -125,10 +128,9 @@ function ISWorldMenuElements.ContextDisassemble()
             if queue then
                 local action = PI2ABUtil.GetMovablesAction(queue)
                 if action and action.moveProps then
-                    local props = action.moveProps
                     local scrapDef = ISMoveableDefinitions:getInstance().getScrapDefinition(action.moveProps.material)
                     local beforeItems
-                    if props.customItem or scrapDef.addToInventory then
+                    if scrapDef.addToInventory then
                         beforeItems = playerInv:getItems()
                         action:setOnComplete(ISWorldMenuElements_ContextDisassemble_transferOnCraftComplete, action,
                             scrapDef, player)

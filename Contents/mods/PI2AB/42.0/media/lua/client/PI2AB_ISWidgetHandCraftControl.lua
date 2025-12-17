@@ -5,6 +5,8 @@ local ISWidgetHandCraftControl_transferOnHandcraftActionComplete = function(args
     PI2ABUtil.PutInBag(playerObj, playerInv, args.container, PI2AB.getTargetContainer(playerObj), args.completedAction, playerInv:getItems(),args.recipe:getAllInputItems())
     -- local previousAction = result.previousAction
     -- local completedAction = result.completedAction
+    -- local targetContainer = PI2AB.getTargetContainer(playerObj)
+    -- local completedAction = args.completedAction
 
     -- local inputItems = args.recipe:getAllInputItems()
     -- if inputItems then
@@ -21,7 +23,7 @@ local ISWidgetHandCraftControl_transferOnHandcraftActionComplete = function(args
     --                     if targetContainer and targetContainer:hasRoomFor(playerObj, it) then
     --                         destinationContainer = targetContainer
     --                     else
-    --                         local defContainer = PI2ABUtil.GetDefaultContainer(container, playerInv)
+    --                         local defContainer = PI2ABUtil.GetDefaultContainer(args.container, playerInv)
     --                         if defContainer and defContainer:hasRoomFor(playerObj, it) then
     --                             destinationContainer = defContainer
     --                         else
@@ -33,7 +35,7 @@ local ISWidgetHandCraftControl_transferOnHandcraftActionComplete = function(args
     --                         ISInventoryTransferAction:new(playerObj, it, playerInv, destinationContainer, nil)
     --                     action:setAllowMissingItems(true)
     --                     if not action.ignoreAction then
-    --                         PI2ABUtil.AddWhenToTransferActionHandcraft(ISTimedActionQueue.getTimedActionQueue(playerObj), action)
+    --                         PI2ABUtil.AddWhenToTransferAction2(ISTimedActionQueue.getTimedActionQueue(playerObj), action)
     --                     end
     --                 end
     --             end
@@ -76,7 +78,7 @@ function ISWidgetHandCraftControl:startHandcraft(force)
                         selectedItem:getContainer(), action.containers, selectedItem)
 
                     action:setOnComplete(ISWidgetHandCraftControl_transferOnHandcraftActionComplete, args)
-                    local timestamp = os.time()
+                    local timestamp = os.time() + i
                     action.timestamp = timestamp
                     PI2ABComparer.create(timestamp, playerObj:getInventory():getItems())
                 end
