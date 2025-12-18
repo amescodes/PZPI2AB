@@ -4,7 +4,7 @@ local upperLayer_ISCharacterInfoWindow_createChildren = ISCharacterInfoWindow.cr
 function ISCharacterInfoWindow:createChildren()
     upperLayer_ISCharacterInfoWindow_createChildren(self)
 
-    self.PI2ABView = ISCharacterPI2AB:new(0, 8, 300, 200, self.playerNum)
+    self.PI2ABView = ISCharacterPI2AB:new(0, 8, 350, 200, self.playerNum)
     self.PI2ABView:initialise()
     self.panel:addView(getText("UI_PI2AB"), self.PI2ABView)
 end
