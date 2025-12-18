@@ -1,6 +1,9 @@
 -- local pdata = nil
 local transferFromGroundOnCraftComplete = function(completedAction, playerObj, square)
-    PI2ABUtil.PutInBagFromGround(playerObj, completedAction, square)
+    -- PI2ABUtil.PutInBagFromGround(playerObj, completedAction, square)
+    if completedAction.pi2ab_timestamp then
+        playerObj.pi2ab_mechanicTimestamp = completedAction.pi2ab_timestamp
+    end
     -- local playerInv = playerObj:getInventory()
     -- local targetContainer = PI2AB.getTargetContainer(playerObj)
     -- local playerNum = playerObj:getPlayerNum()
@@ -69,9 +72,9 @@ function ISVehicleMenu.onRemoveBurntVehicle(player, vehicle)
                 local beforeItems = PI2ABUtil.GetObjectsOnAndAroundSquare(square)
                 action:setOnComplete(transferFromGroundOnCraftComplete, action, player, square)
 
-                local pi2ab_timestamp = os.time()
-                action.pi2ab_timestamp = pi2ab_timestamp
-                PI2ABComparer.create(pi2ab_timestamp, beforeItems)
+                local timestamp = os.time()
+                action.pi2ab_timestamp = timestamp
+                PI2ABComparer.create(timestamp, beforeItems)
             end
         end
     end

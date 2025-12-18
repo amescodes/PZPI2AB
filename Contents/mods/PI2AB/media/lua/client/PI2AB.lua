@@ -34,7 +34,7 @@ end
 
 function PI2AB.getTargetContainer(playerObj)
     local playerInv = playerObj:getInventory()
-    if PI2AB.TargetContainer then
+    if PI2AB.TargetContainer and PI2AB.TargetContainer ~= "" then
         local item = playerInv:getItemById(PI2AB.TargetContainer)
         if item then
             return item:getItemContainer()
@@ -75,7 +75,7 @@ local function setTargetContextMenuEntry(player, context, items)
         if not instanceof(v, "InventoryItem") then
             testItem = v.items[1]
         end
-        if instanceof(testItem, "InventoryContainer") then
+        if instanceof(testItem, "InventoryContainer") and testItem:isEquipped() then
             -- check for keys and moveables
             if testItem:getFullType() == "Base.KeyRing" then return end
 
@@ -116,3 +116,57 @@ end
 
 LuaEventManager.AddEvent("OnFillInventoryContextMenuNoItems")
 Events.OnFillInventoryContextMenuNoItems.Add(resetTargetContextMenuEntry)
+
+--local old_ISVehicleMechanics_OnMechanicActionDone = ISVehicleMechanics.OnMechanicActionDone
+local mechanicActionDone = function(chr, success, vehicleId, partId, itemId, installing)
+    local playerInv = chr:getInventory()
+    local targetContainer = PI2AB.getTargetContainer(chr)
+    local playerNum = chr:getPlayerNum()
+
+    local timestamp = chr.pi2ab_mechanicTimestamp
+	if success and timestamp and not installing  then
+        local comparer = PI2ABComparer.get(timestamp)
+        if comparer then
+            local allItems = playerInv:getItems()
+            local itemsToTransfer = comparer:compare(allItems, nil)
+            -- target container
+            local capacity = targetContainer and targetContainer:getEffectiveCapacity(chr) or 0
+            PI2ABUtil.Print("target container capacity " .. tostring(capacity), true)
+            local runningBagWeight = targetContainer and targetContainer:getContentsWeight() or 0
+            PI2ABUtil.Print("target container contents weight START " .. tostring(runningBagWeight), true)
+            -- backup / default container
+            local defContainer = PI2ABUtil.GetDefaultContainer(nil, playerInv)
+            -- check new items and queue transfer actions
+            for i = 0, itemsToTransfer:size() - 1 do
+                local it = itemsToTransfer:get(i)
+                local itemWeight = it:getWeight()
+                local destinationContainer
+                local possibleNewWeight = PI2ABUtil.Round(runningBagWeight + itemWeight)
+                if targetContainer and targetContainer:hasRoomFor(chr, it) and possibleNewWeight <= capacity then
+                    PI2ABUtil.Print("target container possibleNewWeight: " .. tostring(possibleNewWeight), true)
+                    runningBagWeight = possibleNewWeight
+                    destinationContainer = targetContainer
+                else
+                    if defContainer and defContainer ~= nil then
+                        destinationContainer = nil
+                    else
+                        destinationContainer = ISInventoryPage.GetFloorContainer(playerNum)
+                    end
+                end
+                
+                if destinationContainer then
+                    local tAction = ISInventoryTransferAction:new(chr, it, playerInv, destinationContainer, nil)
+                    tAction:setAllowMissingItems(true)
+                    if not tAction.ignoreAction then
+                        ISTimedActionQueue.add(action)
+                        -- ISTimedActionQueue.getTimedActionQueue(chr):addToQueue(tAction)
+                    end
+                end
+            end
+            
+            PI2ABComparer.remove(timestamp)
+        end
+	end
+end
+
+Events.OnMechanicActionDone.Add(mechanicActionDone);

@@ -41,7 +41,7 @@ ISCraftingUI_transferOnCraftComplete = function(completeAction, recipe, playerOb
         action:setOnComplete(ISCraftingUI_transferOnCraftComplete, action, recipe, playerObj, selectedItemContainer, container,containers,all,ui)
         
         local timestamp = os.time()
-        action.timestamp = timestamp
+        action.pi2ab_timestamp = timestamp
         PI2ABComparer.create(timestamp,playerInv:getItems(),result.itemsToTransfer,result.targetWeightTransferred,result.defWeightTransferred)
 
         ISTimedActionQueue.addAfter(previousAction, action)
@@ -76,7 +76,7 @@ function ISCraftingUI:craft(button, all)
                 action:setOnComplete(ISCraftingUI_transferOnCraftComplete, action, recipe, playerObj,selectedItemContainer,container,self.containerList,all,self)
                 
                 local timestamp = os.time()
-                action.timestamp = timestamp
+                action.pi2ab_timestamp = timestamp
                 PI2ABComparer.create(timestamp,playerObj:getInventory():getItems())
             end
         end

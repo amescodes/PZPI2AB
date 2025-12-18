@@ -7,8 +7,8 @@ local transferOnCraftComplete = function(completedAction, playerObj, square)
     -- if pdata == nil then pdata = getPlayerData(playerNum) end
     -- if pdata then pdata.playerInventory:refreshBackpacks() end
 
-    -- if completedAction.timestamp then
-    --     local comparer = PI2ABComparer.get(completedAction.timestamp)
+    -- if completedAction.pi2ab_timestamp then
+    --     local comparer = PI2ABComparer.get(completedAction.pi2ab_timestamp)
     --     if comparer then
     --         local allItems = playerInv:getItems()
     --         local itemsToTransfer = comparer:compare(allItems, nil)
@@ -46,7 +46,7 @@ local transferOnCraftComplete = function(completedAction, playerObj, square)
     --             end
     --         end
             
-    --         PI2ABComparer.remove(completedAction.timestamp)
+    --         PI2ABComparer.remove(completedAction.pi2ab_timestamp)
     --     end
     -- end
 end
@@ -66,9 +66,9 @@ function ISVehiclePartMenu.onUninstallPart(playerObj, part)
             if action then
                 action:setOnComplete(transferOnCraftComplete, action, playerObj,part:getVehicle():getSquare())
 
-                local timestamp = os.time()
-                action.timestamp = timestamp
-                PI2ABComparer.create(timestamp, playerObj:getInventory():getItems())
+                local pi2ab_timestamp = os.time()
+                action.pi2ab_timestamp = pi2ab_timestamp
+                PI2ABComparer.create(pi2ab_timestamp, playerObj:getInventory():getItems())
             end
         end
     end

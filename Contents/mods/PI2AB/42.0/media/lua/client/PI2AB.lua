@@ -34,7 +34,7 @@ end
 
 function PI2AB.getTargetContainer(playerObj)
     local playerInv = playerObj:getInventory()
-    if PI2AB.TargetContainer then
+    if PI2AB.TargetContainer and PI2AB.TargetContainer ~= "" then
         local item = playerInv:getItemWithID(PI2AB.TargetContainer)
         if item and item:isEquipped() then
             return item:getItemContainer()

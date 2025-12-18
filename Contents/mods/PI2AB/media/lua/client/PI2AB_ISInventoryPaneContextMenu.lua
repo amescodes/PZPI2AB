@@ -74,7 +74,7 @@ ISInventoryPaneContextMenu_transferOnCraftComplete = function(completeAction, re
         action:setOnComplete(ISInventoryPaneContextMenu_transferOnCraftComplete, action, recipe, playerObj, selectedItemContainer,container,containers,all)
 
         local timestamp = os.time()
-        action.timestamp = timestamp
+        action.pi2ab_timestamp = timestamp
         PI2ABComparer.create(timestamp,playerInv:getItems(),result.itemsToTransfer,result.targetWeightTransferred,result.defWeightTransferred)
 
         ISTimedActionQueue.addAfter(previousAction, action)
@@ -105,7 +105,7 @@ ISInventoryPaneContextMenu.OnCraft = function(selectedItem, recipe, player, all)
             if action then
                 action:setOnComplete(ISInventoryPaneContextMenu_transferOnCraftComplete, action, recipe, playerObj, selectedItemContainer,container,containers,all)
                 local timestamp = os.time()
-                action.timestamp = timestamp
+                action.pi2ab_timestamp = timestamp
                 PI2ABComparer.create(timestamp,playerInv:getItems())
             end
         end

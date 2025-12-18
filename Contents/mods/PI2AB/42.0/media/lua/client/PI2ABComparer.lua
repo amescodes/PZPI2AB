@@ -125,7 +125,7 @@ function PI2ABComparer:new(time,targetWeightTransferred,defWeightTransferred)
     setmetatable(o, self)
     self.__index = self
 
-    o.timestamp = time
+    o.pi2ab_timestamp = time
     o.before = nil
 
     o.targetWeightTransferred = targetWeightTransferred or 0

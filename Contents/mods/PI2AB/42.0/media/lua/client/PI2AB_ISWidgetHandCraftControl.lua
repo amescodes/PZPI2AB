@@ -7,7 +7,7 @@ end
 
 local ISWidgetHandCraftControl_onHandcraftActionCancelled = function(args)
     local action = args.completedAction
-    if action then PI2ABComparer.remove(action.timestamp) end
+    if action then PI2ABComparer.remove(action.pi2ab_timestamp) end
     args.widget:onHandcraftActionCancelled()
 end
 
@@ -45,9 +45,9 @@ function ISWidgetHandCraftControl:startHandcraft(force)
                     action:setOnComplete(ISWidgetHandCraftControl_transferOnHandcraftActionComplete, args)
                     action:setOnCancel(ISWidgetHandCraftControl_onHandcraftActionCancelled, args);
 
-                    local timestamp = os.time() + i
-                    action.timestamp = timestamp
-                    PI2ABComparer.create(timestamp, playerObj:getInventory():getItems())
+                    local pi2ab_timestamp = os.time() + i
+                    action.pi2ab_timestamp = pi2ab_timestamp
+                    PI2ABComparer.create(pi2ab_timestamp, playerObj:getInventory():getItems())
                 end
             end
         end

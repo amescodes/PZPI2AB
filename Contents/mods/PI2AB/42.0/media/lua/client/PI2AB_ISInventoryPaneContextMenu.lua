@@ -9,7 +9,7 @@ end
 
 local ISWidgetHandCraftControl_onHandcraftActionCancelled = function(args)
     local action = args.completedAction
-    if action then PI2ABComparer.remove(action.timestamp) end
+    if action then PI2ABComparer.remove(action.pi2ab_timestamp) end
 end
 
 
@@ -32,9 +32,9 @@ ISInventoryPaneContextMenu.OnNewCraft = function(selectedItem, recipe, player, a
                 local args = PI2ABTransferArgs:new(logic,nil, action, logic:getRecipeData(), playerObj, selectedItem:getContainer(), action.containers, selectedItem,all)
                 action:setOnComplete(ISInventoryPaneContextMenu_transferOnNewCraftComplete, args)
                 action:setOnCancel(ISWidgetHandCraftControl_onHandcraftActionCancelled, args)
-                local timestamp = os.time()
-                action.timestamp = timestamp
-                PI2ABComparer.create(timestamp, playerInv:getItems())
+                local pi2ab_timestamp = os.time()
+                action.pi2ab_timestamp = pi2ab_timestamp
+                PI2ABComparer.create(pi2ab_timestamp, playerInv:getItems())
             end
         end
     end

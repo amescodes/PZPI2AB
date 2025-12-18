@@ -10,8 +10,8 @@ ISWorldMenuElements_ContextDisassemble_transferOnCraftComplete =
         -- if pdata == nil then pdata = getPlayerData(playerNum) end
         -- if pdata then pdata.playerInventory:refreshBackpacks() end
 
-        -- if completedAction.timestamp then
-        --     local comparer = PI2ABComparer.get(completedAction.timestamp)
+        -- if completedAction.pi2ab_timestamp then
+        --     local comparer = PI2ABComparer.get(completedAction.pi2ab_timestamp)
         --     if comparer then
         --         local allItems = playerInv:getItems()
         --         local itemsToTransfer = comparer:compare(allItems, nil)
@@ -49,7 +49,7 @@ ISWorldMenuElements_ContextDisassemble_transferOnCraftComplete =
         --             end
         --         end
                 
-        --         PI2ABComparer.remove(completedAction.timestamp)
+        --         PI2ABComparer.remove(completedAction.pi2ab_timestamp)
         --     end
         -- end
     end
@@ -63,8 +63,8 @@ ISWorldMenuElements_ContextDisassemble_transferFromGroundOnCraftComplete =
         -- if pdata == nil then pdata = getPlayerData(playerNum) end
         -- if pdata then pdata.lootInventory:refreshBackpacks() end
         
-        -- if completedAction.timestamp then
-        --     local comparer = PI2ABComparer.get(completedAction.timestamp)
+        -- if completedAction.pi2ab_timestamp then
+        --     local comparer = PI2ABComparer.get(completedAction.pi2ab_timestamp)
         --     if comparer then
         --         local allItems = PI2ABUtil.GetObjectsOnAndAroundSquare(square)
         --         local itemsToTransfer = comparer:compare(allItems, nil)
@@ -102,7 +102,7 @@ ISWorldMenuElements_ContextDisassemble_transferFromGroundOnCraftComplete =
         --             end
         --         end
 
-        --         PI2ABComparer.remove(completedAction.timestamp)
+        --         PI2ABComparer.remove(completedAction.pi2ab_timestamp)
         --     end
         -- end
     end
@@ -140,7 +140,7 @@ function ISWorldMenuElements.ContextDisassemble()
                     end
 
                     local timestamp = os.time()
-                    action.timestamp = timestamp
+                    action.pi2ab_timestamp = timestamp
                     PI2ABComparer.create(timestamp, beforeItems)
                 end
             end

@@ -14,14 +14,14 @@ end
 
 local old_ISRemoveBurntVehicle_forceStop = ISRemoveBurntVehicle.forceStop
 function ISRemoveBurntVehicle:forceStop()
-	if self.timestamp then PI2ABComparer.remove(self.timestamp) end
+	if self.pi2ab_timestamp then PI2ABComparer.remove(self.pi2ab_timestamp) end
 	
     old_ISRemoveBurntVehicle_forceStop(self);
 end
 
 local old_ISRemoveBurntVehicle_forceCancel = ISRemoveBurntVehicle.forceCancel
 function ISRemoveBurntVehicle:forceCancel()
-	if self.timestamp then PI2ABComparer.remove(self.timestamp) end
+	if self.pi2ab_timestamp then PI2ABComparer.remove(self.pi2ab_timestamp) end
 	
 	old_ISRemoveBurntVehicle_forceCancel(self)
 end

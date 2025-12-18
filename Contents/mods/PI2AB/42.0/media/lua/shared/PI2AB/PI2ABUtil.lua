@@ -13,7 +13,7 @@ PI2ABUtil.WhenToTransfer = {'AfterEach', 'AtEnd'}
 --     if src then
 --         local srcItems = PI2ABUtil.GetActualItemsFromSource(playerInv, src)
 --         local allItems = playerInv:getItems()
---         if completedAct.timestamp then
+--         if completedAct.pi2ab_timestamp then
 --             result = PI2ABUtil.PutInBag(playerObj, playerInv, selectedItemContainer, targetContainer, completedAct,
 --                 allItems, srcItems)
 --         end
@@ -23,7 +23,7 @@ PI2ABUtil.WhenToTransfer = {'AfterEach', 'AtEnd'}
 -- end
 
 function PI2ABUtil.PutInBag(playerObj, playerInv, selectedItemContainer, targetContainer, completedAct, allItems, srcItems)
-    local comparer = PI2ABComparer.get(completedAct.timestamp)
+    local comparer = PI2ABComparer.get(completedAct.pi2ab_timestamp)
     local previousAct = completedAct
     local targetWeightTransferred = 0.0
     local defWeightTransferred = 0.0
@@ -83,7 +83,7 @@ function PI2ABUtil.PutInBag(playerObj, playerInv, selectedItemContainer, targetC
             end
         end
 
-        PI2ABComparer.remove(completedAct.timestamp)
+        PI2ABComparer.remove(completedAct.pi2ab_timestamp)
     end
     return PI2ABResult:new(previousAct, completedAct, itemsToTransfer, targetWeightTransferred, defWeightTransferred)
 end
@@ -96,8 +96,8 @@ function PI2ABUtil.PutInBagFromInventory(playerObj, completedAction)
     local pdata = getPlayerData(playerNum)
     if pdata then pdata.playerInventory:refreshBackpacks() end
 
-    if completedAction.timestamp then
-        local comparer = PI2ABComparer.get(completedAction.timestamp)
+    if completedAction.pi2ab_timestamp then
+        local comparer = PI2ABComparer.get(completedAction.pi2ab_timestamp)
         if comparer then
             local allItems = playerInv:getItems()
             local itemsToTransfer = comparer:compare(allItems, nil)
@@ -135,7 +135,7 @@ function PI2ABUtil.PutInBagFromInventory(playerObj, completedAction)
                 end
             end
             
-            PI2ABComparer.remove(completedAction.timestamp)
+            PI2ABComparer.remove(completedAction.pi2ab_timestamp)
         end
     end
 end
@@ -148,8 +148,8 @@ function PI2ABUtil.PutInBagFromGround(playerObj, completedAction, square)
     local pdata = getPlayerData(playerNum)
     if pdata then pdata.lootInventory:refreshBackpacks() end
 
-    if completedAction.timestamp then
-        local comparer = PI2ABComparer.get(completedAction.timestamp)
+    if completedAction.pi2ab_timestamp then
+        local comparer = PI2ABComparer.get(completedAction.pi2ab_timestamp)
         if comparer then
             local allItems = PI2ABUtil.GetObjectsOnAndAroundSquare(square)
             local itemsToTransfer = comparer:compare(allItems, nil)
@@ -187,7 +187,7 @@ function PI2ABUtil.PutInBagFromGround(playerObj, completedAction, square)
                 end
             end
 
-            PI2ABComparer.remove(completedAction.timestamp)
+            PI2ABComparer.remove(completedAction.pi2ab_timestamp)
         end
     end
 end
@@ -241,7 +241,8 @@ function PI2ABUtil.GetUninstallVehiclePartAction(queue)
     for i = 1, #queue do
         local action = queue[i]
 
-        if action.vehicle and action.part then
+        if action.vehicle and action.part and action.jobType
+            and action.jobType == getText("Tooltip_Vehicle_Uninstalling", action.part:getInventoryItem():getDisplayName())then
             return action
         end
     end

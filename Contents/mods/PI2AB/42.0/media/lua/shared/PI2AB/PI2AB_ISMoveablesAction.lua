@@ -14,14 +14,14 @@ end
 
 local old_ISMoveablesAction_forceStop = ISMoveablesAction.forceStop
 function ISMoveablesAction:forceStop()
-	if self.timestamp then PI2ABComparer.remove(self.timestamp) end
+	if self.pi2ab_timestamp then PI2ABComparer.remove(self.pi2ab_timestamp) end
 	
     old_ISMoveablesAction_forceStop(self);
 end
 
 local old_ISMoveablesAction_forceCancel = ISMoveablesAction.forceCancel
 function ISMoveablesAction:forceCancel()
-	if self.timestamp then PI2ABComparer.remove(self.timestamp) end
+	if self.pi2ab_timestamp then PI2ABComparer.remove(self.pi2ab_timestamp) end
 	
 	old_ISMoveablesAction_forceCancel(self)
 end
