@@ -12,6 +12,20 @@ function ISRemoveBurntVehicle:complete()
     return true;
 end
 
+local old_ISRemoveBurntVehicle_forceStop = ISRemoveBurntVehicle.forceStop
+function ISRemoveBurntVehicle:forceStop()
+	if self.timestamp then PI2ABComparer.remove(self.timestamp) end
+	
+    old_ISRemoveBurntVehicle_forceStop(self);
+end
+
+local old_ISRemoveBurntVehicle_forceCancel = ISRemoveBurntVehicle.forceCancel
+function ISRemoveBurntVehicle:forceCancel()
+	if self.timestamp then PI2ABComparer.remove(self.timestamp) end
+	
+	old_ISRemoveBurntVehicle_forceCancel(self)
+end
+
 function ISRemoveBurntVehicle:setOnComplete(func, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)
 	self.onCompleteFunc = func
 	self.onCompleteArgs = { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8 }

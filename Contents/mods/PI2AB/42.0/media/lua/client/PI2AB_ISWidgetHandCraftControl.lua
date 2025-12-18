@@ -1,49 +1,14 @@
 local ISWidgetHandCraftControl_transferOnHandcraftActionComplete = function(args)
     local playerObj = args.playerObj
     local playerInv = playerObj:getInventory()
-    -- local result = PI2ABUtil.PutInBagRecipe(playerObj,playerInv,args.container,targetContainer,completeAction, args.recipe)
     PI2ABUtil.PutInBag(playerObj, playerInv, args.container, PI2AB.getTargetContainer(playerObj), args.completedAction, playerInv:getItems(),args.recipe:getAllInputItems())
-    -- local previousAction = result.previousAction
-    -- local completedAction = result.completedAction
-    -- local targetContainer = PI2AB.getTargetContainer(playerObj)
-    -- local completedAction = args.completedAction
-
-    -- local inputItems = args.recipe:getAllInputItems()
-    -- if inputItems then
-    --     local allItems = playerInv:getItems()
-
-    --     if completedAction.timestamp then
-    --         local comparer = PI2ABComparer.get(completedAction.timestamp)
-    --         if comparer then
-    --             local itemsToTransfer = comparer:compare(allItems, inputItems)
-    --             if itemsToTransfer then
-    --                 for i = 0, itemsToTransfer:size() - 1 do
-    --                     local it = itemsToTransfer:get(i)
-    --                     local destinationContainer
-    --                     if targetContainer and targetContainer:hasRoomFor(playerObj, it) then
-    --                         destinationContainer = targetContainer
-    --                     else
-    --                         local defContainer = PI2ABUtil.GetDefaultContainer(args.container, playerInv)
-    --                         if defContainer and defContainer:hasRoomFor(playerObj, it) then
-    --                             destinationContainer = defContainer
-    --                         else
-    --                             destinationContainer = playerInv
-    --                         end
-    --                     end
-
-    --                     local action =
-    --                         ISInventoryTransferAction:new(playerObj, it, playerInv, destinationContainer, nil)
-    --                     action:setAllowMissingItems(true)
-    --                     if not action.ignoreAction then
-    --                         PI2ABUtil.AddWhenToTransferAction2(ISTimedActionQueue.getTimedActionQueue(playerObj), action)
-    --                     end
-    --                 end
-    --             end
-    --         end
-    --     end
-    -- end
-
     args.widget:onHandcraftActionComplete()
+end
+
+local ISWidgetHandCraftControl_onHandcraftActionCancelled = function(args)
+    local action = args.completedAction
+    if action then PI2ABComparer.remove(action.timestamp) end
+    args.widget:onHandcraftActionCancelled()
 end
 
 local old_ISWidgetHandCraftControl_startHandcraft = ISWidgetHandCraftControl.startHandcraft
@@ -63,7 +28,7 @@ function ISWidgetHandCraftControl:startHandcraft(force)
             local selectedItem = recipeData:getFirstInputItemWithFlag("Prop2")
             if not selectedItem then
                 local destroyedItems = recipeData:getAllDestroyInputItems()
-                if destroyedItems and not destroyedItems == 0 then
+                if destroyedItems and not destroyedItems:size() == 0 then
                     selectedItem = destroyedItems:get(0)
                 else
                     local inputItems = recipeData:getAllInputItems()
@@ -78,6 +43,8 @@ function ISWidgetHandCraftControl:startHandcraft(force)
                         selectedItem:getContainer(), action.containers, selectedItem)
 
                     action:setOnComplete(ISWidgetHandCraftControl_transferOnHandcraftActionComplete, args)
+                    action:setOnCancel(ISWidgetHandCraftControl_onHandcraftActionCancelled, args);
+
                     local timestamp = os.time() + i
                     action.timestamp = timestamp
                     PI2ABComparer.create(timestamp, playerObj:getInventory():getItems())

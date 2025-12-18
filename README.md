@@ -4,8 +4,6 @@
 
 A Project Zomboid mod that automatically transfers crafted and dismantled items to your specified target container. Safe to add/remove mid-game!
 
-Place early in the mod load order, especially if using with other inventory and/or item transfer mods.
-
 <a title="ames_games Steam Workshop" href="https://steamcommunity.com/id/ames_games/myworkshopfiles/?appid=108600"><img width="64" alt="Steam official logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Steam_icon_logo.svg/64px-Steam_icon_logo.svg.png?20220611141426">Workshop</a>
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/amescodes)

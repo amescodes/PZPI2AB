@@ -3,10 +3,8 @@ name=Put it in a #$!% bag!
 description=After crafting or dismantling items, transfer them to a target container of your choosing, as long as it's on your character!
 poster=poster.png
 poster=configtab.png
-tags=Build 41
+icon=icon.png
 versionMin=41.0
 url=https://github.com/amescodes/PZPI2AB
 authors=amescodes
 modversion=41.1.0.0
-
-

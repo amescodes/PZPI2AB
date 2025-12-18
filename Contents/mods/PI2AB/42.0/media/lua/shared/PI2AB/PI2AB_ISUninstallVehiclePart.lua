@@ -12,6 +12,20 @@ function ISUninstallVehiclePart:complete()
     return true;
 end
 
+local old_ISUninstallVehiclePart_forceStop = ISUninstallVehiclePart.forceStop
+function ISUninstallVehiclePart:forceStop()
+	if self.timestamp then PI2ABComparer.remove(self.timestamp) end
+	
+    old_ISUninstallVehiclePart_forceStop(self);
+end
+
+local old_ISUninstallVehiclePart_forceCancel = ISUninstallVehiclePart.forceCancel
+function ISUninstallVehiclePart:forceCancel()
+	if self.timestamp then PI2ABComparer.remove(self.timestamp) end
+	
+	old_ISUninstallVehiclePart_forceCancel(self)
+end
+
 function ISUninstallVehiclePart:setOnComplete(func, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)
 	self.onCompleteFunc = func
 	self.onCompleteArgs = { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8 }

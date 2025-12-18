@@ -36,7 +36,6 @@ function PI2AB.getTargetContainer(playerObj)
     local playerInv = playerObj:getInventory()
     if PI2AB.TargetContainer then
         local item = playerInv:getItemWithID(PI2AB.TargetContainer)
-        -- local item = playerInv:getItemById(PI2AB.TargetContainer)
         if item and item:isEquipped() then
             return item:getItemContainer()
         end
@@ -76,8 +75,7 @@ local function setTargetContextMenuEntry(player, context, items)
         if not instanceof(v, "InventoryItem") then
             testItem = v.items[1]
         end
-        if instanceof(testItem, "InventoryContainer") then
-            -- TODO check for keys and moveables and corpses
+        if instanceof(testItem, "InventoryContainer") and testItem:isEquipped() then
             if testItem:getFullType() == "Base.KeyRing" then return end
 
             local targetContainerOption = context:insertOptionAfter(getText("IGUI_CraftUI_Favorite"), getText("IGUI_PI2AB_TargetContainer"), testItem, makeTargetContainer, player)

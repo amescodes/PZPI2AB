@@ -112,6 +112,9 @@ function ISCharacterPI2AB:render()
     local finalHeight = math.min(h, maxHeight)
     self:setHeightAndParentHeight(finalHeight)
     self:setScrollHeight(h)
+
+    local maxWid = 350
+    self:setWidthAndParentWidth(math.max(self.width, maxWid))
 end
 
 function ISCharacterPI2AB:onSettingChange(combo, settingId)
