@@ -1,7 +1,7 @@
 local transferOnCraftComplete = function(completedAction, playerObj, square)
     -- PI2ABUtil.PutInBagFromInventory(playerObj, completedAction)
     if completedAction.pi2ab_timestamp then
-        playerObj.pi2ab_mechanicTimestamp = completedAction.pi2ab_timestamp
+        PI2AB.LastMechanicTimestamp = completedAction.pi2ab_timestamp
     end
     -- local playerInv = playerObj:getInventory()
     -- local targetContainer = PI2AB.getTargetContainer(playerObj)

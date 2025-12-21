@@ -27,11 +27,6 @@ ISCraftingUI_transferOnCraftComplete = function(completeAction, recipe, playerOb
                     local action = ISInventoryTransferAction:new(playerObj, item, item:getContainer(), playerInv, nil)
                     ISTimedActionQueue.addAfter(previousAction, action)
                     previousAction = action
-                    -- action:setAllowMissingItems(true)
-                    -- if not action.ignoreAction then
-                    --     ISTimedActionQueue.addAfter(previousAction, action)
-                    --     previousAction = action
-                    -- end
                     table.insert(returnToContainer, item)
                 end
             end

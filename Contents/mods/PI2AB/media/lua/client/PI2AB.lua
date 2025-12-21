@@ -9,6 +9,7 @@ PI2AB.Enabled = true
 PI2AB.DefaultDestinationContainer = 1
 PI2AB.WhenToTransferItems = 1
 PI2AB.TargetContainer = ""
+PI2AB.LastMechanicTimestamp = 0
 
 function PI2AB.init()
     local player = getPlayer()
@@ -22,6 +23,7 @@ function PI2AB.init()
         PI2ABUtil.Print("PI2AB.init: creating new modData", true)
         modData.PI2AB = {}
         modData.TargetContainer = ""
+        modData.LastMechanicTimestamp = 0
     else
         -- load mod data
         PI2ABUtil.Print("PI2AB:init: loading modData", true)
@@ -123,8 +125,8 @@ local mechanicActionDone = function(chr, success, vehicleId, partId, itemId, ins
     local targetContainer = PI2AB.getTargetContainer(chr)
     local playerNum = chr:getPlayerNum()
 
-    local timestamp = chr.pi2ab_mechanicTimestamp
-	if success and timestamp and not installing  then
+    local timestamp = PI2AB.LastMechanicTimestamp
+	if success and timestamp and timestamp ~= 0 and not installing then
         local comparer = PI2ABComparer.get(timestamp)
         if comparer then
             local allItems = playerInv:getItems()
@@ -158,12 +160,12 @@ local mechanicActionDone = function(chr, success, vehicleId, partId, itemId, ins
                     local tAction = ISInventoryTransferAction:new(chr, it, playerInv, destinationContainer, nil)
                     tAction:setAllowMissingItems(true)
                     if not tAction.ignoreAction then
-                        ISTimedActionQueue.add(action)
-                        -- ISTimedActionQueue.getTimedActionQueue(chr):addToQueue(tAction)
+                        ISTimedActionQueue.add(tAction)
                     end
                 end
             end
             
+            PI2AB.LastMechanicTimestamp = 0
             PI2ABComparer.remove(timestamp)
         end
 	end
