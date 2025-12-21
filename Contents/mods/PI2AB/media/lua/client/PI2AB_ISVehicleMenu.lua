@@ -1,12 +1,8 @@
-local transferFromGroundOnCraftComplete = function(completedAction, playerObj, square)
-    PI2ABUtil.PutInBagFromGround(playerObj, completedAction, square)
-end
-
 local old_ISVehicleMenu_onRemoveBurntVehicle = ISVehicleMenu.onRemoveBurntVehicle
 function ISVehicleMenu.onRemoveBurntVehicle(player, vehicle)
     old_ISVehicleMenu_onRemoveBurntVehicle(player, vehicle)
 
-    if not PI2ABUtil.IsAllowed(player) then
+    if not PI2AB.IsAllowed(player) then
         return
     end
 
@@ -17,7 +13,8 @@ function ISVehicleMenu.onRemoveBurntVehicle(player, vehicle)
             local action = PI2ABUtil.GetRemoveBurntVehicleAction(queue)
             if action then
                 local beforeItems = PI2ABUtil.GetObjectsOnAndAroundSquare(square)
-                action:setOnComplete(transferFromGroundOnCraftComplete, action, player, square)
+                -- action:setOnComplete(transferFromGroundOnCraftComplete, action, player, square)
+                action:setOnComplete(PI2ABCore.PutInBagFromGround, action, player, square)
 
                 local timestamp = os.time()
                 action.pi2ab_timestamp = timestamp

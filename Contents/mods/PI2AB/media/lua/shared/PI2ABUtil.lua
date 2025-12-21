@@ -2,246 +2,6 @@ if not PI2ABUtil then
     PI2ABUtil = {}
 end
 
-PI2ABUtil.DefaultContainers = {'PlayerInventory', 'ItemSource'}
-
-PI2ABUtil.WhenToTransfer = {'AfterEach', 'AtEnd'}
-
-function PI2ABUtil.PutInBagRecipe(playerObj,playerInv,selectedItemContainer,targetContainer,completedAct,recipe)
-    local src = recipe:getSource()
-    local itemsToTransfer
-    local result
-    if src then
-        local srcItems = PI2ABUtil.GetActualItemsFromSource(playerInv,src)
-        local allItems = playerInv:getItems()
-        if completedAct.pi2ab_timestamp then
-            result = PI2ABUtil.PutInBag(playerObj,playerInv,selectedItemContainer,targetContainer,completedAct, allItems, srcItems)
-        end
-    end
-
-    return result or PI2ABResult:new(nil,completedAct,itemsToTransfer)
-end
-
-function PI2ABUtil.PutInBag(playerObj, playerInv, selectedItemContainer, targetContainer, completedAct, allItems, srcItems)
-    local comparer = PI2ABComparer.get(completedAct.pi2ab_timestamp)
-    local previousAct = completedAct
-    local targetWeightTransferred = 0.0
-    local defWeightTransferred = 0.0
-    local itemsToTransfer
-    if comparer then
-        itemsToTransfer = comparer:compare(allItems, srcItems)
-        -- target container
-        local capacity = targetContainer and targetContainer:getEffectiveCapacity(playerObj) or 0
-        PI2ABUtil.Print("target container capacity " .. tostring(capacity), true)
-        local tWeight = targetContainer and targetContainer:getContentsWeight() or 0
-        targetWeightTransferred = comparer.targetWeightTransferred
-        local runningBagWeight = targetContainer and PI2ABUtil.Round(tWeight + targetWeightTransferred) or 0
-        PI2ABUtil.Print("target container contents weight START " .. tostring(runningBagWeight), true)
-        -- backup / default container
-        local defContainer = PI2ABUtil.GetDefaultContainer(selectedItemContainer, playerInv)
-        local bCapacity = defContainer and defContainer:getCapacity() or 0
-        PI2ABUtil.Print("default container capacity " .. tostring(bCapacity), true)
-        local bWeight = defContainer and defContainer:getContentsWeight() or 0
-        defWeightTransferred = comparer.defWeightTransferred
-        local bRunningBagWeight = defContainer and PI2ABUtil.Round(bWeight + defWeightTransferred) or 0
-        PI2ABUtil.Print("default container contents weight START " .. tostring(bRunningBagWeight), true)
-        -- check new items and queue transfer actions
-        for i = 0, itemsToTransfer:size() - 1 do
-            local it = itemsToTransfer:get(i)
-            local itemWeight = it:getWeight()
-            PI2ABUtil.Print("itemWeight: " .. tostring(itemWeight), true)
-            local destinationContainer
-            local possibleNewWeight = PI2ABUtil.Round(runningBagWeight + itemWeight)
-            if targetContainer and targetContainer:hasRoomFor(playerObj, it) and possibleNewWeight <= capacity then
-                PI2ABUtil.Print("target container possibleNewWeight: " .. tostring(possibleNewWeight), true)
-                runningBagWeight = possibleNewWeight
-                targetWeightTransferred = PI2ABUtil.Round(targetWeightTransferred + itemWeight)
-                destinationContainer = targetContainer
-            else
-                possibleNewWeight = PI2ABUtil.Round(bRunningBagWeight + itemWeight)
-                if defContainer then
-                    PI2ABUtil.Print("default container possibleNewWeight: " .. tostring(possibleNewWeight), true)
-                    if defContainer:getType() ~= "floor" then
-                        if defContainer:hasRoomFor(playerObj, it) and possibleNewWeight <= bCapacity then
-                            bRunningBagWeight = possibleNewWeight
-                            defWeightTransferred = PI2ABUtil.Round(defWeightTransferred + itemWeight)
-                        end
-                    end
-
-                    destinationContainer = defContainer
-                else
-                    destinationContainer = playerInv
-                end
-            end
-
-            if destinationContainer then
-                local tAction = ISInventoryTransferAction:new(playerObj, it, playerInv, destinationContainer, nil)
-                tAction:setAllowMissingItems(true)
-                if not tAction.ignoreAction then
-                    previousAct = PI2ABUtil.AddWhenToTransferAction(previousAct, tAction)
-                end
-            end
-        end
-
-        PI2ABComparer.remove(completedAct.pi2ab_timestamp)
-    end
-
-    return PI2ABResult:new(previousAct, completedAct, itemsToTransfer, targetWeightTransferred, defWeightTransferred)
-end
-
-function PI2ABUtil.PutInBagFromInventory(playerObj, completedAction)
-    local playerInv = playerObj:getInventory()
-    local targetContainer = PI2AB.getTargetContainer(playerObj)
-    local playerNum = playerObj:getPlayerNum()
-
-    local pdata = getPlayerData(playerNum)
-    if pdata then pdata.playerInventory:refreshBackpacks() end
-
-    if completedAction.pi2ab_timestamp then
-        local comparer = PI2ABComparer.get(completedAction.pi2ab_timestamp)
-        if comparer then
-            local allItems = playerInv:getItems()
-            local itemsToTransfer = comparer:compare(allItems, nil)
-            -- target container
-            local capacity = targetContainer and targetContainer:getEffectiveCapacity(playerObj) or 0
-            PI2ABUtil.Print("target container capacity " .. tostring(capacity), true)
-            local runningBagWeight = targetContainer and targetContainer:getContentsWeight() or 0
-            PI2ABUtil.Print("target container contents weight START " .. tostring(runningBagWeight), true)
-            -- backup / default container
-            local defContainer = PI2ABUtil.GetDefaultContainer(nil, playerInv)
-            -- check new items and queue transfer actions
-            for i = 0, itemsToTransfer:size() - 1 do
-                local it = itemsToTransfer:get(i)
-                local itemWeight = it:getWeight()
-                local destinationContainer
-                local possibleNewWeight = PI2ABUtil.Round(runningBagWeight + itemWeight)
-                if targetContainer and targetContainer:hasRoomFor(playerObj, it) and possibleNewWeight <= capacity then
-                    PI2ABUtil.Print("target container possibleNewWeight: " .. tostring(possibleNewWeight), true)
-                    runningBagWeight = possibleNewWeight
-                    destinationContainer = targetContainer
-                else
-                    if defContainer and defContainer ~= nil then
-                        destinationContainer = nil
-                    else
-                        destinationContainer = ISInventoryPage.GetFloorContainer(playerNum)
-                    end
-                end
-                
-                if destinationContainer then
-                    local tAction = ISInventoryTransferAction:new(playerObj, it, playerInv, destinationContainer, nil)
-                    tAction:setAllowMissingItems(true)
-                    if not tAction.ignoreAction then
-                        ISTimedActionQueue.getTimedActionQueue(playerObj):addToQueue(tAction)
-                    end
-                end
-            end
-            
-            PI2ABComparer.remove(completedAction.pi2ab_timestamp)
-        end
-    end
-end
-
-function PI2ABUtil.PutInBagFromGround(playerObj, completedAction, square)
-    local playerInv = playerObj:getInventory()
-    local targetContainer = PI2AB.getTargetContainer(playerObj)
-    local playerNum = playerObj:getPlayerNum()
-
-    local pdata = getPlayerData(playerNum)
-    if pdata then pdata.lootInventory:refreshBackpacks() end
-
-    if completedAction.pi2ab_timestamp then
-        local comparer = PI2ABComparer.get(completedAction.pi2ab_timestamp)
-        if comparer then
-            local allItems = PI2ABUtil.GetObjectsOnAndAroundSquare(square)
-            local itemsToTransfer = comparer:compare(allItems, nil)
-            -- target container
-            local capacity = targetContainer and targetContainer:getEffectiveCapacity(playerObj) or 0
-            PI2ABUtil.Print("target container capacity " .. tostring(capacity), true)
-            local runningBagWeight = targetContainer and targetContainer:getContentsWeight() or 0
-            PI2ABUtil.Print("target container contents weight START " .. tostring(runningBagWeight), true)
-            -- backup / default container
-            local defContainer = PI2ABUtil.GetDefaultContainer(nil, playerInv)
-            -- check new items and queue transfer actions            
-            for i = 0, itemsToTransfer:size() - 1 do
-                local it = itemsToTransfer:get(i)
-                local itemWeight = it:getWeight()
-                local destinationContainer
-                local possibleNewWeight = PI2ABUtil.Round(runningBagWeight + itemWeight)
-                if targetContainer and targetContainer:hasRoomFor(playerObj, it) and possibleNewWeight <= capacity then
-                    PI2ABUtil.Print("target container possibleNewWeight: " .. tostring(possibleNewWeight), true)
-                    runningBagWeight = possibleNewWeight
-                    destinationContainer = targetContainer
-                else
-                    if defContainer and defContainer ~= nil then
-                        destinationContainer = nil
-                    else
-                        destinationContainer = playerInv
-                    end
-                end
-                
-                if destinationContainer then
-                    local tAction = ISInventoryTransferAction:new(playerObj, it, ISInventoryPage.GetFloorContainer(playerNum), destinationContainer, nil)
-                    tAction:setAllowMissingItems(true)
-                    if not tAction.ignoreAction then
-                        ISTimedActionQueue.getTimedActionQueue(playerObj):addToQueue(tAction)
-                    end
-                end
-            end
-
-            PI2ABComparer.remove(completedAction.pi2ab_timestamp)
-        end
-    end
-end
-
-function PI2ABUtil.GetDefaultContainer(selectedItemContainer, playerInv)
-    local defaultIndex = PI2AB.DefaultDestinationContainer
-    if defaultIndex then
-        local defOption = PI2ABUtil.DefaultContainers[defaultIndex]
-        if defOption == 'ItemSource' then
-            return selectedItemContainer
-        end
-    end
-
-    return playerInv
-end
-
-function PI2ABUtil.AddWhenToTransferAction(previousAction, action)
-    local whenToTransferIndex = PI2AB.WhenToTransferItems
-    if whenToTransferIndex then
-        local defOption = PI2ABUtil.WhenToTransfer[whenToTransferIndex]
-        if defOption == 'AfterEach' then
-            local result = ISTimedActionQueue.addAfter(previousAction, action)
-            if result then
-                return action
-            else
-                local queue = ISTimedActionQueue.getTimedActionQueue(previousAction.character)
-                table.insert(queue.queue, 1, action)
-                queue.current = action
-                action:begin()
-                return action
-            end
-        end
-    end
-    
-    ISTimedActionQueue.add(action)
-    -- ISTimedActionQueue.getTimedActionQueue(previousAction.character):addToQueue(action)
-    return nil
-end
-
-
-function PI2ABUtil.AddWhenToTransferAction_old(previousAction, action)
-    local whenToTransferIndex = PI2AB.WhenToTransferItems
-    if whenToTransferIndex then
-        local defOption = PI2ABUtil.WhenToTransfer[whenToTransferIndex]
-        if defOption == 'AfterEach' then
-            ISTimedActionQueue.addAfter(previousAction, action)
-            return action
-        end
-    end
-
-    ISTimedActionQueue.add(action)
-    return nil
-end
-
 function PI2ABUtil.GetMovablesAction(queue)
     for i = 1, #queue do
         local action = queue[i]
@@ -266,6 +26,17 @@ function PI2ABUtil.GetUninstallVehiclePartAction(queue)
 end
 
 function PI2ABUtil.GetRemoveBurntVehicleAction(queue)
+    for i = 1, #queue do
+        local action = queue[i]
+
+        if action.vehicle then
+            return action
+        end
+    end
+    return nil
+end
+
+function PI2ABUtil.GetDismantleAction(queue)
     for i = 1, #queue do
         local action = queue[i]
 
@@ -333,14 +104,6 @@ function PI2ABUtil.GetActualItemsFromSource(playerInv,source)
     return actualItems
 end
 
-function PI2ABUtil.IsAllowed(playerObj)
-    --todo add sandbox setting
-    -- if playerObj:HasTrait("Disorganized") then
-    --     return false
-    -- end
-    return true
-end
-
 function PI2ABUtil.GetActualItemsFromMoveablesSource(playerInv,source)
     local actualItems = ArrayList.new()
     if source and source:size() > 0 then
@@ -397,7 +160,7 @@ function PI2ABUtil.GetObjectsOnAndAroundSquare(square)
             end
         end
     end
-    PI2ABUtil.PrintArray(items)
+
     return items
 end
 

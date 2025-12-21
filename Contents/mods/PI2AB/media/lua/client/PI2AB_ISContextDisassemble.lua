@@ -1,15 +1,5 @@
 ISWorldMenuElements = ISWorldMenuElements or {};
 
-ISWorldMenuElements_ContextDisassemble_transferOnCraftComplete =
-    function(completedAction, scrapDef, playerObj)
-        PI2ABUtil.PutInBagFromInventory(playerObj, completedAction)
-    end
-    
-ISWorldMenuElements_ContextDisassemble_transferFromGroundOnCraftComplete =
-    function(completedAction, scrapDef, playerObj, square)
-        PI2ABUtil.PutInBagFromGround(playerObj, completedAction, square)
-    end
-
 local old_ISWorldMenuElements_ContextDisassemble = ISWorldMenuElements.ContextDisassemble
 function ISWorldMenuElements.ContextDisassemble()
     local self = old_ISWorldMenuElements_ContextDisassemble()
@@ -19,7 +9,7 @@ function ISWorldMenuElements.ContextDisassemble()
         old_disassemble(_data, _v)
         
         local player = _data.player
-        if not PI2ABUtil.IsAllowed(player) then
+        if not PI2AB.IsAllowed(player) then
             return
         end
 
@@ -34,13 +24,13 @@ function ISWorldMenuElements.ContextDisassemble()
                     local beforeItems
                     if props.customItem or scrapDef.addToInventory then
                         beforeItems = playerInv:getItems()
-                        action:setOnComplete(ISWorldMenuElements_ContextDisassemble_transferOnCraftComplete, action,
-                            scrapDef, player)
+                        -- action:setOnComplete(ISWorldMenuElements_ContextDisassemble_transferOnCraftComplete, action, scrapDef, player)
+                        action:setOnComplete(PI2ABCore.PutInBagFromInventory, action, player)
                     else
                         -- items dumped to ground
                         beforeItems = PI2ABUtil.GetObjectsOnAndAroundSquare(_v.square)
-                        action:setOnComplete(ISWorldMenuElements_ContextDisassemble_transferFromGroundOnCraftComplete,
-                            action, scrapDef, player, _v.square)
+                        -- action:setOnComplete(ISWorldMenuElements_ContextDisassemble_transferFromGroundOnCraftComplete,action, scrapDef, player, _v.square)
+                        action:setOnComplete(PI2ABCore.PutInBagFromGround, action, player, _v.square)
                     end
 
                     local timestamp = os.time()

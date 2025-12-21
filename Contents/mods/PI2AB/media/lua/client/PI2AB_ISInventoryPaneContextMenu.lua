@@ -2,7 +2,7 @@ ISInventoryPaneContextMenu_transferOnCraftComplete = function(completeAction, re
     local playerInv = playerObj:getInventory()
     local targetContainer = PI2AB.getTargetContainer(playerObj)
 
-    local result = PI2ABUtil.PutInBagRecipe(playerObj,playerInv,selectedItemContainer,targetContainer,completeAction, recipe)
+    local result = PI2ABCore.PutInBagRecipe(playerObj,playerInv,selectedItemContainer,targetContainer,completeAction, recipe)
     local previousAction = result.previousAction
     local completedAction = result.completedAction
 
@@ -87,7 +87,7 @@ ISInventoryPaneContextMenu.OnCraft = function(selectedItem, recipe, player, all)
     old_ISInventoryPaneContextMenu_OnCraft(selectedItem, recipe, player, all)
     if PI2AB.Enabled then
         local playerObj = getSpecificPlayer(player)
-        if not PI2ABUtil.IsAllowed(playerObj) then
+        if not PI2AB.IsAllowed(playerObj) then
             return
         end
         

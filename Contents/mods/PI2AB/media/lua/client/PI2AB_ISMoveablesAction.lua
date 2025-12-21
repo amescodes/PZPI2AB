@@ -1,4 +1,3 @@
--- overwrites ISMoveablesAction:perform to add onComplete callback functionality
 local old_ISMoveablesAction_perform = ISMoveablesAction.perform
 function ISMoveablesAction:perform()
     old_ISMoveablesAction_perform(self)

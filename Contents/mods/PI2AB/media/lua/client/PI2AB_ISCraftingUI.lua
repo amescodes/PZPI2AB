@@ -2,7 +2,7 @@ ISCraftingUI_transferOnCraftComplete = function(completeAction, recipe, playerOb
     local playerInv = playerObj:getInventory()
     local targetContainer = PI2AB.getTargetContainer(playerObj)
 
-    local result = PI2ABUtil.PutInBagRecipe(playerObj,playerInv,selectedItemContainer,targetContainer,completeAction, recipe)
+    local result = PI2ABCore.PutInBagRecipe(playerObj,playerInv,selectedItemContainer,targetContainer,completeAction, recipe)
     local previousAction = result.previousAction
     local completedAction = result.completedAction
 
@@ -50,7 +50,7 @@ function ISCraftingUI:craft(button, all)
 
     if PI2AB.Enabled then        
         local playerObj = self.character
-        if not PI2ABUtil.IsAllowed(playerObj) then
+        if not PI2AB.IsAllowed(playerObj) then
             return
         end
 

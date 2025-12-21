@@ -9,7 +9,9 @@ PI2AB.Enabled = true
 PI2AB.DefaultDestinationContainer = 1
 PI2AB.WhenToTransferItems = 1
 PI2AB.TargetContainer = ""
+
 PI2AB.LastMechanicTimestamp = 0
+-- PI2AB.LastBuildDismantleTimestamp = 0
 
 function PI2AB.init()
     local player = getPlayer()
@@ -32,6 +34,14 @@ function PI2AB.init()
             PI2AB[key] = value
         end
     end
+end
+
+function PI2AB.IsAllowed(playerObj)
+    --todo add sandbox setting
+    -- if playerObj:HasTrait("Disorganized") then
+    --     return false
+    -- end
+    return true
 end
 
 function PI2AB.getTargetContainer(playerObj)
@@ -119,7 +129,6 @@ end
 LuaEventManager.AddEvent("OnFillInventoryContextMenuNoItems")
 Events.OnFillInventoryContextMenuNoItems.Add(resetTargetContextMenuEntry)
 
---local old_ISVehicleMechanics_OnMechanicActionDone = ISVehicleMechanics.OnMechanicActionDone
 local mechanicActionDone = function(chr, success, vehicleId, partId, itemId, installing)
     local playerInv = chr:getInventory()
     local targetContainer = PI2AB.getTargetContainer(chr)
@@ -137,7 +146,7 @@ local mechanicActionDone = function(chr, success, vehicleId, partId, itemId, ins
             local runningBagWeight = targetContainer and targetContainer:getContentsWeight() or 0
             PI2ABUtil.Print("target container contents weight START " .. tostring(runningBagWeight), true)
             -- backup / default container
-            local defContainer = PI2ABUtil.GetDefaultContainer(nil, playerInv)
+            local defContainer = PI2ABCore.GetDefaultContainer(nil, playerInv)
             -- check new items and queue transfer actions
             for i = 0, itemsToTransfer:size() - 1 do
                 local it = itemsToTransfer:get(i)
@@ -172,3 +181,57 @@ local mechanicActionDone = function(chr, success, vehicleId, partId, itemId, ins
 end
 
 Events.OnMechanicActionDone.Add(mechanicActionDone);
+
+-- local dismantleActionDone = function(thump, chr)
+--     local playerInv = chr:getInventory()
+--     local targetContainer = PI2AB.getTargetContainer(chr)
+--     local playerNum = chr:getPlayerNum()
+--     local square = thump:getSquare()
+
+--     local timestamp = PI2AB.LastBuildDismantleTimestamp
+--     if timestamp then
+--         local comparer = PI2ABComparer.get(timestamp)
+--         if comparer then
+--             local allItems = PI2ABUtil.GetObjectsOnAndAroundSquare(square)
+--             local itemsToTransfer = comparer:compare(allItems, nil)
+--             -- target container
+--             local capacity = targetContainer and targetContainer:getEffectiveCapacity(chr) or 0
+--             PI2ABUtil.Print("target container capacity " .. tostring(capacity), true)
+--             local runningBagWeight = targetContainer and targetContainer:getContentsWeight() or 0
+--             PI2ABUtil.Print("target container contents weight START " .. tostring(runningBagWeight), true)
+--             -- backup / default container
+--             local defContainer = PI2ABCore.GetDefaultContainer(nil, playerInv)
+--             -- check new items and queue transfer actions            
+--             for i = 0, itemsToTransfer:size() - 1 do
+--                 local it = itemsToTransfer:get(i)
+--                 local itemWeight = it:getWeight()
+--                 local destinationContainer
+--                 local possibleNewWeight = PI2ABUtil.Round(runningBagWeight + itemWeight)
+--                 if targetContainer and targetContainer:hasRoomFor(chr, it) and possibleNewWeight <= capacity then
+--                     PI2ABUtil.Print("target container possibleNewWeight: " .. tostring(possibleNewWeight), true)
+--                     runningBagWeight = possibleNewWeight
+--                     destinationContainer = targetContainer
+--                 else
+--                     if defContainer and defContainer ~= nil then
+--                         destinationContainer = nil
+--                     else
+--                         destinationContainer = playerInv
+--                     end
+--                 end
+                
+--                 if destinationContainer then
+--                     local tAction = ISInventoryTransferAction:new(chr, it, ISInventoryPage.GetFloorContainer(playerNum), destinationContainer, nil)
+--                     tAction:setAllowMissingItems(true)
+--                     if not tAction.ignoreAction then
+--                         ISTimedActionQueue.getTimedActionQueue(chr):addToQueue(tAction)
+--                     end
+--                 end
+--             end
+
+--             PI2ABComparer.remove(timestamp)
+--             PI2AB.LastBuildDismantleTimestamp = 0
+--         end
+--     end
+-- end
+
+-- Events.OnDestroyIsoThumpable.Add(dismantleActionDone);
