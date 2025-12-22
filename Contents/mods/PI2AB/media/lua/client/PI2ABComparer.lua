@@ -14,16 +14,24 @@ end
 function PI2ABComparer.create(time, items, previousActionItems, targetWeightTransferred, defWeightTransferred)
     local comparer = PI2ABComparer:new(time, targetWeightTransferred, defWeightTransferred)
 
-    if previousActionItems then
-        local prevItems = PI2ABUtil.ShallowClone(items)
-        for i = 0, previousActionItems:size() - 1 do
-            local item = previousActionItems:get(i)
-            if item then
-                local foundBeforeItem = prevItems:remove(item)
-            end
-        end
-        items = prevItems
-    end
+    -- PI2ABUtil.Print("----NEW COMPARER---")
+    -- PI2ABUtil.Print("")
+    -- PI2ABUtil.PrintArray(items)
+    -- PI2ABUtil.Print("----END---")
+    -- PI2ABUtil.Print("")
+    -- if previousActionItems then
+    --     local prevItems = PI2ABUtil.ShallowClone(items)
+    --     PI2ABUtil.Print("----PREV ITEMS---")
+    --     PI2ABUtil.PrintArray(previousActionItems)
+    --     PI2ABUtil.Print("----END---")
+    --     for i = 0, previousActionItems:size() - 1 do
+    --         local item = previousActionItems:get(i)
+    --         if item then
+    --             local foundBeforeItem = prevItems:remove(item)
+    --         end
+    --     end
+    --     items = prevItems
+    -- end
 
     comparer:setBefore(items)
     PI2ABComparer.Comparers[time] = comparer

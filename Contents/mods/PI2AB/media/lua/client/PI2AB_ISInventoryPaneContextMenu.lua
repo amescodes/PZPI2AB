@@ -1,14 +1,9 @@
 ISInventoryPaneContextMenu_transferOnCraftComplete = function(completeAction, recipe, playerObj, selectedItemContainer,container,containers,all)
     local playerInv = playerObj:getInventory()
     local targetContainer = PI2AB.getTargetContainer(playerObj)
-
     local result = PI2ABCore.PutInBagRecipe(playerObj,playerInv,selectedItemContainer,targetContainer,completeAction, recipe)
     local previousAction = result.previousAction
     local completedAction = result.completedAction
-
-    PI2ABUtil.Print("ISCraftingUI_transferOnCraftComplete QUEUE START",true)
-    PI2ABUtil.PrintQueue(playerObj)
-    PI2ABUtil.Print("ISCraftingUI_transferOnCraftComplete QUEUE END",true)
 
     if all then
         -- from ISInventoryPaneContextMenu.OnCraftComplete

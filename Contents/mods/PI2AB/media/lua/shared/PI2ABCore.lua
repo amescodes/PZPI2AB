@@ -8,8 +8,8 @@ PI2ABCore.WhenToTransfer = {'AfterEach', 'AtEnd'}
 
 function PI2ABCore.PutInBagRecipe(playerObj,playerInv,selectedItemContainer,targetContainer,completedAct,recipe)
     local src = recipe:getSource()
-    local itemsToTransfer
-    local result
+    local itemsToTransfer = nil
+    local result = nil
     if src then
         local srcItems = PI2ABUtil.GetActualItemsFromSource(playerInv,src)
         local allItems = playerInv:getItems()
@@ -26,40 +26,40 @@ function PI2ABCore.PutInBag(playerObj, playerInv, selectedItemContainer, targetC
     local previousAct = completedAct
     local targetWeightTransferred = 0.0
     local defWeightTransferred = 0.0
-    local itemsToTransfer
+    local itemsToTransfer = nil
     if comparer then
         itemsToTransfer = comparer:compare(allItems, srcItems)
         -- target container
         local capacity = targetContainer and PI2ABUtil.Round(targetContainer:getEffectiveCapacity(playerObj)) or 0
-        PI2ABUtil.Print("target container capacity " .. tostring(capacity), true)
+        -- PI2ABUtil.Print("target container capacity " .. tostring(capacity), true)
         local tWeight = targetContainer and PI2ABUtil.Round(targetContainer:getContentsWeight()) or 0
         targetWeightTransferred = comparer.targetWeightTransferred
         local runningBagWeight = PI2ABUtil.Round(tWeight + targetWeightTransferred) or 0
-        PI2ABUtil.Print("target container contents weight START " .. tostring(runningBagWeight), true)
+        -- PI2ABUtil.Print("target container contents weight START " .. tostring(runningBagWeight), true)
         -- backup / default container
         local defContainer = PI2ABCore.GetDefaultContainer(selectedItemContainer, playerInv)
         local bCapacity = defContainer and PI2ABUtil.Round(defContainer:getCapacity()) or 0
-        PI2ABUtil.Print("default container capacity " .. tostring(bCapacity), true)
+        -- PI2ABUtil.Print("default container capacity " .. tostring(bCapacity), true)
         local bWeight = defContainer and PI2ABUtil.Round(defContainer:getContentsWeight()) or 0
         defWeightTransferred = comparer.defWeightTransferred
         local bRunningBagWeight = PI2ABUtil.Round(bWeight + defWeightTransferred) or 0
-        PI2ABUtil.Print("default container contents weight START " .. tostring(bRunningBagWeight), true)
+        -- PI2ABUtil.Print("default container contents weight START " .. tostring(bRunningBagWeight), true)
         -- check new items and queue transfer actions
         for i = 0, itemsToTransfer:size() - 1 do
             local it = itemsToTransfer:get(i)
             local itemWeight =  PI2ABUtil.Round(it:getWeight())
-            PI2ABUtil.Print("itemWeight: " .. tostring(itemWeight), true)
+            --PI2ABUtil.Print("itemWeight: " .. tostring(itemWeight), true)
             local destinationContainer
             local possibleNewWeight = PI2ABUtil.Round(runningBagWeight + itemWeight)
             if targetContainer and targetContainer:hasRoomFor(playerObj, it) and possibleNewWeight <= capacity then
-                PI2ABUtil.Print("target container possibleNewWeight: " .. tostring(possibleNewWeight), true)
+                --PI2ABUtil.Print("target container possibleNewWeight: " .. tostring(possibleNewWeight), true)
                 runningBagWeight = possibleNewWeight
                 targetWeightTransferred = PI2ABUtil.Round(targetWeightTransferred + itemWeight)
                 destinationContainer = targetContainer
             else
                 possibleNewWeight = PI2ABUtil.Round(bRunningBagWeight + itemWeight)
                 if defContainer then
-                    PI2ABUtil.Print("default container possibleNewWeight: " .. tostring(possibleNewWeight), true)
+                    --PI2ABUtil.Print("default container possibleNewWeight: " .. tostring(possibleNewWeight), true)
                     if defContainer:getType() ~= "floor" then
                         if defContainer:hasRoomFor(playerObj, it) and possibleNewWeight <= bCapacity then
                             bRunningBagWeight = possibleNewWeight

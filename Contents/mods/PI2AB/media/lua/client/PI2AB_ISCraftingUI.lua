@@ -6,11 +6,11 @@ ISCraftingUI_transferOnCraftComplete = function(completeAction, recipe, playerOb
     local previousAction = result.previousAction
     local completedAction = result.completedAction
 
-    PI2ABUtil.Print("ISCraftingUI_transferOnCraftComplete QUEUE START",true)
-    PI2ABUtil.PrintQueue(playerObj)
-    PI2ABUtil.Print("ISCraftingUI_transferOnCraftComplete QUEUE END",true)
+    -- PI2ABUtil.Print("ISCraftingUI_transferOnCraftComplete QUEUE START",true)
+    -- PI2ABUtil.PrintQueue(playerObj)
+    -- PI2ABUtil.Print("ISCraftingUI_transferOnCraftComplete QUEUE END",true)
 
-    if all then
+    if all then        
         -- from ISCraftingUI:onCraftComplete
         if not RecipeManager.IsRecipeValid(recipe, playerObj, nil, containers) then return end
         local items = RecipeManager.getAvailableItemsNeeded(recipe, playerObj, containers, nil, nil)
@@ -61,12 +61,11 @@ function ISCraftingUI:craft(button, all)
             return
         end
         
+        local containers = self.containerList
         local recipeListBox = self:getRecipeListBox()
         local recipe = recipeListBox.items[recipeListBox.selected].item.recipe
         
-        local playerInv = playerObj:getInventory()
-
-        local destroyedItem
+        local destroyedItem = nil
         local source = recipe:getSource()
         for j = 0, source:size() - 1 do
             local recipeSource = source:get(j)
@@ -74,21 +73,24 @@ function ISCraftingUI:craft(button, all)
                 local srcItems = recipeSource:getItems()
                 for k = 0, srcItems:size() - 1 do
                     local srcItem = srcItems:get(k)
-                    local actualItem = playerInv:FindAndReturn(srcItem)
-                    if actualItem then
-                        destroyedItem = actualItem
-                        break
+                    for l = 0, containers:size() - 1 do
+                        local actualItem = containers:get(l):FindAndReturn(srcItem)
+                        if actualItem then
+                            destroyedItem = actualItem
+                            break
+                        end
                     end
+                    if destroyedItem then break end
                 end
                 if destroyedItem then break end
             end
         end
 
-        local container
+        local container = nil
         if destroyedItem then
             container = destroyedItem:getContainer()
         else
-            container = self.containerList[1]
+            container = self.containerList[0]
         end
         local selectedItemContainer = container
 
@@ -104,7 +106,7 @@ function ISCraftingUI:craft(button, all)
                 
                 local timestamp = os.time()
                 action.pi2ab_timestamp = timestamp
-                PI2ABComparer.create(timestamp,playerInv:getItems())
+                PI2ABComparer.create(timestamp,playerObj:getInventory():getItems())
             end
         end
     end
