@@ -6,6 +6,10 @@ ISCraftingUI_transferOnCraftComplete = function(completeAction, recipe, playerOb
     local previousAction = result.previousAction
     local completedAction = result.completedAction
 
+    PI2ABUtil.Print("ISCraftingUI_transferOnCraftComplete QUEUE START",true)
+    PI2ABUtil.PrintQueue(playerObj)
+    PI2ABUtil.Print("ISCraftingUI_transferOnCraftComplete QUEUE END",true)
+
     if all then
         -- from ISCraftingUI:onCraftComplete
         if not RecipeManager.IsRecipeValid(recipe, playerObj, nil, containers) then return end
@@ -25,8 +29,11 @@ ISCraftingUI_transferOnCraftComplete = function(completeAction, recipe, playerOb
                 local item = items:get(i-1)
                 if item:getContainer() ~= playerInv then
                     local action = ISInventoryTransferAction:new(playerObj, item, item:getContainer(), playerInv, nil)
-                    ISTimedActionQueue.addAfter(previousAction, action)
-                    previousAction = action
+                    action:setAllowMissingItems(true)
+                    if not action.ignoreAction then
+                        ISTimedActionQueue.addAfter(previousAction, action)
+                        previousAction = action
+                    end
                     table.insert(returnToContainer, item)
                 end
             end
@@ -48,18 +55,43 @@ local old_ISCraftingUI_craft = ISCraftingUI.craft
 function ISCraftingUI:craft(button, all)
     old_ISCraftingUI_craft(self,button, all)
 
-    if PI2AB.Enabled then        
+    if PI2AB.Enabled then
         local playerObj = self.character
         if not PI2AB.IsAllowed(playerObj) then
             return
         end
-
+        
         local recipeListBox = self:getRecipeListBox()
         local recipe = recipeListBox.items[recipeListBox.selected].item.recipe
+        
+        local playerInv = playerObj:getInventory()
 
-        local itemsUsed = self:transferItems()
-        local container = itemsUsed[1]:getContainer()
+        local destroyedItem
+        local source = recipe:getSource()
+        for j = 0, source:size() - 1 do
+            local recipeSource = source:get(j)
+            if not recipeSource:isKeep() then
+                local srcItems = recipeSource:getItems()
+                for k = 0, srcItems:size() - 1 do
+                    local srcItem = srcItems:get(k)
+                    local actualItem = playerInv:FindAndReturn(srcItem)
+                    if actualItem then
+                        destroyedItem = actualItem
+                        break
+                    end
+                end
+                if destroyedItem then break end
+            end
+        end
+
+        local container
+        if destroyedItem then
+            container = destroyedItem:getContainer()
+        else
+            container = self.containerList[1]
+        end
         local selectedItemContainer = container
+
         if not recipe:isCanBeDoneFromFloor() then
             container = playerObj:getInventory()
         end
@@ -72,7 +104,7 @@ function ISCraftingUI:craft(button, all)
                 
                 local timestamp = os.time()
                 action.pi2ab_timestamp = timestamp
-                PI2ABComparer.create(timestamp,playerObj:getInventory():getItems())
+                PI2ABComparer.create(timestamp,playerInv:getItems())
             end
         end
     end

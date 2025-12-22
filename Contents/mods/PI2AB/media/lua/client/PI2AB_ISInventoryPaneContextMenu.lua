@@ -6,6 +6,10 @@ ISInventoryPaneContextMenu_transferOnCraftComplete = function(completeAction, re
     local previousAction = result.previousAction
     local completedAction = result.completedAction
 
+    PI2ABUtil.Print("ISCraftingUI_transferOnCraftComplete QUEUE START",true)
+    PI2ABUtil.PrintQueue(playerObj)
+    PI2ABUtil.Print("ISCraftingUI_transferOnCraftComplete QUEUE END",true)
+
     if all then
         -- from ISInventoryPaneContextMenu.OnCraftComplete
         if not RecipeManager.IsRecipeValid(recipe, playerObj, nil, containers) then return end
@@ -91,7 +95,6 @@ ISInventoryPaneContextMenu.OnCraft = function(selectedItem, recipe, player, all)
             return
         end
         
-        local playerInv = playerObj:getInventory()
         local container = selectedItem:getContainer()
         local selectedItemContainer = container
         if not recipe:isCanBeDoneFromFloor() then
@@ -104,9 +107,10 @@ ISInventoryPaneContextMenu.OnCraft = function(selectedItem, recipe, player, all)
             local action = PI2ABUtil.GetCraftAction(recipe,queue)
             if action then
                 action:setOnComplete(ISInventoryPaneContextMenu_transferOnCraftComplete, action, recipe, playerObj, selectedItemContainer,container,containers,all)
+                
                 local timestamp = os.time()
                 action.pi2ab_timestamp = timestamp
-                PI2ABComparer.create(timestamp,playerInv:getItems())
+                PI2ABComparer.create(timestamp,playerObj:getInventory():getItems())
             end
         end
     end

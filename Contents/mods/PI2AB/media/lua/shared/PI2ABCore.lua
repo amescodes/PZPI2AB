@@ -30,17 +30,17 @@ function PI2ABCore.PutInBag(playerObj, playerInv, selectedItemContainer, targetC
     if comparer then
         itemsToTransfer = comparer:compare(allItems, srcItems)
         -- target container
-        local capacity = targetContainer and  PI2ABUtil.Round(targetContainer:getEffectiveCapacity(playerObj)) or 0
+        local capacity = targetContainer and PI2ABUtil.Round(targetContainer:getEffectiveCapacity(playerObj)) or 0
         PI2ABUtil.Print("target container capacity " .. tostring(capacity), true)
         local tWeight = targetContainer and PI2ABUtil.Round(targetContainer:getContentsWeight()) or 0
         targetWeightTransferred = comparer.targetWeightTransferred
-        local runningBagWeight = (tWeight + targetWeightTransferred) or 0
+        local runningBagWeight = PI2ABUtil.Round(tWeight + targetWeightTransferred) or 0
         PI2ABUtil.Print("target container contents weight START " .. tostring(runningBagWeight), true)
         -- backup / default container
         local defContainer = PI2ABCore.GetDefaultContainer(selectedItemContainer, playerInv)
-        local bCapacity = defContainer and  PI2ABUtil.Round(defContainer:getCapacity()) or 0
+        local bCapacity = defContainer and PI2ABUtil.Round(defContainer:getCapacity()) or 0
         PI2ABUtil.Print("default container capacity " .. tostring(bCapacity), true)
-        local bWeight = defContainer and  PI2ABUtil.Round(defContainer:getContentsWeight()) or 0
+        local bWeight = defContainer and PI2ABUtil.Round(defContainer:getContentsWeight()) or 0
         defWeightTransferred = comparer.defWeightTransferred
         local bRunningBagWeight = PI2ABUtil.Round(bWeight + defWeightTransferred) or 0
         PI2ABUtil.Print("default container contents weight START " .. tostring(bRunningBagWeight), true)
@@ -50,20 +50,20 @@ function PI2ABCore.PutInBag(playerObj, playerInv, selectedItemContainer, targetC
             local itemWeight =  PI2ABUtil.Round(it:getWeight())
             PI2ABUtil.Print("itemWeight: " .. tostring(itemWeight), true)
             local destinationContainer
-            local possibleNewWeight = runningBagWeight + itemWeight
+            local possibleNewWeight = PI2ABUtil.Round(runningBagWeight + itemWeight)
             if targetContainer and targetContainer:hasRoomFor(playerObj, it) and possibleNewWeight <= capacity then
                 PI2ABUtil.Print("target container possibleNewWeight: " .. tostring(possibleNewWeight), true)
                 runningBagWeight = possibleNewWeight
-                targetWeightTransferred = targetWeightTransferred + itemWeight
+                targetWeightTransferred = PI2ABUtil.Round(targetWeightTransferred + itemWeight)
                 destinationContainer = targetContainer
             else
-                possibleNewWeight = bRunningBagWeight + itemWeight
+                possibleNewWeight = PI2ABUtil.Round(bRunningBagWeight + itemWeight)
                 if defContainer then
                     PI2ABUtil.Print("default container possibleNewWeight: " .. tostring(possibleNewWeight), true)
                     if defContainer:getType() ~= "floor" then
                         if defContainer:hasRoomFor(playerObj, it) and possibleNewWeight <= bCapacity then
                             bRunningBagWeight = possibleNewWeight
-                            defWeightTransferred = defWeightTransferred + itemWeight
+                            defWeightTransferred = PI2ABUtil.Round(defWeightTransferred + itemWeight)
                         end
                     end
 

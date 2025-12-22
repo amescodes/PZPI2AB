@@ -47,31 +47,13 @@ function PI2ABUtil.GetDismantleAction(queue)
     return nil
 end
 
-function PI2ABUtil.GetCraftAction(recipe, queue, skipCt)
-    if not skipCt then
-        skipCt = 0
-    end
-
-    local skips = 0
+function PI2ABUtil.GetCraftAction(recipe, queue)
     for i = 1, #queue do
         local action = queue[i]
 
         if (action.recipe and action.jobType and action.jobType == recipe:getName()) or (action.craftRecipe and action.craftRecipe == recipe) then
-            if skips >= skipCt then
-                return action
-            else
-                skips = skips + 1
-            end
+            return action
         end
-
-        -- -- from craft menu
-        -- if action.craftRecipe and action.craftRecipe == recipe then
-        --     if skips >= skipCt then
-        --         return action
-        --     else
-        --         skips = skips + 1
-        --     end
-        -- end
     end
     return nil
 end
@@ -88,7 +70,7 @@ end
 
 function PI2ABUtil.GetActualItemsFromSource(playerInv,source)
     local actualItems = ArrayList.new()
-    if source and source:size() > 0 then
+    if source then
         for j = 0, source:size() - 1 do
             local recipeSource = source:get(j)
             if recipeSource:isKeep() then
@@ -106,7 +88,7 @@ end
 
 function PI2ABUtil.GetActualItemsFromMoveablesSource(playerInv,source)
     local actualItems = ArrayList.new()
-    if source and source:size() > 0 then
+    if source then
         for k = 0, source:size() - 1 do
             local srcItem = source:get(k)
             local actualItem = playerInv:FindAndReturn(srcItem)
