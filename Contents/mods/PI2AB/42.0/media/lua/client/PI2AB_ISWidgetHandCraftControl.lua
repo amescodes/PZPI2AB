@@ -1,7 +1,7 @@
 local ISWidgetHandCraftControl_transferOnHandcraftActionComplete = function(args)
     local playerObj = args.playerObj
     local playerInv = playerObj:getInventory()
-    PI2ABUtil.PutInBag(playerObj, playerInv, args.container, PI2AB.getTargetContainer(playerObj), args.completedAction, playerInv:getItems(),args.recipe:getAllInputItems())
+    PI2ABCore.PutInBag(playerObj, playerInv, args.container, PI2AB.getTargetContainer(playerObj), args.completedAction, playerInv:getItems(),args.recipe:getAllInputItems())
     args.widget:onHandcraftActionComplete()
 end
 
@@ -25,15 +25,14 @@ function ISWidgetHandCraftControl:startHandcraft(force)
         if queue then
             local ct = self.craftTimes
             local recipeData = self.logic:getRecipeData()
-            local selectedItem = recipeData:getFirstInputItemWithFlag("Prop2")
-            if not selectedItem then
-                local destroyedItems = recipeData:getAllDestroyInputItems()
-                if destroyedItems and not destroyedItems:size() == 0 then
-                    selectedItem = destroyedItems:get(0)
-                else
-                    local inputItems = recipeData:getAllInputItems()
-                    selectedItem = inputItems:get(0)
-                end
+            
+            local selectedItem = nil            
+            local destroyedItems = recipeData:getAllDestroyInputItems()
+            if destroyedItems and destroyedItems:size() > 0 then
+                selectedItem = destroyedItems:get(0)
+            else
+                local inputItems = recipeData:getAllInputItems()
+                selectedItem = inputItems:get(inputItems:size() - 1)
             end
 
             for i = 0, ct - 1 do

@@ -4,7 +4,7 @@ ISInventoryPaneContextMenu_transferOnNewCraftComplete = function(args)
 
     local playerObj = args.playerObj
     local playerInv = playerObj:getInventory()
-    PI2ABUtil.PutInBag(playerObj, playerInv, args.container, PI2AB.getTargetContainer(playerObj), args.completedAction, playerInv:getItems(),args.recipe:getAllInputItems())
+    PI2ABCore.PutInBag(playerObj, playerInv, args.container, PI2AB.getTargetContainer(playerObj), args.completedAction, playerInv:getItems(),args.recipe:getAllInputItems())
 end
 
 local ISWidgetHandCraftControl_onHandcraftActionCancelled = function(args)
