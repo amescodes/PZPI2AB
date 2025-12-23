@@ -6,22 +6,6 @@ PI2ABCore.DefaultContainers = {'PlayerInventory', 'ItemSource'}
 
 PI2ABCore.WhenToTransfer = {'AfterEach', 'AtEnd'}
 
--- function PI2ABCore.PutInBagRecipe(playerObj, playerInv, selectedItemContainer, targetContainer, completedAct, recipe)
---     local src = recipe:getSource()
---     local itemsToTransfer
---     local result
---     if src then
---         local srcItems = PI2ABUtil.GetActualItemsFromSource(playerInv, src)
---         local allItems = playerInv:getItems()
---         if completedAct.pi2ab_timestamp then
---             result = PI2ABCore.PutInBag(playerObj, playerInv, selectedItemContainer, targetContainer, completedAct,
---                 allItems, srcItems)
---         end
---     end
-
---     return result or PI2ABResult:new(nil, completedAct, itemsToTransfer)
--- end
-
 function PI2ABCore.PutInBag(playerObj, playerInv, selectedItemContainer, targetContainer, completedAct, allItems, srcItems)
     local comparer = PI2ABComparer.get(completedAct.pi2ab_timestamp)
     local previousAct = completedAct
