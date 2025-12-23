@@ -1,6 +1,6 @@
 version=1
-id=
-title=BETA [B41/B42.13] Put it in a #$!% bag! (PI2AB) 
+id=3629806215
+title=BETA [B41/B42.13] Put it in a #$!% bag! (PI2AB)
 description=After crafting or dismantling items, transfer them to a target container of your choosing, as long as it's on your character!
 description=
 description=Place early in the mod load order, especially if using with other inventory and/or item transfer mods.
