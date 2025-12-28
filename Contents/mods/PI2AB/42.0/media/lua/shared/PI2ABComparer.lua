@@ -14,45 +14,45 @@ end
 function PI2ABComparer.create(time, items, previousActionItems, targetWeightTransferred, defWeightTransferred)
     local comparer = PI2ABComparer:new(time, targetWeightTransferred, defWeightTransferred)
 
-    if previousActionItems then
-        local prevItems = PI2ABUtil.ShallowClone(items)
-        for i = 0, previousActionItems:size() - 1 do
-            local item = previousActionItems:get(i)
-            if item then
-                local foundBeforeItem = prevItems:remove(item)
-            end
+    local beforeIds = {}
+    for i = 0, items:size() - 1 do
+        local item = items:get(i)
+        if item then
+            local id = item:getID()
+            if id then table.insert(beforeIds, id, item) end
         end
-        items = prevItems
     end
 
-    comparer:setBefore(items)
+    if previousActionItems then
+        for i = 0, previousActionItems:size() - 1 do
+            local prevItem = previousActionItems:get(i)
+            if prevItem then
+                local prevId = prevItem:getID()
+                if beforeIds[prevId] then
+                    beforeIds[prevId] = nil
+                end
+            end
+        end
+    end
+
+    comparer.before = beforeIds
     PI2ABComparer.Comparers[time] = comparer
     return comparer
 end
 
-function PI2ABComparer:setBefore(items)
-    if not items then
-        self.before = ArrayList.new()
-    else
-        self.before = PI2ABUtil.ShallowClone(items)
-    end
-end
-
-function PI2ABComparer:compare(items, source)
-    if not self.before then
-        return
-    end
-    if not items then
+function PI2ABComparer:compare(afterItems, source)
+    if not afterItems then
         return
     end
 
-    -- set to after items to start
-    local result = PI2ABUtil.ShallowClone(items)
-
-    for i = 0, self.before:size() - 1 do
-        local item = self.before:get(i)
+    local transferIds = {}
+    for i = 0, afterItems:size() - 1 do
+        local item = afterItems:get(i)
         if item then
-            local foundBeforeItem = result:remove(item)
+            local itemId = item:getID()
+            if self.before[itemId] == nil then
+                transferIds[itemId] = item
+            end
         end
     end
 
@@ -60,16 +60,15 @@ function PI2ABComparer:compare(items, source)
         for j = 0, source:size() - 1 do
             local srcItem = source:get(j)
             if srcItem then
-                local itemType = srcItem:getType()
-                if itemType then
-                    
+                local srcItemId = srcItem:getID()
+                if transferIds[srcItemId] then
+                    transferIds[srcItemId] = nil
                 end
-                local foundSrcItem = result:remove(srcItem)
             end
         end
     end
 
-    return result
+    return transferIds
 end
 
 function PI2ABComparer:compareDebug(items, source)
