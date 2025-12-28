@@ -131,7 +131,7 @@ function PI2ABCore.PutInBagFromGround(completedAction, playerObj, square)
 
     local pdata = getPlayerData(playerNum)
     if pdata then pdata.lootInventory:refreshBackpacks() end
-
+    
     if completedAction.pi2ab_timestamp then
         local comparer = PI2ABComparer.get(completedAction.pi2ab_timestamp)
         if comparer then

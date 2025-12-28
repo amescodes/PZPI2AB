@@ -141,9 +141,7 @@ function PI2ABUtil.GetObjectsOnAndAroundSquare(square)
         local o = wobs:get(i)
         if o then
             local item = o:getItem()
-            if item then
-                items:add(item)
-            end
+            if item and not items:contains(item) then items:add(item) end
         end
     end
     -- items on surrounding squares
@@ -159,9 +157,7 @@ function PI2ABUtil.GetObjectsOnAndAroundSquare(square)
                 local o = wobs:get(i)
                 if o then
                     local item = o:getItem()
-                    if item then
-                        items:add(item)
-                    end
+                    if item and not items:contains(item) then items:add(item) end
                 end
             end
         end

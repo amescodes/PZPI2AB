@@ -1,6 +1,5 @@
--- overwrites ISMoveablesAction:complete to add onCompleteFunc callback functionality
-local old_ISMoveablesAction_complete = ISMoveablesAction.complete
-function ISMoveablesAction:complete()
+local old_ISMoveablesAction_complete = ISMoveablesAction.perform
+function ISMoveablesAction:perform()
     old_ISMoveablesAction_complete(self)
 
     -- NEW FOR PI2AB

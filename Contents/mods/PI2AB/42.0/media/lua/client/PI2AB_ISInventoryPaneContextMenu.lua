@@ -1,13 +1,13 @@
 local old_ISInventoryPaneContextMenu_OnNewCraftComplete = ISInventoryPaneContextMenu.OnNewCraftComplete
-ISInventoryPaneContextMenu_transferOnNewCraftComplete = function(args)
+local ISInventoryPaneContextMenu_transferOnNewCraftComplete = function(args)
     old_ISInventoryPaneContextMenu_OnNewCraftComplete(args.logic)
 
     local playerObj = args.playerObj
     local playerInv = playerObj:getInventory()
-    PI2ABCore.PutInBag(playerObj, playerInv, args.container, PI2AB.getTargetContainer(playerObj), args.completedAction, playerInv:getItems(),args.recipe:getAllInputItems())
+    PI2ABCore.PutInBag(playerObj, playerInv, args.container, PI2AB.getTargetContainer(playerObj), args.completedAction, playerInv:getItems(),args.recipe:getAllKeepInputItems())
 end
 
-local ISWidgetHandCraftControl_onHandcraftActionCancelled = function(args)
+local ISInventoryPaneContextMenu_onHandcraftActionCancelled = function(args)
     local action = args.completedAction
     if action then PI2ABComparer.remove(action.pi2ab_timestamp) end
 end
@@ -31,7 +31,8 @@ ISInventoryPaneContextMenu.OnNewCraft = function(selectedItem, recipe, player, a
                 local logic = action.onCompleteTarget
                 local args = PI2ABTransferArgs:new(logic,nil, action, logic:getRecipeData(), playerObj, selectedItem:getContainer(), action.containers, selectedItem,all)
                 action:setOnComplete(ISInventoryPaneContextMenu_transferOnNewCraftComplete, args)
-                action:setOnCancel(ISWidgetHandCraftControl_onHandcraftActionCancelled, args)
+                action:setOnCancel(ISInventoryPaneContextMenu_onHandcraftActionCancelled, args)
+                
                 local pi2ab_timestamp = os.time()
                 action.pi2ab_timestamp = pi2ab_timestamp
                 PI2ABComparer.create(pi2ab_timestamp, playerInv:getItems())

@@ -7,6 +7,8 @@ function PI2ABTransferArgs:new(logic,widget,completedAction, recipe, playerObj, 
     o.widget = widget
     o.completedAction = completedAction
     o.recipe = recipe
+    o.inputItems = recipe:getAllKeepInputItems()
+    o.putBackInputItems = recipe:getAllPutBackInputItems()
     o.playerObj = playerObj
     o.container = container
     o.containers = containers

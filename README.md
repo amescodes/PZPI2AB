@@ -14,11 +14,11 @@ A Project Zomboid mod that automatically transfers crafted and dismantled items 
 
 ### Target Container System
 
-- Right-click any container (except key rings) to set it as your target container
+- Right-click any equipped bag or container to set it as your target container
 
 ![Target container right-click option on backpacks and other containers.](https://github.com/amescodes/PZPI2AB/blob/main/images/targetcontainer.png)
 
-- Crafted and dismantled items will automatically transfer to the target container if there's room
+- Crafted and dismantled items will automatically transfer to the target container if there's room and it is equipped
 - If the target container is full or not set, items will go to the default target (configurable from the PI2AB tab in the character panel)
 - To reset your target container, right-click the main character inventory and select "Reset Target Container"
 
@@ -32,7 +32,7 @@ The mod adds a new "PI2AB" tab in your character info panel with several options
 
 #### Default Target
 
-When there's no target container set or when the target container is full, items will be transferred to the default target. You have two options:
+When there's no target container set, the target container is unequipped, or when the target container is full, items will be transferred to the default target. You have two options:
 
 - **Player Inventory**: Items go to your main inventory (default setting)
 - **Item Source Container**: Items return to the container where one of the crafting ingredients came from 
@@ -46,7 +46,12 @@ When crafting/dismantling multiple items at once ("All" option), you can choose 
 
 ## Known Incompatibilities
 
-None. (11/10/2025)
+(B42) ![Tidy Up Meister](https://steamcommunity.com/sharedfiles/filedetails/?id=2769706949)
+(Updated 12/27/2025)
+
+## Planned Features
+
+- Filter ingredients from automatically transferring (ie, scrap wood)
 
 ## Credits
 

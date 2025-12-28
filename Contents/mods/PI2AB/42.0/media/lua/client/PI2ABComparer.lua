@@ -59,7 +59,11 @@ function PI2ABComparer:compare(items, source)
     if source then
         for j = 0, source:size() - 1 do
             local srcItem = source:get(j)
-            if srcItem and result:contains(srcItem) then
+            if srcItem then
+                local itemType = srcItem:getType()
+                if itemType then
+                    
+                end
                 local foundSrcItem = result:remove(srcItem)
             end
         end

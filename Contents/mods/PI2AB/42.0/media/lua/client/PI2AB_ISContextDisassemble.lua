@@ -1,5 +1,14 @@
 ISWorldMenuElements = ISWorldMenuElements or {};
 
+ISWorldMenuElements_ContextDisassemble_transferFromGroundOnCraftComplete = function(action, player, square)
+    -- sendServerCommand(player, 'PI2AB', 'transferFromGroundOnCraftComplete', { action = action, square = square })
+    if isServer() then
+        sendServerCommand(player, 'PI2AB', 'transferFromGroundOnCraftComplete', { action = action, square = square })
+    else
+        PI2ABCore.PutInBagFromGround(action, player, square)
+    end
+end
+
 local old_ISWorldMenuElements_ContextDisassemble = ISWorldMenuElements.ContextDisassemble
 function ISWorldMenuElements.ContextDisassemble()
     local self = old_ISWorldMenuElements_ContextDisassemble()
@@ -28,8 +37,8 @@ function ISWorldMenuElements.ContextDisassemble()
                     else
                         -- items dumped to ground
                         beforeItems = PI2ABUtil.GetObjectsOnAndAroundSquare(_v.square)
-                        -- action:setOnComplete(ISWorldMenuElements_ContextDisassemble_transferFromGroundOnCraftComplete, action, scrapDef, player, _v.square)
-                        action:setOnComplete(PI2ABCore.PutInBagFromGround, action, player, _v.square)
+                        action:setOnComplete(ISWorldMenuElements_ContextDisassemble_transferFromGroundOnCraftComplete, action, player, _v.square)
+                        -- action:setOnComplete(PI2ABCore.PutInBagFromGround, action, player, _v.square)
                     end
 
                     local timestamp = os.time()
