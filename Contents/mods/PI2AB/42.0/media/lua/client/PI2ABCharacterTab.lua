@@ -65,7 +65,7 @@ function ISCharacterPI2AB:createChildren()
     self.defaultDestContainerCombo:setWidth(width+35)
 
     self.defaultDestContainerCombo.selected = 1
-	if self.char:getModData().PI2AB.DefaultDestinationContainer then
+	if PI2AB and PI2AB.DefaultDestinationContainer then
         self.defaultDestContainerCombo.selected = PI2AB.DefaultDestinationContainer
     end
 
@@ -89,7 +89,7 @@ function ISCharacterPI2AB:createChildren()
     self.transferItemsCombo:setWidth(width+35)
 
     self.transferItemsCombo.selected = 1
-	if self.char:getModData().PI2AB.WhenToTransferItems then
+	if PI2AB.WhenToTransferItems then
         self.transferItemsCombo.selected = PI2AB.WhenToTransferItems
     end
 
@@ -120,11 +120,13 @@ end
 function ISCharacterPI2AB:onSettingChange(combo, settingId)
     PI2AB[settingId] = combo.selected
     self.char:getModData().PI2AB[settingId] = PI2AB[settingId]
+    self.char:transmitModData()
 end
 
 function ISCharacterPI2AB:onTickChange(index, enabled, settingId)
     PI2AB[settingId] = enabled
     self.char:getModData().PI2AB[settingId] = PI2AB[settingId]
+    self.char:transmitModData()
 end
 
 function ISCharacterPI2AB:createTickBox(settingId, text, tooltip, onTickChange)

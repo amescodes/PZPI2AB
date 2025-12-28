@@ -22,6 +22,7 @@ function PI2AB.init()
         PI2ABUtil.Print("PI2AB.init: creating new modData", true)
         modData.PI2AB = {}
         modData.TargetContainer = ""
+        player:transmitModData()
     else
         -- load mod data
         PI2ABUtil.Print("PI2AB:init: loading modData", true)
@@ -50,6 +51,7 @@ local function setTargetContainer(playerNum,container)
     local player = getSpecificPlayer(playerNum)
     if player then
         player:getModData().PI2AB.TargetContainer = containerId
+        player:transmitModData()
     end
 end
 
@@ -99,6 +101,7 @@ local function resetTargetContainer(target,playerNum)
         local player = getSpecificPlayer(playerNum)
         if player then
             player:getModData().PI2AB.TargetContainer = ""
+            player:transmitModData()
         end
     end
 end
