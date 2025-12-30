@@ -6,7 +6,8 @@ function PI2ABUtil.GetMovablesAction(queue)
     for i = 1, #queue do
         local action = queue[i]
 
-        if action.mode and action.moveProps and action.mode == "scrap" then
+        -- if action.mode and action.moveProps 
+        if action.Type == "ISMoveablesAction" and action.mode == "scrap" then
             return action
         end
     end
@@ -16,9 +17,10 @@ end
 function PI2ABUtil.GetUninstallVehiclePartAction(queue)
     for i = 1, #queue do
         local action = queue[i]
-
-        if action.vehicle and action.part and action.jobType
-            and action.jobType == getText("Tooltip_Vehicle_Uninstalling", action.part:getInventoryItem():getDisplayName())then
+        
+        if action.Type == "ISUninstallVehiclePart" then
+        -- if action.vehicle and action.part and action.jobType
+        --     and action.jobType == getText("Tooltip_Vehicle_Uninstalling", action.part:getInventoryItem():getDisplayName()) then
             return action
         end
     end
@@ -29,7 +31,20 @@ function PI2ABUtil.GetRemoveBurntVehicleAction(queue)
     for i = 1, #queue do
         local action = queue[i]
 
-        if action.vehicle then
+        -- if action.vehicle then
+        if action.Type == "ISRemoveBurntVehicle" then
+            return action
+        end
+    end
+    return nil
+end
+
+function PI2ABUtil.GetDummyAction(queue, timestamp)
+    for i = 1, #queue do
+        local action = queue[i]
+
+        if action.dummy and action.pi2ab_timestamp and action.pi2ab_timestamp == timestamp then
+        -- if action.dummy and action.pi2ab_timestamp and action.pi2ab_timestamp == timestamp then
             return action
         end
     end
@@ -45,7 +60,8 @@ function PI2ABUtil.GetCraftAction(recipe, queue, skipCt)
     for i = 1, #queue do
         local action = queue[i]
 
-        if (action.recipe and action.jobType and action.jobType == recipe:getName()) or (action.craftRecipe and action.craftRecipe == recipe) then
+        if action.Type == "ISHandcraftAction" then
+        -- if (action.recipe and action.jobType and action.jobType == recipe:getName()) or (action.craftRecipe and action.craftRecipe == recipe) then
             if skips >= skipCt then
                 return action
             else
@@ -169,7 +185,7 @@ function PI2ABUtil.Print(txt, debugOnly)
     if debugOnly == nil then
         debugOnly = false
     end
-    if (not debugOnly or PI2AB.Verbose) then
+    if (isServer() or not debugOnly or PI2AB.Verbose) then
         print(txt)
     end
 end

@@ -4,6 +4,11 @@ local Commands = {}
 
 Commands.PI2AB = {};
 
+function Commands.PI2AB.transferOnCraftComplete(player, args)
+    local playerInv = player:getInventory()
+    PI2ABCore.PutInBag(player, playerInv, args.container, PI2ABCore.GetTargetContainer(player), args.completedAction, playerInv:getItems(),args.recipe:getAllKeepInputItems())
+end
+
 function Commands.PI2AB.transferFromGroundOnCraftComplete(player, args)
     PI2ABCore.PutInBagFromGround(args.action, player, args.square)
 end

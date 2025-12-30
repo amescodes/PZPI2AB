@@ -1,7 +1,7 @@
 local ISWidgetHandCraftControl_transferOnHandcraftActionComplete = function(args)
     local playerObj = args.playerObj
     local playerInv = playerObj:getInventory()
-    PI2ABCore.PutInBag(playerObj, playerInv, args.container, PI2AB.getTargetContainer(playerObj), args.completedAction, playerInv:getItems(),args.inputItems)
+    PI2ABCore.PutInBag(playerObj, playerInv, args.container, PI2ABCore.GetTargetContainer(playerObj), args.completedAction, playerInv:getItems(),args.inputItems)
     args.widget:onHandcraftActionComplete()
 end
 
