@@ -43,7 +43,7 @@ function PI2ABUtil.GetDummyAction(queue, timestamp)
     for i = 1, #queue do
         local action = queue[i]
 
-        if action.dummy and action.pi2ab_timestamp and action.pi2ab_timestamp == timestamp then
+        if action.Type == "PI2ABDummyAction" and action.pi2ab_timestamp == timestamp then
         -- if action.dummy and action.pi2ab_timestamp and action.pi2ab_timestamp == timestamp then
             return action
         end
@@ -60,10 +60,10 @@ function PI2ABUtil.GetCraftAction(recipe, queue, skipCt)
     for i = 1, #queue do
         local action = queue[i]
 
-        if action.Type == "ISHandcraftAction" then
         -- if (action.recipe and action.jobType and action.jobType == recipe:getName()) or (action.craftRecipe and action.craftRecipe == recipe) then
+        if action.Type == "ISHandcraftAction" and action.craftRecipe == recipe then
             if skips >= skipCt then
-                return action
+                return action,i
             else
                 skips = skips + 1
             end
@@ -132,6 +132,18 @@ function PI2ABUtil.GetActualItemsFromMoveablesSource(playerInv, source)
         end
     end
     return actualItems
+end
+
+function PI2ABUtil.GetItemIds(items)
+    local ids = {}
+    for i = 0, items:size() - 1 do
+        local item = items:get(i)
+        if item then
+            local id = item:getID()
+            if id then table.insert(ids, id) end
+        end
+    end
+    return ids
 end
 
 -- from ISInventoryPage:refreshBackpacks()
@@ -247,4 +259,31 @@ end
 
 function PI2ABUtil.Round(number)
     return ItemContainer.floatingPointCorrection(number)
+end
+
+function PI2ABUtil.Delay(func, delay)
+    delay = delay or 1;
+    local ticks = 0;
+    local canceled = false;
+
+    local function onTick()
+
+        if not canceled and ticks < delay then
+            ticks = ticks + 1;
+            return;
+        end
+
+        Events.OnTick.Remove(onTick);
+        if not canceled then func(); end
+    end
+
+    Events.OnTick.Add(onTick);
+    return function()
+        canceled = true;
+    end
+end
+
+function PI2ABUtil.Sleep(t)
+    local ntime = getTimestampMs() + t/10
+    repeat until getTimestampMs() > ntime
 end

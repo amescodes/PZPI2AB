@@ -11,7 +11,7 @@ function PI2ABComparer.remove(time)
     PI2ABComparer.Comparers[time] = nil
 end
 
-function PI2ABComparer.create(time, items, previousActionItems, targetWeightTransferred, defWeightTransferred)
+function PI2ABComparer.create(time,actionsToAddBack, items, previousActionItems, targetWeightTransferred, defWeightTransferred)
     local comparer = PI2ABComparer:new(time, targetWeightTransferred, defWeightTransferred)
 
     local beforeIds = {}
@@ -36,11 +36,12 @@ function PI2ABComparer.create(time, items, previousActionItems, targetWeightTran
     end
 
     comparer.before = beforeIds
+    comparer.actionsToAddBack = actionsToAddBack
     PI2ABComparer.Comparers[time] = comparer
     return comparer
 end
 
-function PI2ABComparer:compare(afterItems, source)
+function PI2ABComparer:compare(afterItems, sourceItemIds)
     if not afterItems then
         return
     end
@@ -56,17 +57,26 @@ function PI2ABComparer:compare(afterItems, source)
         end
     end
 
-    if source then
-        for j = 0, source:size() - 1 do
-            local srcItem = source:get(j)
-            if srcItem then
-                local srcItemId = srcItem:getID()
-                if transferIds[srcItemId] then
-                    transferIds[srcItemId] = nil
-                end
+    if sourceItemIds and #sourceItemIds > 0 then
+        for j = 1, #sourceItemIds do
+            local srcItemId = sourceItemIds[j]
+            if transferIds[srcItemId] then
+                transferIds[srcItemId] = nil
             end
         end
     end
+
+    -- if source then
+    --     for j = 0, source:size() - 1 do
+    --         local srcItem = source:get(j)
+    --         if srcItem then
+    --             local srcItemId = srcItem:getID()
+    --             if transferIds[srcItemId] then
+    --                 transferIds[srcItemId] = nil
+    --             end
+    --         end
+    --     end
+    -- end
 
     return transferIds
 end
@@ -130,6 +140,8 @@ function PI2ABComparer:new(time,targetWeightTransferred,defWeightTransferred)
 
     o.pi2ab_timestamp = time
     o.before = nil
+
+    o.actionsToAddBack = nil
 
     o.targetWeightTransferred = targetWeightTransferred or 0
     o.defWeightTransferred = defWeightTransferred or 0

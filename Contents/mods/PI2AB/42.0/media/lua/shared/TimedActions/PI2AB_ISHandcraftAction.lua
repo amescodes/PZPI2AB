@@ -1,13 +1,13 @@
 local old_ISHandcraftAction_forceStop = ISHandcraftAction.forceStop
 function ISHandcraftAction:forceStop()
-	if self.pi2ab_timestamp then PI2ABComparer.remove(self.pi2ab_timestamp) end
+	if not isServer() and self.pi2ab_timestamp then PI2ABComparer.remove(self.pi2ab_timestamp) end
 	
     old_ISHandcraftAction_forceStop(self);
 end
 
 local old_ISHandcraftAction_forceCancel = ISHandcraftAction.forceCancel
 function ISHandcraftAction:forceCancel()
-	if self.pi2ab_timestamp then PI2ABComparer.remove(self.pi2ab_timestamp) end
+	if not isServer() and self.pi2ab_timestamp then PI2ABComparer.remove(self.pi2ab_timestamp) end
 	
 	old_ISHandcraftAction_forceCancel(self)
 end
@@ -54,10 +54,3 @@ end
 -- 	end
 -- 	return true
 -- end
-
-
-
-function ISHandcraftAction:setPI2ABOnComplete(func, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)
-	self.onCompletePI2ABFunc = func
-	self.onCompletePI2ABArgs = { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8 }
-end
