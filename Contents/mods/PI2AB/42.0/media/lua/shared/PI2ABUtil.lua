@@ -8,7 +8,7 @@ function PI2ABUtil.GetMovablesAction(queue)
 
         -- if action.mode and action.moveProps 
         if action.Type == "ISMoveablesAction" and action.mode == "scrap" then
-            return action
+            return action,i
         end
     end
     return nil
@@ -21,7 +21,7 @@ function PI2ABUtil.GetUninstallVehiclePartAction(queue)
         if action.Type == "ISUninstallVehiclePart" then
         -- if action.vehicle and action.part and action.jobType
         --     and action.jobType == getText("Tooltip_Vehicle_Uninstalling", action.part:getInventoryItem():getDisplayName()) then
-            return action
+            return action,i
         end
     end
     return nil
@@ -33,19 +33,7 @@ function PI2ABUtil.GetRemoveBurntVehicleAction(queue)
 
         -- if action.vehicle then
         if action.Type == "ISRemoveBurntVehicle" then
-            return action
-        end
-    end
-    return nil
-end
-
-function PI2ABUtil.GetDummyAction(queue, timestamp)
-    for i = 1, #queue do
-        local action = queue[i]
-
-        if action.Type == "PI2ABDummyAction" and action.pi2ab_timestamp == timestamp then
-        -- if action.dummy and action.pi2ab_timestamp and action.pi2ab_timestamp == timestamp then
-            return action
+            return action,i
         end
     end
     return nil
@@ -91,6 +79,16 @@ function PI2ABUtil.GetCraftActionDesc(recipe, queue)
     return nil
 end
 
+function PI2ABUtil.GetDummyAction(queue, timestamp)
+    for i = 1, #queue do
+        local action = queue[i]
+        if action.Type == "PI2ABDummyAction" and action.pi2ab_timestamp == timestamp then
+            return action
+        end
+    end
+    return nil
+end
+
 function PI2ABUtil.GetActualItemsFromSource(playerInv, source)
     local actualItems = ArrayList.new()
     if source and source:size() > 0 then
@@ -109,6 +107,22 @@ function PI2ABUtil.GetActualItemsFromSource(playerInv, source)
         end
     end
     return actualItems
+end
+
+function PI2ABUtil.GetAddBackActionsFromQueue(queueObj, recipeData, startIndex)    
+    local queue = queueObj.queue
+    local destroyItems = recipeData and recipeData:getAllDestroyInputItems() or nil
+    local actionsToAddBack = {}
+    while #queue > startIndex do
+        local addBackAction = queue[startIndex+1]
+        if addBackAction then
+            queueObj:removeFromQueue(addBackAction)
+            if not (addBackAction.Type == "ISInventoryTransferAction" and destroyItems and destroyItems:contains(addBackAction.item)) then
+                table.insert(actionsToAddBack,addBackAction)
+            end
+        end
+    end
+    return actionsToAddBack
 end
 
 function PI2ABUtil.IsAllowed(playerObj)

@@ -66,18 +66,6 @@ function PI2ABComparer:compare(afterItems, sourceItemIds)
         end
     end
 
-    -- if source then
-    --     for j = 0, source:size() - 1 do
-    --         local srcItem = source:get(j)
-    --         if srcItem then
-    --             local srcItemId = srcItem:getID()
-    --             if transferIds[srcItemId] then
-    --                 transferIds[srcItemId] = nil
-    --             end
-    --         end
-    --     end
-    -- end
-
     return transferIds
 end
 

@@ -1,5 +1,10 @@
 [ 12/23/25 ]
-- Initial release.
+- Initial beta release.
+[ ------ ]
+
+
+[ 1/7/26 ]
+- Initial public release.
 [ ------ ]
 
 

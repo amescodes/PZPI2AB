@@ -52,6 +52,8 @@ When crafting/dismantling multiple items at once ("All" option), you can choose 
 ## Planned Features
 
 - Filter ingredients from automatically transferring (ie, scrap wood)
+- Filter recipes from automatically transferring their result(s)
+- Sandbox option for traits to affect ability to transfer items (ie, a player with Disorganized or All Thumbs won't transfer automatically)
 
 ## Credits
 

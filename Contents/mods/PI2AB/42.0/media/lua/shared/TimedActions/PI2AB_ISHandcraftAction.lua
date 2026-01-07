@@ -1,56 +1,15 @@
 local old_ISHandcraftAction_forceStop = ISHandcraftAction.forceStop
-function ISHandcraftAction:forceStop()
-	if not isServer() and self.pi2ab_timestamp then PI2ABComparer.remove(self.pi2ab_timestamp) end
+function ISHandcraftAction:forceStop()	
+	local timestamp = self.onCompleteArgs and self.onCompleteArgs[3] or nil
+	if not isServer() and timestamp then PI2ABComparer.remove(timestamp) end
 	
     old_ISHandcraftAction_forceStop(self);
 end
 
 local old_ISHandcraftAction_forceCancel = ISHandcraftAction.forceCancel
 function ISHandcraftAction:forceCancel()
-	if not isServer() and self.pi2ab_timestamp then PI2ABComparer.remove(self.pi2ab_timestamp) end
-	
+	local timestamp = self.onCompleteArgs and self.onCompleteArgs[3] or nil
+	if not isServer() and timestamp then PI2ABComparer.remove(timestamp) end
+
 	old_ISHandcraftAction_forceCancel(self)
 end
-
--- -- completely overwriting perform to add PI2AB functionality
--- function ISHandcraftAction:perform()
--- 	--log(DebugType.CraftLogic, "ISHandcraftAction.perform")
-
--- 	self:clearItemsProgressBar(false);
-	
--- 	if self.sound and self.character:getEmitter():isPlaying(self.sound) then
--- 		self.character:stopOrTriggerSound(self.sound);
--- 	end
-
--- 	ISInventoryPage.dirtyUI();
-
--- 	if not isClient() then
--- 		self:performRecipe();
--- 	end
-	
--- 	-- spurcival: super.perform() must happen AFTER performRecipe() as super.perform() kicks off the next multicraft.
--- 	ISBaseTimedAction.perform(self);
-
--- 	if isClient() and self.onCompleteFunc then
--- 		self.onCompleteFunc(self.onCompleteTarget);
--- 	end
--- end
-
--- -- completely overwriting complete to add PI2AB functionality
--- function ISHandcraftAction:complete()
---     if self.eatPercentage > 0 and self.logic:getRecipeData() then
---         self.logic:getRecipeData():setEatPercentage(self.eatPercentage)
---     end
-
--- 	self:clearItemsProgressBar(false);
-
--- 	if isServer() then
--- 		-- spurcival : this has to be completed in perform, or at that same point in time. complete() is too late.
--- 		self:performRecipe();
--- 	end
-
--- 	if self.onCompleteFunc then
--- 		self.onCompleteFunc(self.onCompleteTarget);
--- 	end
--- 	return true
--- end

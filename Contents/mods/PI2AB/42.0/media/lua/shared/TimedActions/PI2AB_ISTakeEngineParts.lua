@@ -1,6 +1,6 @@
-local old_ISTakeEngineParts_perform = ISTakeEngineParts.perform
-function ISTakeEngineParts:perform()
-    old_ISTakeEngineParts_perform(self)
+local old_ISTakeEngineParts_complete = ISTakeEngineParts.complete
+function ISTakeEngineParts:complete()
+    old_ISTakeEngineParts_complete(self)
 
     -- NEW FOR PI2AB
 	if self.onCompleteFunc then
