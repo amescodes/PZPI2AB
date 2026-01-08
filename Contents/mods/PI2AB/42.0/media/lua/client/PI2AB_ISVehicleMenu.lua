@@ -14,7 +14,7 @@ local function transferVehicleItemsOnComplete(player, square,timestamp)
     local itemIdsToTransfer = comparer:compare(allItems, nil)
 	local targetContainer = PI2ABCore.GetTargetContainer(player)
 
-    PI2ABCore.PutInBagFromGround(player, targetContainer, timestamp, itemIdsToTransfer)
+    PI2ABCore.PutInBagFromGround(player, targetContainer, itemIdsToTransfer)
     
     local actionsToAddBack = comparer.actionsToAddBack
     if actionsToAddBack and #actionsToAddBack > 0 then
@@ -41,7 +41,7 @@ function ISVehicleMenu.onRemoveBurntVehicle(player, vehicle)
         if queue then
             local action,i = PI2ABUtil.GetRemoveBurntVehicleAction(queue)
             if action then
-                local timestamp = os.time()
+                local timestamp = action.vehicle:getId()
                 local beforeItems = PI2ABUtil.GetObjectsOnAndAroundSquare(square)
                 action:setOnComplete(transferVehicleItemsOnComplete, player, square,timestamp)
 

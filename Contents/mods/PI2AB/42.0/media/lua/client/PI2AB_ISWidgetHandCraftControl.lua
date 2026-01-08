@@ -37,6 +37,7 @@ function ISWidgetHandCraftControl:startHandcraft(force)
     if not PI2AB.Enabled or not PI2ABUtil.IsAllowed(playerObj) then
         return
     end
+    
     local queueObj = ISTimedActionQueue.getTimedActionQueue(playerObj)
     local queue = queueObj.queue
     if queue then

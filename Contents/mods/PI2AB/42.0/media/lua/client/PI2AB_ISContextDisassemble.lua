@@ -1,11 +1,6 @@
 ISWorldMenuElements = ISWorldMenuElements or {};
 
 ISWorldMenuElements_ContextDisassemble_transferFromInventoryOnCraftComplete = function(player,timestamp)
-    if isServer() then
-        sendServerCommand(player, 'PI2AB', 'transferFromInventoryOnCraftComplete', { tiemstamp = timestamp })
-        return
-    end
-
     local comparer = PI2ABComparer.get(timestamp)
     if not comparer then return end
     
@@ -13,7 +8,7 @@ ISWorldMenuElements_ContextDisassemble_transferFromInventoryOnCraftComplete = fu
     local itemIdsToTransfer = comparer:compare(allItems, nil)
     local targetContainer = PI2ABCore.GetTargetContainer(player)
 
-    PI2ABCore.PutInBagFromInventory(player, targetContainer, timestamp, itemIdsToTransfer)
+    PI2ABCore.PutInBagFromInventory(player, targetContainer, itemIdsToTransfer)
     
     local actionsToAddBack = comparer.actionsToAddBack
     if actionsToAddBack and #actionsToAddBack > 0 then
@@ -26,11 +21,6 @@ ISWorldMenuElements_ContextDisassemble_transferFromInventoryOnCraftComplete = fu
 end
 
 ISWorldMenuElements_ContextDisassemble_transferFromGroundOnCraftComplete = function(player, square,timestamp)
-    if isServer() then
-        sendServerCommand(player, 'PI2AB', 'transferFromGroundOnCraftComplete', { tiemstamp = timestamp, square = square })
-        return
-    end
-
     local comparer = PI2ABComparer.get(timestamp)
     if not comparer then return end
 
@@ -42,7 +32,7 @@ ISWorldMenuElements_ContextDisassemble_transferFromGroundOnCraftComplete = funct
     local itemIdsToTransfer = comparer:compare(allItems, nil)
 	local targetContainer = PI2ABCore.GetTargetContainer(player)
     
-    PI2ABCore.PutInBagFromGround(player, targetContainer, timestamp, itemIdsToTransfer)
+    PI2ABCore.PutInBagFromGround(player, targetContainer, itemIdsToTransfer)
     
     local actionsToAddBack = comparer.actionsToAddBack
     if actionsToAddBack and #actionsToAddBack > 0 then
@@ -63,7 +53,7 @@ function ISWorldMenuElements.ContextDisassemble()
         old_disassemble(_data, _v)
         
         local player = _data.player
-        if not PI2ABUtil.IsAllowed(player) then
+        if not PI2AB.Enabled or not PI2ABUtil.IsAllowed(player) then
             return
         end
 
@@ -74,22 +64,22 @@ function ISWorldMenuElements.ContextDisassemble()
             if queue then
                 local action,i = PI2ABUtil.GetMovablesAction(queue)
                 if action and action.moveProps then
-                    local timestamp = os.time()
+                    local uniqueId = PI2ABUtil.GetMoveableUniqueId(_v.object)
                     local scrapDef = ISMoveableDefinitions:getInstance().getScrapDefinition(action.moveProps.material)
                     local beforeItems
                     if scrapDef.addToInventory then
                         beforeItems = playerInv:getItems()
-                        action:setOnComplete(PI2ABCore.PutInBagFromInventory, player, timestamp)
+                        action:setOnComplete(ISWorldMenuElements_ContextDisassemble_transferFromInventoryOnCraftComplete, player, uniqueId)
                     else
                         -- items dumped to ground
                         beforeItems = PI2ABUtil.GetObjectsOnAndAroundSquare(_v.square)
-                        action:setOnComplete(ISWorldMenuElements_ContextDisassemble_transferFromGroundOnCraftComplete, player, _v.square, timestamp)
+                        action:setOnComplete(ISWorldMenuElements_ContextDisassemble_transferFromGroundOnCraftComplete, player, _v.square, uniqueId)
                     end
 
                     local actionsToAddBack = PI2ABUtil.GetAddBackActionsFromQueue(queueObj, nil, i)
-                    PI2ABComparer.create(timestamp, actionsToAddBack, beforeItems)
+                    PI2ABComparer.create(uniqueId, actionsToAddBack, beforeItems)
 
-                    local dummyAction = PI2ABDummyAction:new(player, timestamp)
+                    local dummyAction = PI2ABDummyAction:new(player, uniqueId)
                     ISTimedActionQueue.addAfter(action, dummyAction)
                 end
             end

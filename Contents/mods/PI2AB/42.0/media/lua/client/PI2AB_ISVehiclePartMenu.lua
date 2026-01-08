@@ -10,7 +10,7 @@ local function transferVehiclePartOnComplete(player, square,timestamp)
     local itemIdsToTransfer = comparer:compare(allItems, nil)
 	local targetContainer = PI2ABCore.GetTargetContainer(player)
 
-    PI2ABCore.PutInBagFromInventory(player, targetContainer, timestamp, itemIdsToTransfer)
+    PI2ABCore.PutInBagFromInventory(player, targetContainer, itemIdsToTransfer)
     
     local actionsToAddBack = comparer.actionsToAddBack
     if actionsToAddBack and #actionsToAddBack > 0 then
@@ -36,7 +36,7 @@ function ISVehiclePartMenu.onUninstallPart(player, part)
         if queue then
             local action,i = PI2ABUtil.GetUninstallVehiclePartAction(queue)
             if action then
-                local timestamp = os.time()
+                local timestamp = action.part:getId()
                 action:setOnComplete(transferVehiclePartOnComplete, player, part:getVehicle():getSquare(),timestamp)
 
                 local actionsToAddBack = PI2ABUtil.GetAddBackActionsFromQueue(queueObj, nil, i)

@@ -89,6 +89,24 @@ function PI2ABUtil.GetDummyAction(queue, timestamp)
     return nil
 end
 
+function PI2ABUtil.GetUniqueId(suff)
+    local suffix = ''
+    if suff then
+        suffix = "_" .. tostring(suff)
+    end
+    return string.sub(os.time(),-16)..suffix
+end
+
+function PI2ABUtil.GetMoveableUniqueId(obj)
+    local spriteId = obj:getSprite():getID()
+
+    local x = obj:getX()
+    local y = obj:getY()
+    local z = obj:getZ()
+
+    return spriteId .. "_" .. x .. "_" .. y .. "_" .. z
+end
+
 function PI2ABUtil.GetActualItemsFromSource(playerInv, source)
     local actualItems = ArrayList.new()
     if source and source:size() > 0 then
@@ -222,23 +240,23 @@ function PI2ABUtil.PrintQueue(playerObj)
         PI2ABUtil.Print("PI2AB: queue...", true)
 
         for i, action in ipairs(queue) do
-            local jobType = action.jobType
-            if not jobType then
+            local jobType = action.Type or '???'
+            if jobType == 'ISInventoryTransferAction' then
                 local destContainer = action.destContainer
                 local srcContainer = action.srcContainer
                 if destContainer or srcContainer then
                     local item = action.item:getFullType()
                     jobType = "Transfer " .. tostring(item) .. " (" .. action.item:getID() .. ") from " ..
-                                  tostring(srcContainer:getType()) .. " to " .. tostring(destContainer:getType())
+                                tostring(srcContainer:getType()) .. " to " .. tostring(destContainer:getType())
                     PI2ABUtil.Print(tostring(i) .. ") action: " .. jobType, true)
-                else
-                    jobType = "???"
-                    local item = action.item:getFullType()
-                    PI2ABUtil.Print(tostring(i) .. ") unknown job...item: " .. item, true)
                 end
+            elseif action.item then
+                local item = action.item:getFullType() or '???'
+                PI2ABUtil.Print(tostring(i) .. ") action: " .. jobType .. " (item: " .. item .. ")", true)
+            elseif action.object then
+                PI2ABUtil.Print(tostring(i) .. ") action: " .. jobType .. " (object id: " .. tostring(action.object) .. ")", true)
             else
-                PI2ABUtil.Print(tostring(i) .. ") action: " .. jobType .. " (item id: " .. action.item:getID() .. ")",
-                    true)
+                PI2ABUtil.Print(tostring(i) .. ") action: " .. jobType, true)
             end
         end
 

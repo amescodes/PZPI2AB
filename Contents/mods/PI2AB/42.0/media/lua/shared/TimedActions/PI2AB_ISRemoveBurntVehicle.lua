@@ -3,21 +3,24 @@ local old_ISRemoveBurntVehicle_complete = ISRemoveBurntVehicle.complete
 function ISRemoveBurntVehicle:complete()
     old_ISRemoveBurntVehicle_complete(self)
 
-    -- NEW FOR PI2AB
+	if isServer() then
+		PI2ABUtil.Delay(function()
+			local player = self.character
+			local vehicle = self.vehicle
+			local uniqueId = vehicle:getId()
+			local square = vehicle:getSquare()
+			sendServerCommand(player, 'PI2AB', 'transferFromGroundOnCraftComplete', { playerNum = player:getPlayerNum(), timestamp = uniqueId, x = square:getX(), y = square:getY(), z = square:getZ()})
+		end, 1)
+		return true
+	end
+
+    -- SINGLE PLAYER
 	if self.onCompleteFunc then
 		local args = self.onCompleteArgs
 		self.onCompleteFunc(args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8])
 	end
 
     return true;
-end
-
-local old_ISRemoveBurntVehicle_stop = ISRemoveBurntVehicle.stop
-function ISRemoveBurntVehicle:stop()
-	local timestamp = self.onCompleteArgs and self.onCompleteArgs[3] or nil
-	if not isServer() and timestamp then PI2ABComparer.remove(timestamp) end
-
-	old_ISRemoveBurntVehicle_stop(self)
 end
 
 local old_ISRemoveBurntVehicle_forceStop = ISRemoveBurntVehicle.forceStop

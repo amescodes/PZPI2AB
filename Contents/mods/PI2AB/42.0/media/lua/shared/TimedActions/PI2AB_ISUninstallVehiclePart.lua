@@ -3,7 +3,15 @@ local old_ISUninstallVehiclePart_complete = ISUninstallVehiclePart.complete
 function ISUninstallVehiclePart:complete()
     old_ISUninstallVehiclePart_complete(self)
 
-    -- NEW FOR PI2AB
+	if isServer() then
+		PI2ABUtil.Delay(function()
+			local player = self.character
+			sendServerCommand(player, 'PI2AB', 'transferFromInventoryOnCraftComplete', { playerNum = player:getPlayerNum(), timestamp = self.part:getId()})
+		end, 1)
+		return true
+	end
+
+    -- SINGLE PLAYER
 	if self.onCompleteFunc then
 		local args = self.onCompleteArgs
 		self.onCompleteFunc(args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8])
