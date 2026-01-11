@@ -4,9 +4,10 @@ function ISUninstallVehiclePart:complete()
     old_ISUninstallVehiclePart_complete(self)
 
 	if isServer() then
+		local player = self.character
+		local id = self.part:getId()
 		PI2ABUtil.Delay(function()
-			local player = self.character
-			sendServerCommand(player, 'PI2AB', 'transferFromInventoryOnCraftComplete', { playerNum = player:getPlayerNum(), timestamp = self.part:getId()})
+			sendServerCommand(player, 'PI2AB', 'transferFromInventoryOnCraftComplete', { playerNum = player:getPlayerNum(), timestamp = id})
 		end, 1)
 		return true
 	end
@@ -21,15 +22,17 @@ function ISUninstallVehiclePart:complete()
 end
 
 local old_ISUninstallVehiclePart_forceStop = ISUninstallVehiclePart.forceStop
-function ISUninstallVehiclePart:forceStop()
-	if self.pi2ab_timestamp then PI2ABComparer.remove(self.pi2ab_timestamp) end
+function ISUninstallVehiclePart:forceStop()	
+	local uniqueId = self.part:getId() or nil
+	if not isServer() and uniqueId then PI2ABComparer.remove(uniqueId) end
 	
     old_ISUninstallVehiclePart_forceStop(self);
 end
 
 local old_ISUninstallVehiclePart_forceCancel = ISUninstallVehiclePart.forceCancel
-function ISUninstallVehiclePart:forceCancel()
-	if self.pi2ab_timestamp then PI2ABComparer.remove(self.pi2ab_timestamp) end
+function ISUninstallVehiclePart:forceCancel()	
+	local uniqueId = self.part:getId() or nil
+	if not isServer() and uniqueId then PI2ABComparer.remove(uniqueId) end
 	
 	old_ISUninstallVehiclePart_forceCancel(self)
 end

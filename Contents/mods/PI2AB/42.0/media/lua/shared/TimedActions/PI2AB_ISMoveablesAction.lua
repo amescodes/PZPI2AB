@@ -3,10 +3,10 @@ function ISMoveablesAction:complete()
     old_ISMoveablesAction_complete(self)
 	
 	if isServer() then
+		local scrapDef = ISMoveableDefinitions:getInstance().getScrapDefinition(self.moveProps.material)
+		local player = self.character
+		local uniqueId = PI2ABUtil.GetMoveableUniqueId(self.object,self.square)
 		PI2ABUtil.Delay(function()
-			local scrapDef = ISMoveableDefinitions:getInstance().getScrapDefinition(self.moveProps.material)
-			local player = self.character
-			local uniqueId = PI2ABUtil.GetMoveableUniqueId(self.object)
 			if scrapDef and scrapDef.addToInventory then
 				sendServerCommand(player, 'PI2AB', 'transferFromInventoryOnCraftComplete', { playerNum = player:getPlayerNum(), timestamp = uniqueId})
 			else
@@ -27,7 +27,7 @@ end
 
 local old_ISMoveablesAction_forceStop = ISMoveablesAction.forceStop
 function ISMoveablesAction:forceStop()
-	local uniqueId = PI2ABUtil.GetMoveableUniqueId(self.object) or nil
+	local uniqueId = PI2ABUtil.GetMoveableUniqueId(self.object,self.square) or nil
 	if not isServer() and uniqueId then PI2ABComparer.remove(uniqueId) end
 	
     old_ISMoveablesAction_forceStop(self);
@@ -35,7 +35,7 @@ end
 
 local old_ISMoveablesAction_forceCancel = ISMoveablesAction.forceCancel
 function ISMoveablesAction:forceCancel()
-	local uniqueId = PI2ABUtil.GetMoveableUniqueId(self.object) or nil
+	local uniqueId = PI2ABUtil.GetMoveableUniqueId(self.object,self.square) or nil
 	if not isServer() and uniqueId then PI2ABComparer.remove(uniqueId) end
 
 	old_ISMoveablesAction_forceCancel(self)

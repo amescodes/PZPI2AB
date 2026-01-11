@@ -3,9 +3,9 @@ function ISTakeEngineParts:complete()
     old_ISTakeEngineParts_complete(self)
 
 	if isServer() then
+		local player = self.character
 		PI2ABUtil.Delay(function()
-			local player = self.character
-			sendServerCommand(player, 'PI2AB', 'transferFromInventoryOnCraftComplete', { playerNum = player:getPlayerNum(), timestamp = self.part:getId()})
+			sendServerCommand(player, 'PI2AB', 'transferFromInventoryOnCraftComplete', { playerNum = player:getPlayerNum(), timestamp = self.vehicle:getId()})
 		end, 1)
 		return true
 	end
@@ -21,15 +21,17 @@ end
 
 local old_ISTakeEngineParts_forceStop = ISTakeEngineParts.forceStop
 function ISTakeEngineParts:forceStop()
-	if self.pi2ab_timestamp then PI2ABComparer.remove(self.pi2ab_timestamp) end
+	local uniqueId = self.vehicle:getId() or nil
+	if not isServer() and uniqueId then PI2ABComparer.remove(uniqueId) end
 	
     old_ISTakeEngineParts_forceStop(self);
 end
 
 local old_ISTakeEngineParts_forceCancel = ISTakeEngineParts.forceCancel
 function ISTakeEngineParts:forceCancel()
-	if self.pi2ab_timestamp then PI2ABComparer.remove(self.pi2ab_timestamp) end
-	
+	local uniqueId = self.vehicle:getId() or nil
+	if not isServer() and uniqueId then PI2ABComparer.remove(uniqueId) end
+
 	old_ISTakeEngineParts_forceCancel(self)
 end
 

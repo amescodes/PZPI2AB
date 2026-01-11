@@ -4,11 +4,11 @@ function ISRemoveBurntVehicle:complete()
     old_ISRemoveBurntVehicle_complete(self)
 
 	if isServer() then
+		local player = self.character
+		local vehicle = self.vehicle
+		local uniqueId = vehicle:getId()
+		local square = vehicle:getSquare()
 		PI2ABUtil.Delay(function()
-			local player = self.character
-			local vehicle = self.vehicle
-			local uniqueId = vehicle:getId()
-			local square = vehicle:getSquare()
 			sendServerCommand(player, 'PI2AB', 'transferFromGroundOnCraftComplete', { playerNum = player:getPlayerNum(), timestamp = uniqueId, x = square:getX(), y = square:getY(), z = square:getZ()})
 		end, 1)
 		return true

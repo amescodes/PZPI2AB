@@ -11,8 +11,8 @@ function PI2ABComparer.remove(time)
     PI2ABComparer.Comparers[time] = nil
 end
 
-function PI2ABComparer.create(time,actionsToAddBack, items, previousActionItems, targetWeightTransferred, defWeightTransferred)
-    local comparer = PI2ABComparer:new(time, targetWeightTransferred, defWeightTransferred)
+function PI2ABComparer.create(time,actionsToAddBack, items, previousActionItems)
+    local comparer = PI2ABComparer:new(time)
 
     local beforeIds = {}
     for i = 0, items:size() - 1 do
@@ -121,7 +121,7 @@ function PI2ABComparer:compareDebug(items, source)
     return result
 end
 
-function PI2ABComparer:new(time,targetWeightTransferred,defWeightTransferred)
+function PI2ABComparer:new(time)
     local o = {}
     setmetatable(o, self)
     self.__index = self
@@ -131,8 +131,24 @@ function PI2ABComparer:new(time,targetWeightTransferred,defWeightTransferred)
 
     o.actionsToAddBack = nil
 
-    o.targetWeightTransferred = targetWeightTransferred or 0
-    o.defWeightTransferred = defWeightTransferred or 0
+    o.targetWeightTransferred = 0
+    o.defWeightTransferred = 0
 
     return o
 end
+
+local function clearComparers()
+    local player = getPlayer()
+    local state = player:getActionStateName()
+    if player:isPerformingAnAction() or state ~= "idle" or #PI2ABComparer.Comparers == 0 then
+        return
+    end
+
+    PI2ABUtil.Print("Leftover comparers:",true)
+    PI2ABUtil.PrintTable(PI2ABComparer.Comparers)
+    PI2ABUtil.Print("--------",true)
+
+    PI2ABComparer.Comparers = {}
+end
+
+Events.EveryTenMinutes.Add(clearComparers)

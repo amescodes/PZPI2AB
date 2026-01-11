@@ -62,9 +62,21 @@ function ISWorldMenuElements.ContextDisassemble()
             local queueObj = ISTimedActionQueue.getTimedActionQueue(player)
             local queue = queueObj.queue
             if queue then
+                -- if instanceof(_v.object,"IsoLightSwitch") and _v.object:hasLightBulb() then
+                --     local lightAction,k = PI2ABUtil.GetMovablesAction(queue)
+                    
+                --         local uniqueId = PI2ABUtil.GetMoveableUniqueId(_v.object)
+                --         local scrapDef = ISMoveableDefinitions:getInstance().getScrapDefinition(action.moveProps.material)
+                --         local beforeItems
+                --         if scrapDef.addToInventory then
+                --             beforeItems = playerInv:getItems()
+                --             action:setOnComplete(ISWorldMenuElements_ContextDisassemble_transferFromInventoryOnCraftComplete, player, uniqueId)
+                --         end
+                -- end
+
                 local action,i = PI2ABUtil.GetMovablesAction(queue)
                 if action and action.moveProps then
-                    local uniqueId = PI2ABUtil.GetMoveableUniqueId(_v.object)
+                    local uniqueId = PI2ABUtil.GetMoveableUniqueId(_v.object,_v.square)
                     local scrapDef = ISMoveableDefinitions:getInstance().getScrapDefinition(action.moveProps.material)
                     local beforeItems
                     if scrapDef.addToInventory then

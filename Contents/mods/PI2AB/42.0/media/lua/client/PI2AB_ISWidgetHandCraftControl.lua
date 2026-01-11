@@ -10,8 +10,20 @@ local ISWidgetHandCraftControl_transferOnHandcraftActionComplete = function(args
     local itemIdsToTransfer = comparer:compare(allItems, args.sourceItemIds)
 	local targetContainer = PI2ABCore.GetTargetContainer(player)
 
-    PI2ABCore.PutInBag(player, timestamp,args.selectedItemContainer, targetContainer, itemIdsToTransfer)
+    local result = PI2ABCore.PutInBag(player, timestamp,args.selectedItemContainer, targetContainer, itemIdsToTransfer,comparer.targetWeightTransferred, comparer.defWeightTransferred)
     
+    local split = PI2ABUtil.SplitString(timestamp, '_')    
+    local currentActionIndex = split[2]
+    local nextActionIndex = tonumber(currentActionIndex) + 1
+
+    local nextComparerId = split[1] .. "_" .. tostring(nextActionIndex)
+
+    local nextComparer = PI2ABComparer.get(nextComparerId)
+    if nextComparer then
+        nextComparer.targetWeightTransferred = result and result.targetWeightTransferred or 0
+        nextComparer.defWeightTransferred = result and result.defWeightTransferred or 0
+    end
+
     local actionsToAddBack = comparer.actionsToAddBack
     if actionsToAddBack and #actionsToAddBack > 0 then
         for i = 1, #actionsToAddBack do
@@ -56,11 +68,12 @@ function ISWidgetHandCraftControl:startHandcraft(force)
             selectedItem = inputItems:get(inputItems:size() - 1)
         end
 
+        local timestamp = os.time()
         for i = 0, ct - 1 do
             local action,j = PI2ABUtil.GetCraftAction(recipeData:getRecipe(), queue, i)
             if action then
-                local timestamp = os.time() + i
-                local args = PI2ABTransferArgs:new(playerObj:getPlayerNum(),nil,self, self.logic:getRecipe(), selectedItem:getContainer(), action.containers, selectedItem, timestamp,sourceItemIds)
+                local uniqueId = timestamp .. "_" .. tostring(i)
+                local args = PI2ABTransferArgs:new(playerObj:getPlayerNum(),nil,self, self.logic:getRecipe(), selectedItem:getContainer(), action.containers, selectedItem, uniqueId,sourceItemIds)
 
                 action:setOnComplete(ISWidgetHandCraftControl_transferOnHandcraftActionComplete, args)
                 action:setOnCancel(ISWidgetHandCraftControl_onHandcraftActionCancelled, args);
@@ -70,9 +83,9 @@ function ISWidgetHandCraftControl:startHandcraft(force)
                     actionsToAddBack = PI2ABUtil.GetAddBackActionsFromQueue(queueObj, recipeData, j)
                 end
 
-                PI2ABComparer.create(timestamp, actionsToAddBack, playerObj:getInventory():getItems())
+                PI2ABComparer.create(uniqueId, actionsToAddBack, playerObj:getInventory():getItems())
 
-                local dummyAction = PI2ABDummyAction:new(playerObj, timestamp)
+                local dummyAction = PI2ABDummyAction:new(playerObj, uniqueId)
                 ISTimedActionQueue.addAfter(action, dummyAction)
             end
         end

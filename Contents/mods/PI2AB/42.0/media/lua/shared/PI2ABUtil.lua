@@ -5,9 +5,17 @@ end
 function PI2ABUtil.GetMovablesAction(queue)
     for i = 1, #queue do
         local action = queue[i]
-
-        -- if action.mode and action.moveProps 
         if action.Type == "ISMoveablesAction" and action.mode == "scrap" then
+            return action,i
+        end
+    end
+    return nil
+end
+
+function PI2ABUtil.GetTakeEnginePartsAction(queue)
+    for i = 1, #queue do
+        local action = queue[i]
+        if action.Type == "ISTakeEngineParts" then
             return action,i
         end
     end
@@ -16,11 +24,8 @@ end
 
 function PI2ABUtil.GetUninstallVehiclePartAction(queue)
     for i = 1, #queue do
-        local action = queue[i]
-        
+        local action = queue[i]        
         if action.Type == "ISUninstallVehiclePart" then
-        -- if action.vehicle and action.part and action.jobType
-        --     and action.jobType == getText("Tooltip_Vehicle_Uninstalling", action.part:getInventoryItem():getDisplayName()) then
             return action,i
         end
     end
@@ -30,8 +35,6 @@ end
 function PI2ABUtil.GetRemoveBurntVehicleAction(queue)
     for i = 1, #queue do
         local action = queue[i]
-
-        -- if action.vehicle then
         if action.Type == "ISRemoveBurntVehicle" then
             return action,i
         end
@@ -47,8 +50,6 @@ function PI2ABUtil.GetCraftAction(recipe, queue, skipCt)
     local skips = 0
     for i = 1, #queue do
         local action = queue[i]
-
-        -- if (action.recipe and action.jobType and action.jobType == recipe:getName()) or (action.craftRecipe and action.craftRecipe == recipe) then
         if action.Type == "ISHandcraftAction" and action.craftRecipe == recipe then
             if skips >= skipCt then
                 return action,i
@@ -72,7 +73,7 @@ end
 function PI2ABUtil.GetCraftActionDesc(recipe, queue)
     for i = #queue, 1, -1 do
         local action = queue[i]
-        if action.recipe and action.jobType and action.jobType == recipe:getName() then
+        if action.Type == "ISHandcraftAction" and action.craftRecipe == recipe then
             return action
         end
     end
@@ -97,12 +98,12 @@ function PI2ABUtil.GetUniqueId(suff)
     return string.sub(os.time(),-16)..suffix
 end
 
-function PI2ABUtil.GetMoveableUniqueId(obj)
+function PI2ABUtil.GetMoveableUniqueId(obj,sq)
     local spriteId = obj:getSprite():getID()
 
-    local x = obj:getX()
-    local y = obj:getY()
-    local z = obj:getZ()
+    local x = sq:getX()
+    local y = sq:getY()
+    local z = sq:getZ()
 
     return spriteId .. "_" .. x .. "_" .. y .. "_" .. z
 end
@@ -318,4 +319,15 @@ end
 function PI2ABUtil.Sleep(t)
     local ntime = getTimestampMs() + t/10
     repeat until getTimestampMs() > ntime
+end
+
+function PI2ABUtil.SplitString(inputstr, sep)
+  if sep == nil then
+    sep = "%s"
+  end
+  local t = {}
+  for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
+    table.insert(t, str)
+  end
+  return t
 end

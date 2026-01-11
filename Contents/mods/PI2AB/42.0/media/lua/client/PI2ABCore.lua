@@ -65,7 +65,9 @@ function PI2ABCore.PutInBag(playerObj, timestamp, selectedItemContainer, targetC
                 end
             end
         end
+        return PI2ABResult:new(nil, nil, nil, targetWeightTransferred, defWeightTransferred)
     end
+    return nil
 end
 
 function PI2ABCore.PutInBagFromInventory(playerObj, targetContainer, itemIdsToTransfer)
