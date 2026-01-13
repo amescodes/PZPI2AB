@@ -36,9 +36,7 @@ ISInventoryPaneContextMenu.OnNewCraft = function(selectedItem, recipe, player, a
     old_ISInventoryPaneContextMenu_OnNewCraft(selectedItem, recipe, player, all, eatPercentage)
 
     local playerObj = getSpecificPlayer(player)
-    if not PI2AB.Enabled or not PI2ABUtil.IsAllowed(playerObj) then
-        return
-    end
+    if not PI2AB.Enabled or not PI2ABUtil.IsAllowed(playerObj) or recipe:getCategory() == 'Cooking' then return end
 
     local queueObj = ISTimedActionQueue.getTimedActionQueue(playerObj)
     local queue = queueObj.queue

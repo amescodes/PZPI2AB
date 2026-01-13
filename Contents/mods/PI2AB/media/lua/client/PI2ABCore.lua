@@ -15,6 +15,13 @@ function PI2ABCore.PutInBagRecipe(playerObj,playerInv,selectedItemContainer,targ
         local allItems = playerInv:getItems()
         if completedAct.pi2ab_timestamp then
             result = PI2ABCore.PutInBag(playerObj,playerInv,selectedItemContainer,targetContainer,completedAct, allItems, srcItems)
+            
+            local defOption = PI2ABCore.WhenToTransfer[PI2AB.WhenToTransferItems]
+            if defOption == 'AfterEach' then
+                -- don't need to track this in AfterEach mode
+                result.targetWeightTransferred = 0
+                result.defWeightTransferred = 0
+            end
         end
     end
 

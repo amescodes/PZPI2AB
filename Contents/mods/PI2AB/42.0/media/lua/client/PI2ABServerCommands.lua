@@ -4,7 +4,6 @@ local Commands = {}
 Commands.PI2AB = {}
 
 Commands.PI2AB.transferFromInventoryOnCraftComplete = function(args)
-
     local player = getSpecificPlayer(args.playerNum)
     if not player or not PI2AB.Enabled or not PI2ABUtil.IsAllowed(player) then
         return

@@ -1,4 +1,4 @@
-local transferOnCraftComplete = function(completedAction, playerObj, square)
+local transferOnCraftComplete = function(completedAction)
     if completedAction.pi2ab_timestamp then
         PI2AB.LastMechanicTimestamp = completedAction.pi2ab_timestamp
     end
@@ -17,7 +17,7 @@ function ISVehiclePartMenu.onUninstallPart(playerObj, part)
         if queue then
             local action = PI2ABUtil.GetUninstallVehiclePartAction(queue)
             if action then
-                action:setOnComplete(transferOnCraftComplete, action, playerObj,part:getVehicle():getSquare())
+                action:setOnComplete(transferOnCraftComplete, action)
 
                 local timestamp = os.time()
                 action.pi2ab_timestamp = timestamp

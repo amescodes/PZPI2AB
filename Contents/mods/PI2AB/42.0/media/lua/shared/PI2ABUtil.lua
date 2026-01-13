@@ -128,6 +128,20 @@ function PI2ABUtil.GetActualItemsFromSource(playerInv, source)
     return actualItems
 end
 
+function PI2ABUtil.GetActualItemsFromMoveablesSource(playerInv, source)
+    local actualItems = ArrayList.new()
+    if source and source:size() > 0 then
+        for k = 0, source:size() - 1 do
+            local srcItem = source:get(k)
+            local actualItem = playerInv:FindAndReturn(srcItem)
+            if actualItem then
+                actualItems:add(actualItem)
+            end
+        end
+    end
+    return actualItems
+end
+
 function PI2ABUtil.GetAddBackActionsFromQueue(queueObj, recipeData, startIndex)    
     local queue = queueObj.queue
     local destroyItems = recipeData and recipeData:getAllDestroyInputItems() or nil
@@ -153,19 +167,6 @@ function PI2ABUtil.IsAllowed(playerObj)
     return true
 end
 
-function PI2ABUtil.GetActualItemsFromMoveablesSource(playerInv, source)
-    local actualItems = ArrayList.new()
-    if source and source:size() > 0 then
-        for k = 0, source:size() - 1 do
-            local srcItem = source:get(k)
-            local actualItem = playerInv:FindAndReturn(srcItem)
-            if actualItem then
-                actualItems:add(actualItem)
-            end
-        end
-    end
-    return actualItems
-end
 
 function PI2ABUtil.GetItemIds(items)
     local ids = {}

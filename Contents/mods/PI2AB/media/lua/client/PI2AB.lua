@@ -130,12 +130,17 @@ LuaEventManager.AddEvent("OnFillInventoryContextMenuNoItems")
 Events.OnFillInventoryContextMenuNoItems.Add(resetTargetContextMenuEntry)
 
 local mechanicActionDone = function(chr, success, vehicleId, partId, itemId, installing)
+    --support for AutoMechanics mod
+    if AutoMechanics and AutoMechanics.onAutoMechanicsTrain_started then
+        return
+    end
+
     local playerInv = chr:getInventory()
     local targetContainer = PI2AB.getTargetContainer(chr)
     local playerNum = chr:getPlayerNum()
 
     local timestamp = PI2AB.LastMechanicTimestamp
-	if success and timestamp and timestamp ~= 0 and not installing then
+	if success and timestamp and timestamp ~= 0 and ((not installing) or partId == "Engine") then
         local comparer = PI2ABComparer.get(timestamp)
         if comparer then
             local allItems = playerInv:getItems()

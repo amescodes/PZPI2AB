@@ -44,15 +44,26 @@ When crafting/dismantling multiple items at once ("All" option), you can choose 
 - **After Each**: Items are transferred immediately after each individual craft/dismantle task
 - **At End**: Items are transferred only after all crafting/dismantling tasks are completed
 
+Note: Automatic transfer of 'Cooking' craft recipes is not currently supported because I personally don't usually want those to transfer. Look to planned features if you find this annoying. :)
+
 ## Known Incompatibilities
 
-(B42) ![Tidy Up Meister](https://steamcommunity.com/sharedfiles/filedetails/?id=2769706949)
-(Updated 12/27/2025)
+If you experience any issues alongside other mods, please provide a mod list and console log ![here](). Without at least a mod list, I won't be able to determine what the incompatibility is.
+
+### B41 (Updated 1/12/2026)
+
+- ![Inventory Tetris - Grid Based Inventory Overhaul [B41 Legacy Version]](https://steamcommunity.com/sharedfiles/filedetails/?id=2982070344)
+
+### B42 (Updated 1/13/2026)
+
+- ![Inventory Tetris - Grid Based Inventory Overhaul [B42]](https://steamcommunity.com/sharedfiles/filedetails/?id=3397561666)
+- ![Tidy Up Meister](https://steamcommunity.com/sharedfiles/filedetails/?id=2769706949)
 
 ## Planned Features
 
-- Filter ingredients from automatically transferring (ie, scrap wood)
-- Filter recipes from automatically transferring their result(s)
+- Player option to filter ingredients from automatically transferring (ie, scrap wood)
+- Player option to filter recipes from automatically transferring their result(s)
+- Player option to filter recipe categories from automatically transferring their result(s)
 - Sandbox option for traits to affect ability to transfer items (ie, a player with Disorganized or All Thumbs won't transfer automatically)
 
 ## Credits

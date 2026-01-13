@@ -13,7 +13,6 @@ function ISVehicleMenu.onRemoveBurntVehicle(player, vehicle)
             local action = PI2ABUtil.GetRemoveBurntVehicleAction(queue)
             if action then
                 local beforeItems = PI2ABUtil.GetObjectsOnAndAroundSquare(square)
-                -- action:setOnComplete(transferFromGroundOnCraftComplete, action, player, square)
                 action:setOnComplete(PI2ABCore.PutInBagFromGround, action, player, square)
 
                 local timestamp = os.time()

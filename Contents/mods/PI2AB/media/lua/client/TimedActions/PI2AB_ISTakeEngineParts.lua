@@ -11,7 +11,10 @@ end
 
 local old_ISTakeEngineParts_forceStop = ISTakeEngineParts.forceStop
 function ISTakeEngineParts:forceStop()
-	if self.timestamp then PI2ABComparer.remove(self.timestamp) end
+	if self.pi2ab_timestamp then 
+		PI2ABComparer.remove(self.pi2ab_timestamp) 
+		PI2AB.LastMechanicTimestamp = 0
+	end
 	
     old_ISTakeEngineParts_forceStop(self);
 end

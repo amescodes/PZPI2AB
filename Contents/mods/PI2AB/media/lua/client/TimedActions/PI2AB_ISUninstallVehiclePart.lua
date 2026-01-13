@@ -11,7 +11,10 @@ end
 
 local old_ISUninstallVehiclePart_forceStop = ISUninstallVehiclePart.forceStop
 function ISUninstallVehiclePart:forceStop()
-	if self.pi2ab_timestamp then PI2ABComparer.remove(self.pi2ab_timestamp) end
+	if self.pi2ab_timestamp then 
+		PI2ABComparer.remove(self.pi2ab_timestamp) 
+		PI2AB.LastMechanicTimestamp = 0
+	end
 	
     old_ISUninstallVehiclePart_forceStop(self);
 end

@@ -84,29 +84,27 @@ end
 local old_ISInventoryPaneContextMenu_OnCraft = ISInventoryPaneContextMenu.OnCraft
 ISInventoryPaneContextMenu.OnCraft = function(selectedItem, recipe, player, all)
     old_ISInventoryPaneContextMenu_OnCraft(selectedItem, recipe, player, all)
-    if PI2AB.Enabled then
-        local playerObj = getSpecificPlayer(player)
-        if not PI2AB.IsAllowed(playerObj) then
-            return
-        end
-        
-        local container = selectedItem:getContainer()
-        local selectedItemContainer = container
-        if not recipe:isCanBeDoneFromFloor() then
-            container = playerObj:getInventory()
-        end
-        local containers = ISInventoryPaneContextMenu.getContainers(playerObj)
+    
+    local playerObj = getSpecificPlayer(player)
+    if not PI2AB.Enabled or not PI2AB.IsAllowed(playerObj) or recipe:getCategory() == 'Cooking' then return end
+    
+    local container = selectedItem:getContainer()
+    local selectedItemContainer = container
+    if not recipe:isCanBeDoneFromFloor() then
+        container = playerObj:getInventory()
+    end
+    local containers = ISInventoryPaneContextMenu.getContainers(playerObj)
 
-        local queue = ISTimedActionQueue.getTimedActionQueue(playerObj).queue
-        if queue then
-            local action = PI2ABUtil.GetCraftAction(recipe,queue)
-            if action then
-                action:setOnComplete(ISInventoryPaneContextMenu_transferOnCraftComplete, action, recipe, playerObj, selectedItemContainer,container,containers,all)
-                
-                local timestamp = os.time()
-                action.pi2ab_timestamp = timestamp
-                PI2ABComparer.create(timestamp,playerObj:getInventory():getItems())
-            end
+    local queue = ISTimedActionQueue.getTimedActionQueue(playerObj).queue
+    if queue then
+        local action = PI2ABUtil.GetCraftAction(recipe,queue)
+        if action then
+            action:setOnComplete(ISInventoryPaneContextMenu_transferOnCraftComplete, action, recipe, playerObj, selectedItemContainer,container,containers,all)
+            
+            local timestamp = os.time()
+            action.pi2ab_timestamp = timestamp
+            PI2ABComparer.create(timestamp,playerObj:getInventory():getItems())
         end
     end
 end
+

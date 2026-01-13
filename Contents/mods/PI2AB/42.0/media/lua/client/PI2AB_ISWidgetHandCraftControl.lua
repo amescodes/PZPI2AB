@@ -11,17 +11,20 @@ local ISWidgetHandCraftControl_transferOnHandcraftActionComplete = function(args
 	local targetContainer = PI2ABCore.GetTargetContainer(player)
 
     local result = PI2ABCore.PutInBag(player, timestamp,args.selectedItemContainer, targetContainer, itemIdsToTransfer,comparer.targetWeightTransferred, comparer.defWeightTransferred)
+        
+    local defOption = PI2ABCore.WhenToTransfer[PI2AB.WhenToTransferItems]
+    if defOption ~= 'AfterEach' then
+        local split = PI2ABUtil.SplitString(timestamp, '_')    
+        local currentActionIndex = split[2]
+        local nextActionIndex = tonumber(currentActionIndex) + 1
     
-    local split = PI2ABUtil.SplitString(timestamp, '_')    
-    local currentActionIndex = split[2]
-    local nextActionIndex = tonumber(currentActionIndex) + 1
-
-    local nextComparerId = split[1] .. "_" .. tostring(nextActionIndex)
-
-    local nextComparer = PI2ABComparer.get(nextComparerId)
-    if nextComparer then
-        nextComparer.targetWeightTransferred = result and result.targetWeightTransferred or 0
-        nextComparer.defWeightTransferred = result and result.defWeightTransferred or 0
+        local nextComparerId = split[1] .. "_" .. tostring(nextActionIndex)
+    
+        local nextComparer = PI2ABComparer.get(nextComparerId)
+        if nextComparer then
+            nextComparer.targetWeightTransferred = result and result.targetWeightTransferred or 0
+            nextComparer.defWeightTransferred = result and result.defWeightTransferred or 0
+        end        
     end
 
     local actionsToAddBack = comparer.actionsToAddBack
@@ -46,7 +49,8 @@ function ISWidgetHandCraftControl:startHandcraft(force)
     old_ISWidgetHandCraftControl_startHandcraft(self, force)
 
     local playerObj = self.player
-    if not PI2AB.Enabled or not PI2ABUtil.IsAllowed(playerObj) then
+    local recipe = self.logic:getRecipe()
+    if not PI2AB.Enabled or not PI2ABUtil.IsAllowed(playerObj) or recipe:getCategory() == 'Cooking' then
         return
     end
     
@@ -70,10 +74,10 @@ function ISWidgetHandCraftControl:startHandcraft(force)
 
         local timestamp = os.time()
         for i = 0, ct - 1 do
-            local action,j = PI2ABUtil.GetCraftAction(recipeData:getRecipe(), queue, i)
+            local action,j = PI2ABUtil.GetCraftAction(recipe, queue, i)
             if action then
                 local uniqueId = timestamp .. "_" .. tostring(i)
-                local args = PI2ABTransferArgs:new(playerObj:getPlayerNum(),nil,self, self.logic:getRecipe(), selectedItem:getContainer(), action.containers, selectedItem, uniqueId,sourceItemIds)
+                local args = PI2ABTransferArgs:new(playerObj:getPlayerNum(),nil,self, recipe, selectedItem:getContainer(), action.containers, selectedItem, uniqueId,sourceItemIds)
 
                 action:setOnComplete(ISWidgetHandCraftControl_transferOnHandcraftActionComplete, args)
                 action:setOnCancel(ISWidgetHandCraftControl_onHandcraftActionCancelled, args);

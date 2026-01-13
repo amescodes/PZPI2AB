@@ -13,12 +13,23 @@ function PI2ABUtil.GetMovablesAction(queue)
     return nil
 end
 
+function PI2ABUtil.GetTakeEnginePartsAction(queue)
+    for i = 1, #queue do
+        local action = queue[i]
+
+        if action.vehicle and action.part and action.part:getId() == "Engine" then
+            return action
+        end
+    end
+    return nil
+end
+
 function PI2ABUtil.GetUninstallVehiclePartAction(queue)
     for i = 1, #queue do
         local action = queue[i]
 
         if action.vehicle and action.part and action.jobType
-            and action.jobType == getText("Tooltip_Vehicle_Uninstalling", action.part:getInventoryItem():getDisplayName())then
+            and action.jobType == getText("Tooltip_Vehicle_Uninstalling", action.part:getInventoryItem():getDisplayName()) then
             return action
         end
     end
@@ -96,6 +107,15 @@ function PI2ABUtil.GetActualItemsFromMoveablesSource(playerInv,source)
         end
     end
     return actualItems
+end
+
+function PI2ABUtil.IsAllowed(playerObj)
+    -- todo add sandbox setting
+    -- if playerObj:hasTrait(CharacterTrait.DISORGANIZED) then return end
+    -- b41: if playerObj:HasTrait("Disorganized") then
+    --     return false
+    -- end
+    return true
 end
 
 -- from ISInventoryPage:refreshBackpacks()
