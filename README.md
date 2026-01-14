@@ -73,7 +73,7 @@ Note: Automatic transfer of 'Cooking' craft recipes is not currently supported b
 
 ## Known Mod Incompatibilities
 
-If you experience any issues alongside other mods, please provide a mod list and console log [here](). Without at least a mod list, I won't be able to determine what the incompatibility is.
+If you experience any issues alongside other mods, please provide a mod list and console log [here](https://steamcommunity.com/workshop/filedetails/discussion/3646521075/689746766007965329/). Without at least a mod list, I won't be able to determine what the incompatibility is.
 
 #### B41 (Updated 1/13/2026)
 
