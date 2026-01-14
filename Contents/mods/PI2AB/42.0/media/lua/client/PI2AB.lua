@@ -33,17 +33,6 @@ function PI2AB.init()
     end
 end
 
--- function PI2AB.getTargetContainer(playerObj)
---     local playerInv = playerObj:getInventory()
---     if PI2AB.TargetContainer and PI2AB.TargetContainer ~= "" then
---         local item = playerInv:getItemWithID(PI2AB.TargetContainer)
---         if item and item:isEquipped() then
---             return item:getItemContainer()
---         end
---     end
---     return nil
--- end
-
 local function setTargetContainer(playerNum,container)
     local containerId = container:getID()
     PI2ABUtil.Print("setTargetContainer: container Id "..tostring(containerId), true)
@@ -80,7 +69,7 @@ local function setTargetContextMenuEntry(player, context, items)
         if instanceof(testItem, "InventoryContainer") and testItem:isEquipped() then
             if testItem:getFullType() == "Base.KeyRing" then return end
 
-            local targetContainerOption = context:insertOptionAfter(getText("IGUI_CraftUI_Favorite"), getText("IGUI_PI2AB_TargetContainer"), testItem, makeTargetContainer, player)
+            local targetContainerOption = context:insertOptionBefore(getText("ContextMenu_More"), getText("IGUI_PI2AB_TargetContainer"), testItem, makeTargetContainer, player)
             targetContainerOption.tooltip = getText("IGUI_PI2AB_TargetContainer_tooltip")
             local texture = getTexture("media/ui/RadioButtonCircle.png")
             local alreadyTarget = isTargetContainer(testItem)

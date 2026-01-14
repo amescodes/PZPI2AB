@@ -26,6 +26,11 @@ local old_ISVehiclePartMenu_onUninstallPart = ISVehiclePartMenu.onUninstallPart
 function ISVehiclePartMenu.onUninstallPart(player, part)
     old_ISVehiclePartMenu_onUninstallPart(player, part)
     
+    --support for AutoMechanics mod
+    if AutoMechanics and AutoMechanics.onAutoMechanicsTrain_started then
+        return
+    end
+
     if not PI2AB.Enabled or not PI2ABUtil.IsAllowed(player) then
         return
     end
