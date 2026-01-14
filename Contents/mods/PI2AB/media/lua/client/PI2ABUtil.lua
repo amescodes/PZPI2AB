@@ -13,12 +13,23 @@ function PI2ABUtil.GetMovablesAction(queue)
     return nil
 end
 
+function PI2ABUtil.GetTakeEnginePartsAction(queue)
+    for i = 1, #queue do
+        local action = queue[i]
+
+        if action.vehicle and action.part and action.part:getId() == "Engine" then
+            return action
+        end
+    end
+    return nil
+end
+
 function PI2ABUtil.GetUninstallVehiclePartAction(queue)
     for i = 1, #queue do
         local action = queue[i]
 
         if action.vehicle and action.part and action.jobType
-            and action.jobType == getText("Tooltip_Vehicle_Uninstalling", action.part:getInventoryItem():getDisplayName())then
+            and action.jobType == getText("Tooltip_Vehicle_Uninstalling", action.part:getInventoryItem():getDisplayName()) then
             return action
         end
     end
@@ -36,31 +47,24 @@ function PI2ABUtil.GetRemoveBurntVehicleAction(queue)
     return nil
 end
 
-function PI2ABUtil.GetCraftAction(recipe, queue, skipCt)
-    if not skipCt then
-        skipCt = 0
-    end
+function PI2ABUtil.GetDismantleAction(queue)
+    for i = 1, #queue do
+        local action = queue[i]
 
-    local skips = 0
+        if action.vehicle then
+            return action
+        end
+    end
+    return nil
+end
+
+function PI2ABUtil.GetCraftAction(recipe, queue)
     for i = 1, #queue do
         local action = queue[i]
 
         if (action.recipe and action.jobType and action.jobType == recipe:getName()) or (action.craftRecipe and action.craftRecipe == recipe) then
-            if skips >= skipCt then
-                return action
-            else
-                skips = skips + 1
-            end
+            return action
         end
-
-        -- -- from craft menu
-        -- if action.craftRecipe and action.craftRecipe == recipe then
-        --     if skips >= skipCt then
-        --         return action
-        --     else
-        --         skips = skips + 1
-        --     end
-        -- end
     end
     return nil
 end
@@ -75,9 +79,9 @@ function PI2ABUtil.GetCraftActionDesc(recipe, queue)
     return nil
 end
 
-function PI2ABUtil.GetActualItemsFromSource(playerInv, source)
+function PI2ABUtil.GetActualItemsFromSource(playerInv,source)
     local actualItems = ArrayList.new()
-    if source and source:size() > 0 then
+    if source then
         for j = 0, source:size() - 1 do
             local recipeSource = source:get(j)
             if recipeSource:isKeep() then
@@ -85,11 +89,21 @@ function PI2ABUtil.GetActualItemsFromSource(playerInv, source)
                 for k = 0, srcItems:size() - 1 do
                     local srcItem = srcItems:get(k)
                     local actualItem = playerInv:FindAndReturn(srcItem)
-                    if actualItem then
-                        actualItems:add(actualItem)
-                    end
+                    if actualItem then actualItems:add(actualItem) end
                 end
             end
+        end
+    end
+    return actualItems
+end
+
+function PI2ABUtil.GetActualItemsFromMoveablesSource(playerInv,source)
+    local actualItems = ArrayList.new()
+    if source then
+        for k = 0, source:size() - 1 do
+            local srcItem = source:get(k)
+            local actualItem = playerInv:FindAndReturn(srcItem)
+            if actualItem then actualItems:add(actualItem) end
         end
     end
     return actualItems
@@ -104,28 +118,14 @@ function PI2ABUtil.IsAllowed(playerObj)
     return true
 end
 
-function PI2ABUtil.GetActualItemsFromMoveablesSource(playerInv, source)
-    local actualItems = ArrayList.new()
-    if source and source:size() > 0 then
-        for k = 0, source:size() - 1 do
-            local srcItem = source:get(k)
-            local actualItem = playerInv:FindAndReturn(srcItem)
-            if actualItem then
-                actualItems:add(actualItem)
-            end
-        end
-    end
-    return actualItems
-end
-
 -- from ISInventoryPage:refreshBackpacks()
 function PI2ABUtil.GetObjectsOnAndAroundSquare(square)
     local cx = square:getX()
     local cy = square:getY()
     local cz = square:getZ()
     local sqs = {}
-    for dy = -1, 1 do
-        for dx = -1, 1 do
+    for dy=-1,1 do
+        for dx=-1,1 do
             local sq = getCell():getGridSquare(cx + dx, cy + dy, cz)
             if sq then
                 table.insert(sqs, sq)
@@ -134,20 +134,18 @@ function PI2ABUtil.GetObjectsOnAndAroundSquare(square)
     end
 
     local items = ArrayList.new()
-
+    
     -- items on square
     local wobs = square:getWorldObjects()
-    for i = 0, wobs:size() - 1 do
+    for i = 0, wobs:size()-1 do
         local o = wobs:get(i)
         if o then
             local item = o:getItem()
-            if item then
-                items:add(item)
-            end
+            if item and not items:contains(item) then items:add(item) end
         end
     end
     -- items on surrounding squares
-    for _, gs in ipairs(sqs) do
+    for _,gs in ipairs(sqs) do
         -- stop grabbing thru walls...
         if gs ~= square and square and square:isBlockedTo(gs) then
             gs = nil
@@ -155,17 +153,16 @@ function PI2ABUtil.GetObjectsOnAndAroundSquare(square)
 
         if gs ~= nil then
             local wobs = gs:getWorldObjects()
-            for i = 0, wobs:size() - 1 do
+            for i = 0, wobs:size()-1 do
                 local o = wobs:get(i)
                 if o then
                     local item = o:getItem()
-                    if item then
-                        items:add(item)
-                    end
+                    if item and not items:contains(item) then items:add(item) end
                 end
             end
         end
     end
+
     return items
 end
 
@@ -190,8 +187,7 @@ function PI2ABUtil.PrintQueue(playerObj)
                 local srcContainer = action.srcContainer
                 if destContainer or srcContainer then
                     local item = action.item:getFullType()
-                    jobType = "Transfer " .. tostring(item) .. " (" .. action.item:getID() .. ") from " ..
-                                  tostring(srcContainer:getType()) .. " to " .. tostring(destContainer:getType())
+                    jobType = "Transfer "..tostring(item).." ("..action.item:getID()..") from " .. tostring(srcContainer:getType()) .. " to " .. tostring(destContainer:getType())
                     PI2ABUtil.Print(tostring(i) .. ") action: " .. jobType, true)
                 else
                     jobType = "???"
@@ -199,8 +195,7 @@ function PI2ABUtil.PrintQueue(playerObj)
                     PI2ABUtil.Print(tostring(i) .. ") unknown job...item: " .. item, true)
                 end
             else
-                PI2ABUtil.Print(tostring(i) .. ") action: " .. jobType .. " (item id: " .. action.item:getID() .. ")",
-                    true)
+                PI2ABUtil.Print(tostring(i) .. ") action: " .. jobType.." (item id: "..action.item:getID()..")", true)
             end
         end
 

@@ -13,8 +13,7 @@ end
 local old_ISRemoveBurntVehicle_forceStop = ISRemoveBurntVehicle.forceStop
 function ISRemoveBurntVehicle:forceStop()
 	if self.pi2ab_timestamp then 
-		PI2ABComparer.remove(self.pi2ab_timestamp) 
-		PI2AB.LastMechanicTimestamp = 0
+		PI2ABComparer.remove(self.pi2ab_timestamp)
 	end
 	
     old_ISRemoveBurntVehicle_forceStop(self);

@@ -11,61 +11,62 @@ function PI2ABComparer.remove(time)
     PI2ABComparer.Comparers[time] = nil
 end
 
-function PI2ABComparer.create(time, items, previousActionItems, targetWeightTransferred, defWeightTransferred)
-    local comparer = PI2ABComparer:new(time, targetWeightTransferred, defWeightTransferred)
+function PI2ABComparer.create(time,actionsToAddBack, items, previousActionItems)
+    local comparer = PI2ABComparer:new(time)
 
-    if previousActionItems then
-        local prevItems = PI2ABUtil.ShallowClone(items)
-        for i = 0, previousActionItems:size() - 1 do
-            local item = previousActionItems:get(i)
-            if item then
-                local foundBeforeItem = prevItems:remove(item)
-            end
+    local beforeIds = {}
+    for i = 0, items:size() - 1 do
+        local item = items:get(i)
+        if item then
+            local id = item:getID()
+            if id then table.insert(beforeIds, id, item) end
         end
-        items = prevItems
     end
 
-    comparer:setBefore(items)
+    if previousActionItems then
+        for i = 0, previousActionItems:size() - 1 do
+            local prevItem = previousActionItems:get(i)
+            if prevItem then
+                local prevId = prevItem:getID()
+                if beforeIds[prevId] then
+                    beforeIds[prevId] = nil
+                end
+            end
+        end
+    end
+
+    comparer.before = beforeIds
+    comparer.actionsToAddBack = actionsToAddBack
     PI2ABComparer.Comparers[time] = comparer
     return comparer
 end
 
-function PI2ABComparer:setBefore(items)
-    if not items then
-        self.before = ArrayList.new()
-    else
-        self.before = PI2ABUtil.ShallowClone(items)
-    end
-end
-
-function PI2ABComparer:compare(items, source)
-    if not self.before then
-        return
-    end
-    if not items then
+function PI2ABComparer:compare(afterItems, sourceItemIds)
+    if not afterItems then
         return
     end
 
-    -- set to after items to start
-    local result = PI2ABUtil.ShallowClone(items)
-
-    for i = 0, self.before:size() - 1 do
-        local item = self.before:get(i)
+    local transferIds = {}
+    for i = 0, afterItems:size() - 1 do
+        local item = afterItems:get(i)
         if item then
-            local foundBeforeItem = result:remove(item)
-        end
-    end
-
-    if source then
-        for j = 0, source:size() - 1 do
-            local srcItem = source:get(j)
-            if srcItem and result:contains(srcItem) then
-                local foundSrcItem = result:remove(srcItem)
+            local itemId = item:getID()
+            if self.before[itemId] == nil then
+                transferIds[itemId] = item
             end
         end
     end
 
-    return result
+    if sourceItemIds and #sourceItemIds > 0 then
+        for j = 1, #sourceItemIds do
+            local srcItemId = sourceItemIds[j]
+            if transferIds[srcItemId] then
+                transferIds[srcItemId] = nil
+            end
+        end
+    end
+
+    return transferIds
 end
 
 function PI2ABComparer:compareDebug(items, source)
@@ -120,7 +121,7 @@ function PI2ABComparer:compareDebug(items, source)
     return result
 end
 
-function PI2ABComparer:new(time,targetWeightTransferred,defWeightTransferred)
+function PI2ABComparer:new(time)
     local o = {}
     setmetatable(o, self)
     self.__index = self
@@ -128,8 +129,26 @@ function PI2ABComparer:new(time,targetWeightTransferred,defWeightTransferred)
     o.pi2ab_timestamp = time
     o.before = nil
 
-    o.targetWeightTransferred = targetWeightTransferred or 0
-    o.defWeightTransferred = defWeightTransferred or 0
+    o.actionsToAddBack = nil
+
+    o.targetWeightTransferred = 0
+    o.defWeightTransferred = 0
 
     return o
 end
+
+local function clearComparers()
+    local player = getPlayer()
+    local state = player:getActionStateName()
+    if player:isPerformingAnAction() or state ~= "idle" or #PI2ABComparer.Comparers == 0 then
+        return
+    end
+
+    PI2ABUtil.Print("Leftover comparers:",true)
+    PI2ABUtil.PrintTable(PI2ABComparer.Comparers)
+    PI2ABUtil.Print("--------",true)
+
+    PI2ABComparer.Comparers = {}
+end
+
+Events.EveryTenMinutes.Add(clearComparers)

@@ -1,13 +1,46 @@
 local ISWidgetHandCraftControl_transferOnHandcraftActionComplete = function(args)
-    local playerObj = args.playerObj
-    local playerInv = playerObj:getInventory()
-    PI2ABCore.PutInBag(playerObj, playerInv, args.container, PI2AB.getTargetContainer(playerObj), args.completedAction, playerInv:getItems(),args.recipe:getAllInputItems())
+    if isServer() then return end
+
+    local timestamp = args.timestamp
+    local comparer = PI2ABComparer.get(timestamp)
+    if not comparer then return end
+    
+    local player = getSpecificPlayer(args.playerNum)
+    local allItems = player:getInventory():getItems()
+    local itemIdsToTransfer = comparer:compare(allItems, args.sourceItemIds)
+	local targetContainer = PI2ABCore.GetTargetContainer(player)
+
+    local result = PI2ABCore.PutInBag(player, timestamp,args.selectedItemContainer, targetContainer, itemIdsToTransfer,comparer.targetWeightTransferred, comparer.defWeightTransferred)
+        
+    local defOption = PI2ABCore.WhenToTransfer[PI2AB.WhenToTransferItems]
+    if defOption ~= 'AfterEach' then
+        local split = PI2ABUtil.SplitString(timestamp, '_')    
+        local currentActionIndex = split[2]
+        local nextActionIndex = tonumber(currentActionIndex) + 1
+    
+        local nextComparerId = split[1] .. "_" .. tostring(nextActionIndex)
+    
+        local nextComparer = PI2ABComparer.get(nextComparerId)
+        if nextComparer then
+            nextComparer.targetWeightTransferred = result and result.targetWeightTransferred or 0
+            nextComparer.defWeightTransferred = result and result.defWeightTransferred or 0
+        end        
+    end
+
+    local actionsToAddBack = comparer.actionsToAddBack
+    if actionsToAddBack and #actionsToAddBack > 0 then
+        for i = 1, #actionsToAddBack do
+            ISTimedActionQueue.add(actionsToAddBack[i])
+        end
+    end
+    
+    PI2ABComparer.remove(timestamp)
     args.widget:onHandcraftActionComplete()
 end
 
 local ISWidgetHandCraftControl_onHandcraftActionCancelled = function(args)
-    local action = args.completedAction
-    if action then PI2ABComparer.remove(action.pi2ab_timestamp) end
+    local timestamp = args.timestamp
+    if timestamp then PI2ABComparer.remove(timestamp) end
     args.widget:onHandcraftActionCancelled()
 end
 
@@ -15,39 +48,49 @@ local old_ISWidgetHandCraftControl_startHandcraft = ISWidgetHandCraftControl.sta
 function ISWidgetHandCraftControl:startHandcraft(force)
     old_ISWidgetHandCraftControl_startHandcraft(self, force)
 
-    if PI2AB.Enabled then
-        local playerObj = self.player
-        if not PI2ABUtil.IsAllowed(playerObj) then
-            return
+    local playerObj = self.player
+    local recipe = self.logic:getRecipe()
+    if not PI2AB.Enabled or not PI2ABUtil.IsAllowed(playerObj) or recipe:getCategory() == 'Cooking' then
+        return
+    end
+    
+    local queueObj = ISTimedActionQueue.getTimedActionQueue(playerObj)
+    local queue = queueObj.queue
+    if queue then
+        local ct = self.craftTimes
+        local recipeData = self.logic:getRecipeData()
+        
+        local sourceItems = recipeData:getAllKeepInputItems()
+        local sourceItemIds = PI2ABUtil.GetItemIds(sourceItems)
+
+        local selectedItem = nil
+        local destroyedItems = recipeData:getAllDestroyInputItems()
+        if destroyedItems and destroyedItems:size() > 0 then
+            selectedItem = destroyedItems:get(0)
+        else
+            local inputItems = recipeData:getAllInputItems()
+            selectedItem = inputItems:get(inputItems:size() - 1)
         end
 
-        local queue = ISTimedActionQueue.getTimedActionQueue(playerObj).queue
-        if queue then
-            local ct = self.craftTimes
-            local recipeData = self.logic:getRecipeData()
-            
-            local selectedItem = nil            
-            local destroyedItems = recipeData:getAllDestroyInputItems()
-            if destroyedItems and destroyedItems:size() > 0 then
-                selectedItem = destroyedItems:get(0)
-            else
-                local inputItems = recipeData:getAllInputItems()
-                selectedItem = inputItems:get(inputItems:size() - 1)
-            end
+        local timestamp = os.time()
+        for i = 0, ct - 1 do
+            local action,j = PI2ABUtil.GetCraftAction(recipe, queue, i)
+            if action then
+                local uniqueId = timestamp .. "_" .. tostring(i)
+                local args = PI2ABTransferArgs:new(playerObj:getPlayerNum(),nil,self, recipe, selectedItem:getContainer(), action.containers, selectedItem, uniqueId,sourceItemIds)
 
-            for i = 0, ct - 1 do
-                local action = PI2ABUtil.GetCraftAction(recipeData:getRecipe(), queue, i)
-                if action then
-                    local args = PI2ABTransferArgs:new(nil, self, action, recipeData, playerObj,
-                        selectedItem:getContainer(), action.containers, selectedItem)
+                action:setOnComplete(ISWidgetHandCraftControl_transferOnHandcraftActionComplete, args)
+                action:setOnCancel(ISWidgetHandCraftControl_onHandcraftActionCancelled, args);
 
-                    action:setOnComplete(ISWidgetHandCraftControl_transferOnHandcraftActionComplete, args)
-                    action:setOnCancel(ISWidgetHandCraftControl_onHandcraftActionCancelled, args);
-
-                    local pi2ab_timestamp = os.time() + i
-                    action.pi2ab_timestamp = pi2ab_timestamp
-                    PI2ABComparer.create(pi2ab_timestamp, playerObj:getInventory():getItems())
+                local actionsToAddBack
+                if i == ct - 1 then
+                    actionsToAddBack = PI2ABUtil.GetAddBackActionsFromQueue(queueObj, recipeData, j)
                 end
+
+                PI2ABComparer.create(uniqueId, actionsToAddBack, playerObj:getInventory():getItems())
+
+                local dummyAction = PI2ABDummyAction:new(playerObj, uniqueId)
+                ISTimedActionQueue.addAfter(action, dummyAction)
             end
         end
     end

@@ -10,7 +10,7 @@ ISCraftingUI_transferOnCraftComplete = function(completeAction, recipe, playerOb
     -- PI2ABUtil.PrintQueue(playerObj)
     -- PI2ABUtil.Print("ISCraftingUI_transferOnCraftComplete QUEUE END",true)
 
-    if all then        
+    if all then
         -- from ISCraftingUI:onCraftComplete
         if not RecipeManager.IsRecipeValid(recipe, playerObj, nil, containers) then return end
         local items = RecipeManager.getAvailableItemsNeeded(recipe, playerObj, containers, nil, nil)
@@ -55,59 +55,58 @@ local old_ISCraftingUI_craft = ISCraftingUI.craft
 function ISCraftingUI:craft(button, all)
     old_ISCraftingUI_craft(self,button, all)
 
-    if PI2AB.Enabled then
-        local playerObj = self.character
-        if not PI2AB.IsAllowed(playerObj) then
-            return
-        end
-        
-        local containers = self.containerList
-        local recipeListBox = self:getRecipeListBox()
-        local recipe = recipeListBox.items[recipeListBox.selected].item.recipe
-        
-        local destroyedItem = nil
-        local source = recipe:getSource()
-        for j = 0, source:size() - 1 do
-            local recipeSource = source:get(j)
-            if not recipeSource:isKeep() then
-                local srcItems = recipeSource:getItems()
-                for k = 0, srcItems:size() - 1 do
-                    local srcItem = srcItems:get(k)
-                    for l = 0, containers:size() - 1 do
-                        local actualItem = containers:get(l):FindAndReturn(srcItem)
-                        if actualItem then
-                            destroyedItem = actualItem
-                            break
-                        end
+    local playerObj = self.character
+    if not PI2AB.Enabled or not PI2AB.IsAllowed(playerObj) then
+        return
+    end
+    
+    local containers = self.containerList
+    local recipeListBox = self:getRecipeListBox()
+    local recipe = recipeListBox.items[recipeListBox.selected].item.recipe
+    if recipe:getCategory() == 'Cooking' then return end
+    
+    local destroyedItem = nil
+    local source = recipe:getSource()
+    for j = 0, source:size() - 1 do
+        local recipeSource = source:get(j)
+        if not recipeSource:isKeep() then
+            local srcItems = recipeSource:getItems()
+            for k = 0, srcItems:size() - 1 do
+                local srcItem = srcItems:get(k)
+                for l = 0, containers:size() - 1 do
+                    local actualItem = containers:get(l):FindAndReturn(srcItem)
+                    if actualItem then
+                        destroyedItem = actualItem
+                        break
                     end
-                    if destroyedItem then break end
                 end
                 if destroyedItem then break end
             end
+            if destroyedItem then break end
         end
+    end
 
-        local container = nil
-        if destroyedItem then
-            container = destroyedItem:getContainer()
-        else
-            container = self.containerList[0]
-        end
-        local selectedItemContainer = container
+    local container = nil
+    if destroyedItem then
+        container = destroyedItem:getContainer()
+    else
+        container = self.containerList[0]
+    end
+    local selectedItemContainer = container
 
-        if not recipe:isCanBeDoneFromFloor() then
-            container = playerObj:getInventory()
-        end
+    if not recipe:isCanBeDoneFromFloor() then
+        container = playerObj:getInventory()
+    end
 
-        local queue = ISTimedActionQueue.getTimedActionQueue(playerObj).queue
-        if queue then
-            local action = PI2ABUtil.GetCraftAction(recipe,queue)
-            if action then
-                action:setOnComplete(ISCraftingUI_transferOnCraftComplete, action, recipe, playerObj,selectedItemContainer,container,self.containerList,all,self)
-                
-                local timestamp = os.time()
-                action.pi2ab_timestamp = timestamp
-                PI2ABComparer.create(timestamp,playerObj:getInventory():getItems())
-            end
+    local queue = ISTimedActionQueue.getTimedActionQueue(playerObj).queue
+    if queue then
+        local action = PI2ABUtil.GetCraftAction(recipe,queue)
+        if action then
+            action:setOnComplete(ISCraftingUI_transferOnCraftComplete, action, recipe, playerObj,selectedItemContainer,container,self.containerList,all,self)
+            
+            local timestamp = os.time()
+            action.pi2ab_timestamp = timestamp
+            PI2ABComparer.create(timestamp,playerObj:getInventory():getItems())
         end
     end
 end

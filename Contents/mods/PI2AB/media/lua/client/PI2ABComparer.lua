@@ -133,3 +133,19 @@ function PI2ABComparer:new(time,targetWeightTransferred,defWeightTransferred)
 
     return o
 end
+
+local function clearComparers()
+    local player = getPlayer()
+    local state = player:getActionStateName()
+    if player:isPerformingAnAction() or state ~= "idle" or #PI2ABComparer.Comparers == 0 then
+        return
+    end
+
+    PI2ABUtil.Print("Leftover comparers:",true)
+    PI2ABUtil.PrintTable(PI2ABComparer.Comparers)
+    PI2ABUtil.Print("--------",true)
+
+    PI2ABComparer.Comparers = {}
+end
+
+Events.EveryTenMinutes.Add(clearComparers)
