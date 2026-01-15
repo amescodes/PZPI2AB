@@ -2,7 +2,7 @@
 
 #### Put it in a #$!% bag! (PI2AB) Compatible with Build 41 & 42 MP!
 
-A Project Zomboid mod that automatically transfers crafted and dismantled items to your specified target container. Safe to add/remove mid-game!
+A Project Zomboid mod that automatically transfers the results of crafting/dismantling items to your specified target container. Safe to add/remove mid-game!
 
 [![Steam Workshop Logo](https://github.com/amescodes/PZPI2AB/blob/main/images/workshop_logo.png?raw=true)](https://steamcommunity.com/id/ames_games/myworkshopfiles/?appid=108600)
 
@@ -73,7 +73,7 @@ Note: Automatic transfer of 'Cooking' craft recipes is not currently supported b
 
 ## Known Mod Incompatibilities
 
-If you experience any issues alongside other mods, please provide a mod list and console log [here](). Without at least a mod list, I won't be able to determine what the incompatibility is.
+If you experience any issues alongside other mods, please provide a mod list and console log [here](https://steamcommunity.com/workshop/filedetails/discussion/3646521075/689746766007965329/). Without at least a mod list, I won't be able to determine what the incompatibility is.
 
 #### B41 (Updated 1/13/2026)
 
@@ -97,7 +97,7 @@ If you experience any issues alongside other mods, please provide a mod list and
 ## Mod Notes
 
 - No items are created, removed, or affected in any way by PI2AB. Only new transfer actions are added to the player's queue depending on the player's configuration set in the PI2AB character window tab.
-- When using the 'At End' transfer option, some items may not transfer correctly, especially if the target container is close to capacity or if items were transferred out of the target container to perform the action (eg, unpacking screwdriver to dismantle watch)
+- When using the 'At End' transfer option, some items may not transfer correctly, especially if the target container is close to capacity or if items were transferred out of the target container to perform the action (eg, unpacking screwdriver to dismantle watch.) I will dig into it deeper at a later time, but for now the behavior is more than tolerable.
 
 
 
