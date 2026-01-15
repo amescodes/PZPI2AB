@@ -7,4 +7,5 @@ icon=icon.png
 versionMin=41.0
 url=https://github.com/amescodes/PZPI2AB
 authors=amescodes
+incompatible=PI2AB
 modversion=41.1.0.2

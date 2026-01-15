@@ -1,0 +1,5 @@
+IGUI_PI2AB_TargetContainer = "Target Container"
+IGUI_PI2AB_TargetContainer_tooltip = "Crafted and dismantled items will transfer to this inventory automatically if there is capacity."
+IGUI_PI2AB_IsTargetContainer_tooltip = "This is the current target container. Crafted and dismantled items will transfer to this inventory automatically if there is capacity."
+IGUI_PI2AB_ResetTarget = "Reset Target Container"
+IGUI_PI2AB_ResetTarget_tooltip = "Clears the current target container. Items will transfer to the Default Target set in the PI2AB tab of the character info window."

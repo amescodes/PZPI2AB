@@ -1,0 +1,67 @@
+[h1]Compatible with Build 41 & 42 MP![/h1]
+After crafting or dismantling items, automatically transfer the resulting item(s) to the container of your choice, as long it's equipped to your character!
+
+[url=https://steamcommunity.com/linkfilter/?u=https://ko-fi.com/E1E11KCLJV][img]https://i.imgur.com/NGShmTZ.png[/img][/url]
+
+[h2]Features[/h2]
+[h3]Target Container System[/h3]
+Assign an equipped bag as the "Target Container" that receives the resulting items of various tasks.
+[list][*]Right-click any equipped bag or container to set it as your target container
+[*]Crafted and dismantled items will automatically transfer to the target container if there's room and it is equipped
+[*]If the target container is full or not set, items will go to the default target (configurable from the PI2AB tab in the character panel)
+[*]To reset your target container, right-click the main character inventory and select "Reset Target Container"
+[/list]
+
+[h3]Configuration[/h3]
+Adds a new "PI2AB" tab in your character info panel with several options:
+
+[b]Default Target[/b]
+When there's no target container set, the target container is unequipped, or when the target container is full, items will be transferred to the default target. You have two options:
+[list][*]Player Inventory: Items go to your main inventory (default setting)
+[*]Item Source Container: Items return to the container where one of the crafting ingredients came from
+[/list]
+[b]Transfer Items on All[/b]
+When crafting/dismantling multiple items at once ("All" option), you can choose when the items get transferred:
+[list][*]After Each: Items are transferred immediately after each individual craft/dismantle task
+[*]At End: Items are transferred only after all crafting/dismantling tasks are completed
+[/list]
+
+[h2]Affected Actions[/h2]
+The following actions should trigger automatic transferring:
+[list][*]Craft/dismantle items
+[*]Dismantle car wreck
+[*]Uninstall car part
+[*]Take engine parts
+[*]Disassemble furniture/moveable objects
+[/list]
+Note: Automatic transfer of 'Cooking' craft recipes is not currently supported because personally, I don't usually want those to transfer. Look to planned features if you find this annoying. 😊
+
+[h2]Known Mod Incompatibilities[/h2]
+If you experience any issues alongside other mods, please provide a mod list and console log in the pinned BUG REPORTS discussion below. Without at least a mod list, I won't be able to determine what the incompatibility is.
+
+[b]B41[/b] [i](Updated 1/13/2026)[/i]
+[list][*]Inventory Tetris - Grid Based Inventory Overhaul [B41 Legacy Version]
+[/list]
+[b]B42[/b] [i](Updated 1/13/2026)[/i]
+[list][*]Inventory Tetris - Grid Based Inventory Overhaul [B42]
+[/list]
+
+[h2]Planned Features[/h2]
+[list][*]Player option to filter ingredients from automatically transferring (eg, scrap wood)
+[*]Player option to filter recipes from automatically transferring their result(s)
+[*]Player option to filter recipe categories from automatically transferring their result(s)
+[*]Sandbox option for traits to affect ability to transfer items (eg, a player with Disorganized or All Thumbs won't transfer automatically)
+[/list]
+
+[h3]Mod Notes[/h3]
+[list][*]No items are created, removed, or affected in any way by PI2AB. Only new transfer actions are added to the player's queue depending on the player's configuration set in the PI2AB character window tab.
+[*]When using the 'At End' transfer option, some items may not transfer correctly, especially if the target container is close to capacity or if items were transferred out of the target container to perform the action (eg, unpacking screwdriver to dismantle watch.) I will dig into it deeper at a later time, but for now the behavior is more than tolerable.
+[/list]
+
+[b]Credits[/b]
+PZ modding community for the repo template and being a helpful resource
+
+--------
+[i]Workshop ID: 3646521075
+Mod ID: PI2AB[/i]
+[url=https://steamcommunity.com/linkfilter/?u=https://github.com/amescodes/PZPI2AB][img]https://img.shields.io/badge/github-repo-blue?logo=github[/img][/url]
