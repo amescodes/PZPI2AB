@@ -1,6 +1,6 @@
 version=1
-id=3646521075
-title=[B41/B42 MP] Put it in a #$!% bag! (PI2AB)
+id=3629806215
+title=BETA [B41/B42.13] Put it in a #$!% bag! (PI2AB)
 description=After crafting or dismantling items, automatically transfer the resulting item(s) to the container of your choice, as long it's equipped to your character!
 description=
 description=- Right-click any container to set it as your target container
@@ -8,4 +8,4 @@ description=- Crafted and dismantled items will automatically transfer to the ta
 description=- If the target container is full or not set, items will go to the default target (configurable from the PI2AB tab in the character panel)
 description=- To reset your target container, right-click the main character inventory and select "Reset Target Container"
 tags=Build 41;Build 42;Items;QoL
-visibility=public
+visibility=unlisted
