@@ -72,7 +72,7 @@ end
 function PI2ABUtil.GetCraftActionDesc(recipe, queue)
     for i = #queue, 1, -1 do
         local action = queue[i]
-        if action.recipe and action.jobType and action.jobType == recipe:getName() then
+        if (action.recipe and action.jobType and action.jobType == recipe:getName()) or (action.craftRecipe and action.craftRecipe == recipe) then
             return action
         end
     end

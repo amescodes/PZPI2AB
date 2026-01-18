@@ -74,7 +74,7 @@ function PI2ABUtil.GetCraftActionDesc(recipe, queue)
     for i = #queue, 1, -1 do
         local action = queue[i]
         if action.Type == "ISHandcraftAction" and action.craftRecipe == recipe then
-            return action
+            return action,i
         end
     end
     return nil

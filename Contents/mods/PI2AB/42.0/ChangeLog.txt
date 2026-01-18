@@ -8,6 +8,11 @@
 [ ------ ]
 
 
+[ 1/17/26 ]
+- Fix bug where items wouldn't transfer correctly if a new craft action was started from the inventory panes while another action was already in progress
+[ ------ ]
+
+
 [ ALERT_CONFIG ]
 link1 = Ko-fi = https://steamcommunity.com/linkfilter/?u=https://ko-fi.com/amescodes,
 link2 = Workshop = https://steamcommunity.com/id/ames_games/myworkshopfiles/?appid=108600,

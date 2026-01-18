@@ -1,8 +1,6 @@
 [h1]Compatible with Build 41 & 42 MP![/h1]
 After crafting or dismantling items, automatically transfer the resulting item(s) to the container of your choice, as long it's equipped to your character!
 
-[url=https://steamcommunity.com/linkfilter/?u=https://ko-fi.com/E1E11KCLJV][img]https://i.imgur.com/NGShmTZ.png[/img][/url]
-
 [h2]Features[/h2]
 [h3]Target Container System[/h3]
 Assign an equipped bag as the "Target Container" that receives the resulting items of various tasks.
@@ -60,6 +58,8 @@ If you experience any issues alongside other mods, please provide a mod list and
 
 [b]Credits[/b]
 PZ modding community for the repo template and being a helpful resource
+
+[url=https://steamcommunity.com/linkfilter/?u=https://ko-fi.com/E1E11KCLJV][img]https://i.imgur.com/NGShmTZ.png[/img][/url]
 
 --------
 [i]Workshop ID: 3646521075

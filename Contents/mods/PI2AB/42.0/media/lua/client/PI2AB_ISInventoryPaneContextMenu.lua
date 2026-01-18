@@ -41,7 +41,7 @@ ISInventoryPaneContextMenu.OnNewCraft = function(selectedItem, recipe, player, a
     local queueObj = ISTimedActionQueue.getTimedActionQueue(playerObj)
     local queue = queueObj.queue
     if queue then
-        local action,i= PI2ABUtil.GetCraftAction(recipe, queue)
+        local action,i= PI2ABUtil.GetCraftActionDesc(recipe, queue)
         if action then
             local logic = action.onCompleteTarget
 
