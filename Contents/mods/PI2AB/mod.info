@@ -1,5 +1,5 @@
-id=PI2AB_beta
-name=Put it in a #$!% bag! [BETA]
+id=PI2AB
+name=Put it in a #$!% bag!
 description=After crafting or dismantling items, automatically transfer the resulting item(s) to the container of your choice, as long it's equipped to your character!
 poster=poster.png
 poster=configtab.png
@@ -7,5 +7,4 @@ icon=icon.png
 versionMin=41.0
 url=https://github.com/amescodes/PZPI2AB
 authors=amescodes
-incompatible=PI2AB
-modversion=41.1.0.2
+modversion=41.1.0.1
