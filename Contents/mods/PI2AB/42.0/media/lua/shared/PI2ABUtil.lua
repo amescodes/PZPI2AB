@@ -99,6 +99,10 @@ function PI2ABUtil.GetUniqueId(suff)
 end
 
 function PI2ABUtil.GetMoveableUniqueId(obj,sq)
+    if not obj or not sq then
+        return nil
+    end
+    
     local spriteId = obj:getSprite():getID()
 
     local x = sq:getX()
