@@ -69,12 +69,25 @@ ISInventoryPaneContextMenu_transferOnCraftComplete = function(completeAction, re
             end
         end
 
-        local action = ISCraftAction:new(playerObj, items:get(0), recipe:getTimeToMake() + additionalTime, recipe, container, containers)
+        local selectedItem =  items:get(0)
+        local action = ISCraftAction:new(playerObj,selectedItem, recipe:getTimeToMake() + additionalTime, recipe, container, containers)
         action:setOnComplete(ISInventoryPaneContextMenu_transferOnCraftComplete, action, recipe, playerObj, selectedItemContainer,container,containers,all)
+        
+        local beforeItems
+        if recipe:isCanBeDoneFromFloor() and selectedItemContainer:getType() == "floor" then
+            local worldItem = selectedItem:getWorldItem()
+            if worldItem then
+                beforeItems = PI2ABUtil.GetObjectsOnAndAroundSquare(worldItem:getSquare())
+            end
+        end
+        
+        if beforeItems == nil then
+            beforeItems = playerObj:getInventory():getItems()
+        end
 
         local timestamp = os.time()
         action.pi2ab_timestamp = timestamp
-        PI2ABComparer.create(timestamp,playerInv:getItems(),result.itemsToTransfer,result.targetWeightTransferred,result.defWeightTransferred)
+        PI2ABComparer.create(timestamp,beforeItems,result.itemsToTransfer,result.targetWeightTransferred,result.defWeightTransferred)
 
         ISTimedActionQueue.addAfter(previousAction, action)
         ISCraftingUI.ReturnItemsToOriginalContainer(playerObj, returnToContainer)
@@ -93,17 +106,27 @@ ISInventoryPaneContextMenu.OnCraft = function(selectedItem, recipe, player, all)
     if not recipe:isCanBeDoneFromFloor() then
         container = playerObj:getInventory()
     end
-    local containers = ISInventoryPaneContextMenu.getContainers(playerObj)
 
     local queue = ISTimedActionQueue.getTimedActionQueue(playerObj).queue
     if queue then
         local action = PI2ABUtil.GetCraftAction(recipe,queue)
         if action then
-            action:setOnComplete(ISInventoryPaneContextMenu_transferOnCraftComplete, action, recipe, playerObj, selectedItemContainer,container,containers,all)
+            action:setOnComplete(ISInventoryPaneContextMenu_transferOnCraftComplete, action, recipe, playerObj, selectedItemContainer,container,ISInventoryPaneContextMenu.getContainers(playerObj),all)
+            local beforeItems
+            if recipe:isCanBeDoneFromFloor() and selectedItemContainer:getType() == "floor" then
+                local worldItem = selectedItem:getWorldItem()
+                if worldItem then
+                    beforeItems = PI2ABUtil.GetObjectsOnAndAroundSquare(worldItem:getSquare())
+                end
+            end
             
+            if beforeItems == nil then
+                beforeItems = playerObj:getInventory():getItems()
+            end
+
             local timestamp = os.time()
             action.pi2ab_timestamp = timestamp
-            PI2ABComparer.create(timestamp,playerObj:getInventory():getItems())
+            PI2ABComparer.create(timestamp,beforeItems)
         end
     end
 end
