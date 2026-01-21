@@ -50,11 +50,9 @@ When there's no target container set, the target container is unequipped, or whe
 When crafting/dismantling multiple items at once ("All" option), you can choose when the items get transferred:
 
 - **After Each**: Items are transferred immediately after each individual craft/dismantle task
-
 - **At End**: Items are transferred only after all crafting/dismantling tasks are completed
 
   
-
 ---
 
 ### Affected Actions

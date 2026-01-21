@@ -1,6 +1,8 @@
 [h1]Compatible with Build 41 & 42 MP![/h1]
 After crafting or dismantling items, automatically transfer the resulting item(s) to the container of your choice, as long it's equipped to your character!
 
+[img]https://i.imgur.com/O3gfkxv.gif[/img]
+
 [h2]Features[/h2]
 [h3]Target Container System[/h3]
 Assign an equipped bag as the "Target Container" that receives the resulting items of various tasks.

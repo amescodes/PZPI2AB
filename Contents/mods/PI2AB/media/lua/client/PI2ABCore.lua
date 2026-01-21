@@ -14,7 +14,11 @@ function PI2ABCore.PutInBagRecipe(playerObj,playerInv,selectedItemContainer,targ
         local srcItems = PI2ABUtil.GetActualItemsFromSource(playerInv,src)
         local allItems = playerInv:getItems()
         if completedAct.pi2ab_timestamp then
-            result = PI2ABCore.PutInBag(playerObj,playerInv,selectedItemContainer,targetContainer,completedAct, allItems, srcItems)
+            if recipe:isCanBeDoneFromFloor() and selectedItemContainer:getType() == "floor" then
+                result = PI2ABCore.PutInBagFromGround(completedAct, playerObj, playerObj:getSquare())
+            else
+                result = PI2ABCore.PutInBag(playerObj,playerInv,selectedItemContainer,targetContainer,completedAct, allItems, srcItems)
+            end
             
             local defOption = PI2ABCore.WhenToTransfer[PI2AB.WhenToTransferItems]
             if defOption == 'AfterEach' then
@@ -81,7 +85,11 @@ function PI2ABCore.PutInBag(playerObj, playerInv, selectedItemContainer, targetC
             end
 
             if destinationContainer then
-                local tAction = ISInventoryTransferAction:new(playerObj, it, playerInv, destinationContainer, nil)
+                local transferFrom = it:getContainer()
+                if transferFrom == nil then
+                    transferFrom = playerInv
+                end
+                local tAction = ISInventoryTransferAction:new(playerObj, it, transferFrom, destinationContainer, nil)
                 tAction:setAllowMissingItems(true)
                 if not tAction.ignoreAction then
                     previousAct = PI2ABCore.AddWhenToTransferAction(previousAct, tAction)
@@ -151,21 +159,25 @@ function PI2ABCore.PutInBagFromGround(completedAction, playerObj, square)
     local playerInv = playerObj:getInventory()
     local targetContainer = PI2AB.getTargetContainer(playerObj)
     local playerNum = playerObj:getPlayerNum()
+    local previousAct = completedAction
+    local targetWeightTransferred = 0.0
+    local defWeightTransferred = 0.0
 
     local pdata = getPlayerData(playerNum)
     if pdata then pdata.lootInventory:refreshBackpacks() end
-
+    local itemsToTransfer
     if completedAction.pi2ab_timestamp then
         local comparer = PI2ABComparer.get(completedAction.pi2ab_timestamp)
         if comparer then
             local allItems = PI2ABUtil.GetObjectsOnAndAroundSquare(square)
-            local itemsToTransfer = comparer:compare(allItems, nil)
+            itemsToTransfer = comparer:compare(allItems, nil)
             -- target container
             local capacity = targetContainer and targetContainer:getEffectiveCapacity(playerObj) or 0
             PI2ABUtil.Print("target container capacity " .. tostring(capacity), true)
             local runningBagWeight = targetContainer and targetContainer:getContentsWeight() or 0
             PI2ABUtil.Print("target container contents weight START " .. tostring(runningBagWeight), true)
             -- backup / default container
+            defWeightTransferred = comparer.defWeightTransferred
             local defContainer = PI2ABCore.GetDefaultContainer(nil, playerInv)
             -- check new items and queue transfer actions            
             for i = 0, itemsToTransfer:size() - 1 do
@@ -189,7 +201,7 @@ function PI2ABCore.PutInBagFromGround(completedAction, playerObj, square)
                     local tAction = ISInventoryTransferAction:new(playerObj, it, ISInventoryPage.GetFloorContainer(playerNum), destinationContainer, nil)
                     tAction:setAllowMissingItems(true)
                     if not tAction.ignoreAction then
-                        ISTimedActionQueue.getTimedActionQueue(playerObj):addToQueue(tAction)
+                        previousAct = PI2ABCore.AddWhenToTransferAction(previousAct, tAction)
                     end
                 end
             end
@@ -197,6 +209,7 @@ function PI2ABCore.PutInBagFromGround(completedAction, playerObj, square)
             PI2ABComparer.remove(completedAction.pi2ab_timestamp)
         end
     end
+    return PI2ABResult:new(previousAct, completedAction, itemsToTransfer, targetWeightTransferred, defWeightTransferred)
 end
 
 function PI2ABCore.GetDefaultContainer(selectedItemContainer, playerInv)
