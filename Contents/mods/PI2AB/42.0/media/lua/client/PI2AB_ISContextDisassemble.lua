@@ -75,7 +75,7 @@ function ISWorldMenuElements.ContextDisassemble()
                 -- end
 
                 local action,i = PI2ABUtil.GetMovablesAction(queue)
-                if action and action.moveProps then
+                if action and action.moveProps and _v.object then
                     local uniqueId = PI2ABUtil.GetMoveableUniqueId(_v.object,_v.square)
                     local scrapDef = ISMoveableDefinitions:getInstance().getScrapDefinition(action.moveProps.material)
                     local beforeItems
