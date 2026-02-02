@@ -1,5 +1,5 @@
-id=PI2AB
-name=Put it in a #$!% bag!
+id=PI2AB_beta
+name=Put it in a #$!% bag! [BETA]
 description=After crafting or dismantling items, automatically transfer the resulting item(s) to the container of your choice, as long it's equipped to your character!
 poster=poster.png
 poster=configtab.png
