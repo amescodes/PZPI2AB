@@ -1,0 +1,11 @@
+-- local old_ISLightActions_completeRemoveLightBulb = ISLightActions.completeRemoveLightBulb
+-- function ISLightActions:completeRemoveLightBulb()
+-- 	old_ISLightActions_completeRemoveLightBulb()(self)
+-- 	if isServer() then
+-- 		PI2ABUtil.Delay(function()
+-- 			local player = self.character
+-- 			sendServerCommand(player, 'PI2AB', 'transferFromInventoryOnCraftComplete', { playerNum = player:getPlayerNum(), timestamp = self.part:getId()})
+-- 		end, 1)
+-- 		return true
+-- 	end
+-- end

@@ -9,12 +9,12 @@
 
 
 [ 1/17/26 ]
-- Fix bug where items wouldn't transfer correctly if a new craft action was started from the inventory panes while another action was already in progress
+- Fix bug where items wouldn't transfer correctly if a new craft action was started from the inventory panes while another action was already in progress.
 [ ------ ]
 
 
 [ 2/1/26 ]
-- Fix bug from moveables place action that was canceled 
+- Fix bug from moveables place action that was canceled.
 [ ------ ]
 
 
@@ -22,6 +22,7 @@
 - Add support for B42.14.
 - Add automatic transfer behavior to grass cutting.
 [ ------ ]
+
 
 [ ALERT_CONFIG ]
 link1 = Ko-fi = https://steamcommunity.com/linkfilter/?u=https://ko-fi.com/amescodes,

@@ -9,7 +9,12 @@
 
 
 [ 1/21/26 ]
-- Fix bug where craft recipes with the "CanBeDoneFromFloor" tag would not transfer to the target container if the selected item was on the floor
+- Fix bug where craft recipes with the "CanBeDoneFromFloor" tag would not transfer to the target container if the selected item was on the floor.
+[ ------ ]
+
+
+[ 2/19/26 ]
+- Add support for B42.14.
 [ ------ ]
 
 
